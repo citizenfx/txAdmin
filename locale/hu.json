@@ -4,18 +4,18 @@
         "humanizer_language": "hu"
     },
     "restarter": {
-        "crash_detected": "crash észlelve",
-        "partial_crash_warn": "Due to a partial crash, this server will restart in 1 minute. Please disconnect now.",
-        "partial_crash_warn_discord": "Due to a partial crash, **%{servername}** will restart in 1 minute.",
+        "crash_detected": "összeomlás észlelve",
+        "partial_crash_warn": "Részleges összeomlás miatt a szerver 1 percen belül újraindul. Kérjük csatlakozz le!",
+        "partial_crash_warn_discord": "Részleges összeomlás miatt **%{servername}** 1 percen belül újraindul.",
         "schedule_reason": "ütemezett újraindítás %{time}",
-        "schedule_warn": "A szerver ütemezett újrainditása lesz %{smart_count} perc múlva. Lépjetek le. |||| A szerver ütemezett újrainditása lesz %{smart_count} perc múlva.",
+        "schedule_warn": "A szerver ütemezett újrainditása lesz %{smart_count} perc múlva. Kérjük csatlakozzatok le! |||| A szerver ütemezett újrainditása lesz %{smart_count} perc múlva.",
         "schedule_warn_discord": "**%{servername}** szerver ütemezett újrainditása lesz %{smart_count} perc múlva. |||| **%{servername}** szerver ütemezett újrainditása lesz %{smart_count} perc múlva."
     },
     "server_actions": {
         "restarting": "Szerver újraindítás (%{reason}).",
         "restarting_discord": "**%{servername}** újraindul (%{reason}).",
-        "stopping": "Szerver leállítás (%{reason}).",
-        "stopping_discord": "**%{servername}** szervert leállítják (%{reason}).",
+        "stopping": "Szerver leáll (%{reason}).",
+        "stopping_discord": "**%{servername}** szervert leáll (%{reason}).",
         "spawning_discord": "**%{servername}** szerver indul."
     },
     "discord": {
@@ -23,8 +23,8 @@
         "status_offline": "**%{servername}** jelenleg **Nem Elérhető**!"
     },
     "nui_warning": {
-        "title": "WARNING",
-        "warned_by": "Warned by:",
-        "instruction": "Hold [SPACE] for 10 seconds to dismiss this message."
+        "title": "FIGYELMEZTETÉS",
+        "warned_by": "Figyelmeztette:",
+        "instruction": "Az üzenet eltüntetéséhez 10 másodpercig tartsd nyomva a [SPACE] billentyűt."
     }
 }
