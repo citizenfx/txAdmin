@@ -7,11 +7,43 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
 <link rel="stylesheet" href="<%= resourcePath %>css/codemirror_lucario.css?txVer=<%= txAdminVersion %>">
 <style>
-    .cm-s-lucario{
-        font-size: 1.05rem !important;
+    .cfg-editor-layout {
+        display: flex;
+        flex-direction: column;
+        height: 100vh;
+        overflow: hidden;
     }
-    .CodeMirror{
-        height: calc(100vh - 250px);
+    .cfg-editor-main {
+        flex: 1 1 auto;
+        min-height: 0;
+    }
+    .cfg-editor-main > div,
+    .cfg-editor-main .code-editor-shell,
+    .cfg-editor-main .CodeMirror {
+        height: 100%;
+    }
+    .cfg-editor-header {
+        display: flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: space-between;
+        min-height: 4rem;
+        margin-bottom: 1rem;
+        padding: .5rem 1rem;
+        border-bottom: 1px solid rgba(127, 127, 127, .25);
+    }
+    .cfg-editor-title {
+        display: flex;
+        align-items: center;
+        gap: .625rem;
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 400;
+        line-height: 1;
+    }
+    .cfg-editor-title i {
+        font-size: 1.35rem;
+        opacity: .65;
     }
 
     /* https://codemirror.net/5/addon/dialog/dialog.css */
@@ -43,25 +75,197 @@
     .CodeMirror-dialog button {
         font-size: 70%;
     }
+
+    .cfg-migration-callout {
+        display: flex;
+        width: 100%;
+        margin-bottom: 1rem;
+        padding: .625rem .75rem;
+        color: inherit;
+        background: hsla(53.3, 75%, 95.3%, .55);
+        border-left: 2px solid hsla(47, 78%, 57%, .55);
+        border-radius: .25rem;
+    }
+    body.theme--dark .cfg-migration-callout {
+        background: hsla(21.9, 72.2%, 14.1%, .45);
+    }
+    .cfg-migration-copy {
+        flex: 1 1 auto;
+        min-width: 0;
+    }
+    .cfg-migration-copy strong {
+        display: block;
+    }
+    .cfg-migration-copy p {
+        margin: .15rem 0 0;
+        font-size: .875rem;
+        line-height: 1.4;
+        opacity: .72;
+    }
+    .cfg-migration-copy code {
+        display: inline;
+        padding: .08em .3em;
+        color: inherit;
+        font-size: .875em;
+        white-space: nowrap;
+        background: rgba(127, 127, 127, .08);
+        border: 1px solid rgba(127, 127, 127, .12);
+        border-radius: .25rem;
+    }
+    .cfg-migration-matches {
+        display: grid;
+        margin-top: .2rem;
+        overflow: hidden;
+        background: rgba(127, 127, 127, .08);
+        border: 1px solid rgba(127, 127, 127, .12);
+        border-radius: .25rem;
+    }
+    .cfg-migration-match {
+        display: flex;
+        min-width: 0;
+    }
+    .cfg-migration-match + .cfg-migration-match {
+        border-top: 1px solid rgba(127, 127, 127, .1);
+    }
+    .cfg-migration-match-line {
+        appearance: none;
+        flex: 0 0 3em;
+        padding: 0 .5em 0 0;
+        color: inherit;
+        font-family: inherit;
+        font-size: .75rem;
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+        line-height: inherit;
+        text-align: right;
+        cursor: pointer;
+        background: rgba(127, 127, 127, .06);
+        border: 0;
+        border-right: 1px solid rgba(127, 127, 127, .1);
+        border-radius: 0;
+        opacity: .8;
+    }
+    .cfg-migration-match-line:hover {
+        background: rgba(127, 127, 127, .14);
+        opacity: 1;
+    }
+    .cfg-migration-match-line:focus-visible {
+        z-index: 1;
+        outline: 2px solid currentColor;
+        outline-offset: -2px;
+        opacity: 1;
+    }
+    .cfg-migration-copy .cfg-migration-match-preview {
+        display: block;
+        flex: 1 1 auto;
+        min-width: 0;
+        padding: .08em .3em;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: pre;
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+    }
+    .cfg-external-link-tail {
+        white-space: nowrap;
+    }
+    .cfg-external-link-icon {
+        display: inline;
+        width: 1.3125rem;
+        height: .875rem;
+        margin: 0 -.21875rem .21875rem 0;
+    }
+    .cfg-svg-symbols {
+        position: absolute;
+        width: 0;
+        height: 0;
+        overflow: hidden;
+    }
 </style>
 
-<!-- Hacky hack but ok, no time to do it better: -->
-<% if (!isWebInterface) { %>
-    <style>.CodeMirror{height: calc(100vh - 150px);}</style>
-<% } %>
+<%
+    const metadataMigrationStrings = [
+        'sv_hostname',
+        'sv_projectName',
+        'sv_projectDesc',
+        'tags',
+        'locale',
+        'banner_detail',
+        'banner_connecting',
+        'load_server_icon',
+    ];
+    const getMetadataMigrationMatches = (cfgData) => {
+        const matches = [];
+        const lines = cfgData.split(/\r\n?|\n/);
+        for (const [lineIndex, line] of lines.entries()) {
+            const trimmedLine = line.trimStart();
+            if (trimmedLine.startsWith('#') || trimmedLine.startsWith('//')) continue;
+            for (const value of metadataMigrationStrings) {
+                if (!line.includes(value)) continue;
+                matches.push({lineNumber: lineIndex + 1, preview: trimmedLine});
+                break;
+            }
+        }
+        return matches;
+    };
+    const metadataMigrationEnabled = Date.now() >= 1792591200000; //2026-10-21 14:00 UTC
+    const metadataMigrationMatches = metadataMigrationEnabled ? getMetadataMigrationMatches(rawFile) : [];
+    const showMetadataMigrationNotice = metadataMigrationMatches.length > 0;
+    const portalServerUrl = cfxId
+        ? `https://portal.cfx.re/servers/registration-keys/details?id=${encodeURIComponent(cfxId)}`
+        : 'https://portal.cfx.re/servers/registration-keys';
+%>
 
 <!-- CFG Editor -->
-<div class="row justify-content-md-center">
-    <div class="col-lg-12 col-xl-11 mw-col8">
-        <textarea id="codeMirrorTarget" style="height: calc(100vh - 250px); width: 100%;"
-            class="cms-s-lucario" name="code"><%= rawFile %></textarea>
-    </div>
-</div>
-<div class="row justify-content-md-center" style="margin-top: 1em;">
-    <div class="mx-auto">
-        <button type="button" id="cfgEditor-save" class="btn btn-outline-dark btn-sm mb-2">
-            Save File (CTRL+S)
+<svg class="cfg-svg-symbols" aria-hidden="true">
+    <symbol id="cfg-external-link-symbol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 3h6v6"/>
+        <path d="M10 14 21 3"/>
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+    </symbol>
+</svg>
+<div class="cfg-editor-layout">
+    <header class="cfg-editor-header">
+        <h1 class="cfg-editor-title">
+            <i class="icon-note" aria-hidden="true"></i>
+            <span>CFG Editor</span>
+        </h1>
+        <button type="button" id="cfgEditor-save" class="btn btn-primary btn-sm" title="Save File (CTRL+S)" disabled>
+            <i class="icon-cloud-upload" aria-hidden="true"></i>
+            Save File
         </button>
+    </header>
+    <div class="row justify-content-md-center" id="cfgMigrationNotice"
+        data-migration-enabled="<%= metadataMigrationEnabled %>"
+        data-migration-strings="<%= metadataMigrationStrings.join(',') %>" <%= showMetadataMigrationNotice ? '' : 'hidden' %>>
+        <div class="col-lg-12 col-xl-11 mw-col8">
+            <div class="cfg-migration-callout" role="alert">
+                <div class="cfg-migration-copy">
+                    <strong>Server Listing Details (Metadata) Moved to Cfx Portal</strong>
+                    <p>
+                        As of October 21th, server listing details must be configured in the <a href="<%= portalServerUrl %>" target="_blank">Cfx <span class="cfg-external-link-tail">Portal<svg class="cfg-external-link-icon" aria-hidden="true"><use href="#cfg-external-link-symbol"/></svg></span></a> instead of this file.
+                        Please read the <a href="https://forum.cfx.re/t/5431315" target="_blank"><span class="cfg-external-link-tail">Announcement<svg class="cfg-external-link-icon" aria-hidden="true"><use href="#cfg-external-link-symbol"/></svg></span></a> for more details. <br/>
+                        <small>Review and remove the following lines:</small>
+                        <span class="cfg-migration-matches" id="cfgMigrationMatches">
+                            <% for (const match of metadataMigrationMatches) { %>
+                                <span class="cfg-migration-match">
+                                    <button type="button" class="cfg-migration-match-line" data-line-number="<%= match.lineNumber %>" aria-label="Select line <%= match.lineNumber %>"><%= match.lineNumber %></button>
+                                    <code class="cfg-migration-match-preview"><%= match.preview %></code>
+                                </span>
+                            <% } %>
+                        </span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row justify-content-md-center cfg-editor-main">
+        <div class="col-lg-12 col-xl-11 mw-col8">
+            <div class="code-editor-shell cm-s-lucario">
+                <textarea id="codeMirrorTarget" name="code" hidden><%= rawFile %></textarea>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -83,8 +287,62 @@
 <script>
     //============================================== CodeMirror & Hook Setup
     const saveButton = document.getElementById('cfgEditor-save');
+    const metadataMigrationNotice = document.getElementById('cfgMigrationNotice');
+    const metadataMigrationEnabled = metadataMigrationNotice.dataset.migrationEnabled === 'true';
+    const metadataMigrationStrings = metadataMigrationNotice.dataset.migrationStrings.split(',');
+    const metadataMigrationMatchesElement = document.getElementById('cfgMigrationMatches');
+    const getMetadataMigrationMatches = (cfgData) => {
+        const matches = [];
+        const lines = cfgData.split(/\r\n?|\n/);
+        for (const [lineIndex, line] of lines.entries()) {
+            const trimmedLine = line.trimStart();
+            if (trimmedLine.startsWith('#') || trimmedLine.startsWith('//')) continue;
+            for (const value of metadataMigrationStrings) {
+                if (!line.includes(value)) continue;
+                matches.push({lineNumber: lineIndex + 1, preview: trimmedLine});
+                break;
+            }
+        }
+        return matches;
+    };
+    const updateMetadataMigrationNotice = (cfgData) => {
+        if (!metadataMigrationEnabled) return;
+        const matches = getMetadataMigrationMatches(cfgData);
+        const matchesFragment = document.createDocumentFragment();
+        for (const match of matches) {
+            const matchElement = document.createElement('span');
+            matchElement.className = 'cfg-migration-match';
+            const lineNumberElement = document.createElement('button');
+            lineNumberElement.type = 'button';
+            lineNumberElement.className = 'cfg-migration-match-line';
+            lineNumberElement.dataset.lineNumber = match.lineNumber;
+            lineNumberElement.setAttribute('aria-label', `Select line ${match.lineNumber}`);
+            lineNumberElement.textContent = match.lineNumber;
+            const previewElement = document.createElement('code');
+            previewElement.className = 'cfg-migration-match-preview';
+            previewElement.textContent = match.preview;
+            matchElement.append(lineNumberElement, previewElement);
+            matchesFragment.append(matchElement);
+        }
+        metadataMigrationMatchesElement.replaceChildren(matchesFragment);
+        metadataMigrationNotice.hidden = matches.length === 0;
+    };
+    metadataMigrationMatchesElement.addEventListener('click', (event) => {
+        const lineNumberElement = event.target.closest('.cfg-migration-match-line');
+        if (!lineNumberElement) return;
 
-    window.onload = function () {
+        const lineIndex = Number(lineNumberElement.dataset.lineNumber) - 1;
+        const lineText = window.CMInstance.getLine(lineIndex);
+        if (lineText === undefined) return;
+
+        const lineStart = {line: lineIndex, ch: 0};
+        const lineEnd = {line: lineIndex, ch: lineText.length};
+        window.CMInstance.focus();
+        window.CMInstance.setSelection(lineStart, lineEnd);
+        window.CMInstance.scrollIntoView({from: lineStart, to: lineEnd}, 40);
+    });
+
+    const initializeCfgEditor = () => {
         const codeMirrorTarget = document.getElementById("codeMirrorTarget");
         window.CMInstance = CodeMirror.fromTextArea(codeMirrorTarget, {
             mode: "fivem-cfg",
@@ -92,6 +350,7 @@
             lineWrapping: true,
             theme: "lucario" //NOTE: I modified the theme a bit
         });
+        saveButton.disabled = false;
 
         window.addEventListener("keydown", (event) => {
             if (event.ctrlKey && event.key == 's') {
@@ -103,11 +362,13 @@
             }
         })
     };
+    initializeCfgEditor();
 
 
     //============================================== Save action
     saveButton.onclick = () =>  {
         const cfgData = window.CMInstance.getValue();
+        saveButton.disabled = true;
         if(cfgData.length < 1024){
             const notifyWarn = $.notify({ message: `Your CFG file is too small, there is a good chance you deleted something you shouldn't. We are saving an backup file just in case you need it.` }, { type: 'warning' });
         }
@@ -118,10 +379,15 @@
             url: '/cfgEditor/save',
             data: {cfgData},
             success: function (data) {
+                saveButton.disabled = false;
                 if (checkApiLogoutRefresh(data)) return;
+                if (data.type === 'success' || data.type === 'warning') {
+                    updateMetadataMigrationNotice(cfgData);
+                }
                 updateMarkdownNotification(data, notify);
             },
             error: function (xmlhttprequest, textstatus, message) {
+                saveButton.disabled = false;
                 notify.update('progress', 0);
                 notify.update('type', 'danger');
                 notify.update('message', message);

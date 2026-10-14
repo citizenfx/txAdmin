@@ -1,4 +1,5 @@
 const modulename = 'WebServer:CFGEditorPage';
+import path from 'node:path';
 import { resolveCFGFilePath, readRawCFGFile } from '@lib/fxserver/fxsConfigHelper';
 import consoleFactory from '@lib/console';
 const console = consoleFactory(modulename);
@@ -21,9 +22,10 @@ export default async function CFGEditorPage(ctx) {
     }
 
     //Read cfg file
+    let cfgFilePath;
     let rawFile;
     try {
-        let cfgFilePath = resolveCFGFilePath(txConfig.server.cfgPath, txConfig.server.dataPath);
+        cfgFilePath = resolveCFGFilePath(txConfig.server.cfgPath, txConfig.server.dataPath);
         rawFile = await readRawCFGFile(cfgFilePath);
     } catch (error) {
         let message = `Failed to read CFG File with error: ${error.message}`;
@@ -33,6 +35,8 @@ export default async function CFGEditorPage(ctx) {
     return ctx.utils.render('main/cfgEditor', {
         headerTitle: 'CFG Editor',
         rawFile,
+        cfgFileName: path.basename(cfgFilePath),
+        cfxId: txManager.hostStatus.cfxId,
         disableRestart: (ctx.admin.hasPermission('control.server')) ? '' : 'disabled',
     });
 };

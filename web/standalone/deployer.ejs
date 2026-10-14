@@ -28,8 +28,11 @@
         body.theme--dark .inline-code {
             color: #00bf8f !important;
         }
-        .cm-s-lucario{
-            font-size: 1.05rem !important;
+        .deployer-stepper .cm-s-lucario {
+            --cm-background: #1a1b1e;
+        }
+        .deployer-stepper {
+            overflow: hidden;
         }
         .deployer-stepper > .card-header,
         .deployer-stepper > .card-footer{
@@ -81,14 +84,15 @@
                                     <%= recipe.description %>
                                 <% } %>
                             </p>
-                            <textarea 
-                                id="codeMirrorTarget"
-                                style="width: 100%;"
-                                class="cms-s-lucario"
-                                name="code"
-                            >
-                                <%= recipe.raw %>
-                            </textarea>
+                            <div class="code-editor-shell cm-s-lucario">
+                                <textarea 
+                                    id="codeMirrorTarget"
+                                    style="width: 100%;"
+                                    name="code"
+                                >
+                                    <%= recipe.raw %>
+                                </textarea>
+                            </div>
                             <div class="row justify-content-center m-2">
                                 <button class="btn btn-outline-danger" type="button" 
                                     onclick="cancelAction()">Cancel and Return to Setup</button>
@@ -299,7 +303,9 @@
                                 </div>
                             </div>
         
-                            <textarea id="codeMirrorTarget" style="width: 100%;" class="cms-s-lucario" name="code"><%= serverCFG %></textarea>
+                            <div class="code-editor-shell cm-s-lucario">
+                                <textarea id="codeMirrorTarget" style="width: 100%;" name="code"><%= serverCFG %></textarea>
+                            </div>
                             <div class="row justify-content-center m-2">
                                 <button class="btn btn-outline-danger" type="button" onclick="cancelAction()">Cancel and Return to Setup</button>
                                 &nbsp; &nbsp;
