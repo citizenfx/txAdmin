@@ -33,9 +33,14 @@ local vehClassNamesEnum = {
     [21] = "train",
 }
 
--- Since we don't have the vehicle types on the server, we need this translation table
--- NOTE: this list was generated for game build 2802/mpchristmas3
--- How to update the list: https://gist.github.com/tabarra/32ef90524188093ab4218ee7b5121269
+-- Since CreateVehicleServerSetter() requires the vehicle type and
+-- there is currently no native capable of resolving it from the model,
+-- this table contains known mismatches between GTA's reported vehicle
+-- class and the server-side vehicle type expected by CFX.
+--
+-- Rockstar DLCs may introduce new vehicles that require additions here.
+-- How to regenerate/update this table:
+-- https://gist.github.com/tabarra/32ef90524188093ab4218ee7b5121269
 local mismatchedTypes = {
     ["airtug"] = "automobile",       -- trailer
     ["avisa"] = "submarine",         -- boat
@@ -47,7 +52,9 @@ local mismatchedTypes = {
     ["caddy3"] = "automobile",       -- trailer
     ["chimera"] = "automobile",      -- bike
     ["docktug"] = "automobile",      -- trailer
+    ["driftkeitora"] = "automobile", -- trailer
     ["forklift"] = "automobile",     -- trailer
+    ["keitora"] = "automobile",      -- trailer
     ["kosatka"] = "submarine",       -- boat
     ["mower"] = "automobile",        -- trailer
     ["policeb"] = "bike",            -- automobile
@@ -63,6 +70,8 @@ local mismatchedTypes = {
     ["thruster"] = "heli",           -- automobile
     ["towtruck"] = "automobile",     -- trailer
     ["towtruck2"] = "automobile",    -- trailer
+    ["towtruck3"] = "automobile",    -- trailer
+    ["towtruck4"] = "automobile",    -- trailer
     ["tractor"] = "automobile",      -- trailer
     ["tractor2"] = "automobile",     -- trailer
     ["tractor3"] = "automobile",     -- trailer
@@ -72,21 +81,48 @@ local mismatchedTypes = {
     ["utillitruck3"] = "automobile", -- trailer
 }
 
+local function resolveVehicleType(model)
+    -- Explicit overrides always take precedence.
+    local override = mismatchedTypes[model]
+    if override then
+        return override
+    end
+
+    local vehicleClass = GetVehicleClassFromName(model)
+
+    -- Defensive fallback.
+    if vehicleClass == nil or vehicleClass < 0 then
+        debugPrint((
+            "^3Unknown vehicle class for '%s'. Falling back to 'automobile'."
+        ):format(model))
+
+        return "automobile"
+    end
+
+    local vehicleType = vehClassNamesEnum[vehicleClass]
+
+    if vehicleType == nil then
+        -- This is expected for most road vehicles.
+        vehicleType = "automobile"
+    end
+
+    if mismatchedTypes[model] == nil and vehClassNamesEnum[vehicleClass] == nil then
+        debugPrint((
+            "^2Vehicle '%s' resolved to default type 'automobile' (class %s)."
+        ):format(model, tostring(vehicleClass)))
+    end
+
+    return vehicleType
+end
+
 local function handleSpawnRequestFivem(model)
     if not IsModelAVehicle(model) then
         debugPrint("^1Model provided is not a vehicle: " .. model)
         return false
     end
 
-    --Resolve vehicle type, required for server setter
-    --NOTE: check if GetVehicleTypeFromName is already available
-    local modelType
-    if mismatchedTypes[model] then
-        modelType = mismatchedTypes[model]
-    else
-        local modelClassNumber = GetVehicleClassFromName(model)
-        modelType = vehClassNamesEnum[modelClassNumber] or "automobile"
-    end
+    -- Resolve vehicle type required by CreateVehicleServerSetter().
+    local modelType = resolveVehicleType(model)
 
     --Request from server
     TriggerServerEvent('txsv:req:vehicle:spawn:fivem', model, modelType)
