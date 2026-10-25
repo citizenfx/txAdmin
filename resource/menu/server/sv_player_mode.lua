@@ -11,6 +11,7 @@ RegisterNetEvent('txsv:req:changePlayerMode', function(mode, nearbyPlayers)
     debugPrint("Invalid player mode requested by " .. GetPlayerName(src) .. " (mode: " .. (mode or 'nil'))
     return
   end
+  if type(nearbyPlayers) ~= 'table' then return end
 
   local allow = PlayerHasTxPermission(src, 'players.playermode')
   TriggerEvent('txsv:logger:menuEvent', src, "playerModeChanged", allow, mode)
@@ -19,7 +20,9 @@ RegisterNetEvent('txsv:req:changePlayerMode', function(mode, nearbyPlayers)
 
     if IS_PTFX_ENABLED then
       for _, v in ipairs(nearbyPlayers) do
-        TriggerClientEvent('txcl:showPtfx', v, src)
+        if type(v) == 'number' and GetPlayerName(v) ~= nil then
+          TriggerClientEvent('txcl:showPtfx', v, src)
+        end
       end
     end
   end
