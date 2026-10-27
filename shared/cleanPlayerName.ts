@@ -60,28 +60,11 @@ const hexInvalidString = (str: string, limit = 35) => {
 
 
 /**
- * Checks if a character is an emoji.
- * TODO: this is not perfect, use @mathiasbynens/emoji-regex
- *  or await for NodeJS 20 and use the native regex /^\p{RGI_Emoji}$/v
- *  ref: https://v8.dev/features/regexp-v-flag
-*  NOTE: also remove the library unicode-emoji-json, being used by the discord bot
+ * Checks if a character is an emoji using the native RGI_Emoji property.
+ * ref: https://v8.dev/features/regexp-v-flag
  */
-const isEmoji = (char: string) => {
-    const codePoint = char.codePointAt(0)!;
-    return (
-        (codePoint >= 0x1F300 && codePoint <= 0x1F5FF) || // Miscellaneous Symbols and Pictographs
-        (codePoint >= 0x1F600 && codePoint <= 0x1F64F) || // Emoticons
-        (codePoint >= 0x1F680 && codePoint <= 0x1F6FF) || // Transport and Map Symbols
-        (codePoint >= 0x1F700 && codePoint <= 0x1F77F) || // Alchemical Symbols
-        (codePoint >= 0x1F780 && codePoint <= 0x1F7FF) || // Geometric Shapes Extended
-        (codePoint >= 0x1F800 && codePoint <= 0x1F8FF) || // Supplemental Arrows-C
-        (codePoint >= 0x1F900 && codePoint <= 0x1F9FF) || // Supplemental Symbols and Pictographs
-        (codePoint >= 0x1FA00 && codePoint <= 0x1FA6F) || // Chess Symbols
-        (codePoint >= 0x1FA70 && codePoint <= 0x1FAFF) || // Symbols and Pictographs Extended-A
-        (codePoint >= 0x2600 && codePoint <= 0x26FF) ||   // Miscellaneous Symbols
-        (codePoint >= 0x2700 && codePoint <= 0x27BF)      // Dingbats
-    );
-}
+const emojiRegex = /^\p{RGI_Emoji}$/v;
+const isEmoji = (char: string) => emojiRegex.test(char);
 
 
 /**

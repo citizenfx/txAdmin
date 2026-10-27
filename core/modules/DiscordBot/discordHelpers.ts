@@ -1,9 +1,8 @@
 const modulename = 'DiscordBot:cmd';
-import orderedEmojis from 'unicode-emoji-json/data-ordered-emoji';
 import { ColorResolvable, CommandInteraction, EmbedBuilder, InteractionReplyOptions } from "discord.js";
 import consoleFactory from '@lib/console';
 const console = consoleFactory(modulename);
-const allEmojis = new Set(orderedEmojis);
+const emojiRegex = /^\p{RGI_Emoji}$/v;
 
 
 /**
@@ -95,7 +94,7 @@ export const isValidButtonEmoji = (emoji: unknown) => {
     if (typeof emoji !== 'string') return false;
     if (/^\d{17,19}$/.test(emoji)) return true;
     if (/^<a?:\w{2,32}:\d{17,19}>$/.test(emoji)) return true;
-    return allEmojis.has(emoji);
+    return emojiRegex.test(emoji);
 }
 
 

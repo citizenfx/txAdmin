@@ -59,7 +59,6 @@
     "string-argv": "^0.3.2",
     "systeminformation": "^5.23.5",
     "throttle-debounce": "^5.0.2",
-    "unicode-emoji-json": "^0.8.0",
     "xss": "^1.0.15",
     "zod": "^3.23.8",
     "zod-validation-error": "^3.4.0"

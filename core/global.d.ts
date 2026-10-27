@@ -52,14 +52,6 @@ declare function ScanResourceRoot(rootPath: string, callback: (data: object) => 
 declare function VerifyPasswordHash(password: string, hash: string): boolean;
 
 
-/**
- * MARK: Fixes
- */
-declare module 'unicode-emoji-json/data-ordered-emoji' {
-    const emojis: string[];
-    export = emojis;
-}
-
 //FIXME: checar se eu preciso disso
 // interface ProcessEnv {
 //     [x: string]: string | undefined;
