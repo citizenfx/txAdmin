@@ -177,6 +177,23 @@ export default class WebServer {
             // console.debug(`HTTP ${req.method} ${req.url}`);
             if (!checkHttpLoad()) return;
             if (!checkRateLimit(req?.socket?.remoteAddress)) return;
+
+            // FIXME:NEXT:UPDATE: CVE-2026-111497 Mitigation
+            // Reject inbound encoded bodies before Koa/Socket.IO decodes them.
+            const contentEncoding = req.headers['content-encoding'];
+            if (contentEncoding !== undefined) {
+                if (typeof contentEncoding !== 'string' || contentEncoding.trim().toLowerCase() !== 'identity') {
+                    res.writeHead(415, {
+                        'Content-Type': 'text/plain; charset=utf-8',
+                        'Accept-Encoding': 'identity',
+                    });
+                    res.end('Unsupported Content-Encoding');
+                    return;
+                }
+                // Downstream parsers must also recognize case/whitespace variants.
+                req.headers['content-encoding'] = 'identity';
+            }
+
             if (req.url.startsWith('/socket.io')) {
                 (this.io.engine as any).handleRequest(req, res);
             } else {
