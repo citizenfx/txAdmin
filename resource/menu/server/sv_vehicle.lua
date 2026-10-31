@@ -8,6 +8,64 @@ if not TX_MENU_ENABLED then return end
 --  actions defined on Menu's "Main Page"
 -- =============================================
 
+-- NOTE: this is not a complete list, but most others have the type "automobile"
+local vehClassNamesEnum = {
+  [8] = "bike",
+  [11] = "trailer",
+  [13] = "bike",
+  [14] = "boat",
+  [15] = "heli",
+  [16] = "plane",
+  [21] = "train",
+}
+
+-- Since we don't have the vehicle types on the server, we need this translation table
+-- NOTE: this list was generated for game build 2802/mpchristmas3
+-- How to update the list: https://gist.github.com/tabarra/32ef90524188093ab4218ee7b5121269
+local mismatchedTypes = {
+  ["airtug"] = "automobile",       -- trailer
+  ["avisa"] = "submarine",         -- boat
+  ["blimp"] = "heli",              -- plane
+  ["blimp2"] = "heli",             -- plane
+  ["blimp3"] = "heli",             -- plane
+  ["caddy"] = "automobile",        -- trailer
+  ["caddy2"] = "automobile",       -- trailer
+  ["caddy3"] = "automobile",       -- trailer
+  ["chimera"] = "automobile",      -- bike
+  ["docktug"] = "automobile",      -- trailer
+  ["forklift"] = "automobile",     -- trailer
+  ["kosatka"] = "submarine",       -- boat
+  ["mower"] = "automobile",        -- trailer
+  ["policeb"] = "bike",            -- automobile
+  ["ripley"] = "automobile",       -- trailer
+  ["rrocket"] = "automobile",      -- bike
+  ["sadler"] = "automobile",       -- trailer
+  ["sadler2"] = "automobile",      -- trailer
+  ["scrap"] = "automobile",        -- trailer
+  ["slamtruck"] = "automobile",    -- trailer
+  ["Stryder"] = "automobile",      -- bike
+  ["submersible"] = "submarine",   -- boat
+  ["submersible2"] = "submarine",  -- boat
+  ["thruster"] = "heli",           -- automobile
+  ["towtruck"] = "automobile",     -- trailer
+  ["towtruck2"] = "automobile",    -- trailer
+  ["tractor"] = "automobile",      -- trailer
+  ["tractor2"] = "automobile",     -- trailer
+  ["tractor3"] = "automobile",     -- trailer
+  ["trailersmall2"] = "trailer",   -- automobile
+  ["utillitruck"] = "automobile",  -- trailer
+  ["utillitruck2"] = "automobile", -- trailer
+  ["utillitruck3"] = "automobile", -- trailer
+}
+
+---Update mismatched vehicle types list
+---@param list table
+AddEventHandler('txAdmin:menu:addMismatchedTypes', function(list)
+  for model, modelType in pairs(list) do
+    mismatchedTypes[model] = modelType
+  end
+end)
+
 RegisterNetEvent('txsv:req:vehicle:fix', function()
   local src = source
   local allow = PlayerHasTxPermission(src, 'menu.vehicle')
@@ -41,17 +99,25 @@ end)
 
 --- Spawn a vehicle on the server at the request of a client (fivem)
 ---@param model string
----@param modelType string
-RegisterNetEvent('txsv:req:vehicle:spawn:fivem', function(model, modelType)
+---@param modelClassNumber number
+RegisterNetEvent('txsv:req:vehicle:spawn:fivem', function(model, modelClassNumber)
   if not IS_FIVEM then return end
   local src = source
   if type(model) ~= 'string' then return end
-  if type(modelType) ~= 'string' then return end
 
   --check permission
   local allow = PlayerHasTxPermission(src, 'menu.vehicle')
   TriggerEvent('txsv:logger:menuEvent', src, 'spawnVehicle', allow, model)
   if not allow then return end
+
+  --Resolve vehicle type, required for server setter
+  --NOTE: check if GetVehicleTypeFromName is already available
+  local modelType
+  if mismatchedTypes[model] then
+    modelType = mismatchedTypes[model]
+  else
+    modelType = vehClassNamesEnum[modelClassNumber] or "automobile"
+  end
 
   --resolve source ped
   local ped = GetPlayerPed(src)
