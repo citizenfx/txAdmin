@@ -5,6 +5,7 @@ import { cloneDeep } from 'lodash-es';
 import { nanoid } from 'nanoid';
 import { txHostConfig } from '@core/globalData';
 import CfxProvider from './providers/CitizenFX.js';
+import OidcProvider from './providers/GenericOidc.js';
 import { createHash } from 'node:crypto';
 import consoleFactory from '@lib/console.js';
 import fatalError from '@lib/fatalError.js';
@@ -32,6 +33,19 @@ const migrateProviderIdentifiers = (providerName, providerData) => {
         providerData.identifier = `discord:${providerData.id}`;
     }
 };
+
+
+const buildOidcProviderData = (oidcData) => ({
+    id: `oidc:${oidcData.sub}`,
+    identifier: `oidc:${oidcData.sub}`,
+    data: {
+        issuer: oidcData.issuer,
+        sub: oidcData.sub,
+        username: oidcData.username,
+        email: oidcData.email,
+        linkedAt: Date.now(),
+    },
+});
 
 
 /**
@@ -92,6 +106,7 @@ export default class AdminStore {
             this.providers = {
                 discord: false,
                 citizenfx: new CfxProvider(),
+                oidc: new OidcProvider(),
             };
         } catch (error) {
             throw new Error(`Failed to load providers with error: ${error.message}`);
@@ -303,6 +318,22 @@ export default class AdminStore {
 
 
     /**
+     * Returns all data from an admin by their OIDC issuer + subject, or false
+     * NOTE: exact match on purpose, the subject is case sensitive
+     * @param {string} issuer
+     * @param {string} sub
+     */
+    getAdminByOidcSub(issuer, sub) {
+        if (!this.admins) return false;
+        const admin = this.admins.find((user) => {
+            const oidc = user.providers.oidc;
+            return oidc && oidc.data?.issuer === issuer && oidc.data?.sub === sub;
+        });
+        return (admin) ? cloneDeep(admin) : false;
+    }
+
+
+    /**
      * Returns a list with all registered permissions
      */
     getPermissionsList() {
@@ -405,6 +436,69 @@ export default class AdminStore {
 
 
     /**
+     * Add a new admin created via OIDC login and save to the admins file.
+     * The admin gets an unusable random password, which can be changed without the old one.
+     * @param {string} name
+     * @param {{issuer: string, sub: string, username?: string, email?: string}} oidcData
+     * @param {string[]} permissions
+     */
+    async addOidcAdmin(name, oidcData, permissions) {
+        if (this.admins == false) throw new Error('Admins not set');
+        if (this.getAdminByName(name)) throw new Error('Username already taken');
+        if (this.getAdminByOidcSub(oidcData.issuer, oidcData.sub)) throw new Error('SSO account already linked');
+
+        const admin = {
+            $schema: ADMIN_SCHEMA_VERSION,
+            name,
+            master: false,
+            password_hash: await hashPassword(`${name}-password-not-meant-to-be-used-${nanoid()}`),
+            password_sso_generated: true,
+            providers: {
+                oidc: buildOidcProviderData(oidcData),
+            },
+            permissions,
+        };
+
+        this.admins.push(admin);
+        this.refreshOnlineAdmins().catch((e) => { });
+        try {
+            return await this.writeAdminsFile();
+        } catch (error) {
+            throw new Error(`Failed to save admins.json with error: ${error.message}`);
+        }
+    }
+
+
+    /**
+     * Links or unlinks (oidcData = false) an OIDC account to an admin and save to the admins file
+     * @param {string} name
+     * @param {{issuer: string, sub: string, username?: string, email?: string}|false} oidcData
+     */
+    async setAdminOidcLink(name, oidcData) {
+        if (this.admins == false) throw new Error('Admins not set');
+        const username = name.toLowerCase();
+        const adminIndex = this.admins.findIndex((user) => username === user.name.toLowerCase());
+        if (adminIndex == -1) throw new Error('Admin not found');
+
+        if (oidcData) {
+            const existing = this.getAdminByOidcSub(oidcData.issuer, oidcData.sub);
+            if (existing && existing.name.toLowerCase() !== username) {
+                throw new Error(`This SSO account is already linked to the admin '${existing.name}'.`);
+            }
+            this.admins[adminIndex].providers.oidc = buildOidcProviderData(oidcData);
+        } else {
+            delete this.admins[adminIndex].providers.oidc;
+        }
+
+        try {
+            return await this.writeAdminsFile();
+        } catch (error) {
+            throw new Error(`Failed to save admins.json with error: ${error.message}`);
+        }
+    }
+
+
+    /**
      * Edit admin and save to the admins file
      * @param {string} name
      * @param {string|null} password
@@ -426,6 +520,7 @@ export default class AdminStore {
         if (password !== null) {
             this.admins[adminIndex].password_hash = await hashPassword(password);
             delete this.admins[adminIndex].password_temporary;
+            delete this.admins[adminIndex].password_sso_generated;
         }
         if (typeof citizenfxData !== 'undefined') {
             if (!citizenfxData) {

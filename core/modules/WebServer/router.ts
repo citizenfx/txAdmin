@@ -26,6 +26,23 @@ export default () => {
         id: (ctx: any) => ctx.txVars.realIP,
     });
 
+    //Separate limiter for the OIDC flow, as it cannot be used to brute force passwords
+    //(credentials are entered at the IdP) and testing the setup requires multiple attempts.
+    //It only exists to prevent abuse of the outbound requests to the IdP.
+    const oidcLimiter = KoaRateLimit({
+        driver: 'memory',
+        db: new Map(),
+        duration: txConfig.webServer.limiterMinutes * 60 * 1000,
+        errorMessage: JSON.stringify({
+            error: `Too many SSO attempts. Blocked for ${txConfig.webServer.limiterMinutes} minutes.`,
+            errorTitle: 'Too many SSO attempts.',
+            errorMessage: `Blocked for ${txConfig.webServer.limiterMinutes} minutes.`,
+        }),
+        max: 60,
+        disableHeader: true,
+        id: (ctx: any) => ctx.txVars.realIP,
+    });
+
     //Rendered Pages
     router.get('/legacy/adminManager', webAuthMw, routes.adminManager_page);
     router.get('/legacy/cfgEditor', webAuthMw, routes.cfgEditor_page);
@@ -46,6 +63,12 @@ export default () => {
     router.post('/auth/addMaster/save', authLimiter, routes.auth_addMasterSave);
     router.get('/auth/cfxre/redirect', authLimiter, routes.auth_providerRedirect);
     router.post('/auth/cfxre/callback', authLimiter, routes.auth_providerCallback);
+    router.get('/auth/oidc/redirect', oidcLimiter, routes.auth_oidcLoginRedirect);
+    router.post('/auth/oidc/callback', oidcLimiter, routes.auth_oidcLoginCallback);
+    router.get('/auth/oidc/link', apiAuthMw, routes.auth_oidcLinkStatus);
+    router.get('/auth/oidc/link/redirect', apiAuthMw, routes.auth_oidcLinkRedirect);
+    router.post('/auth/oidc/link/callback', apiAuthMw, routes.auth_oidcLinkCallback);
+    router.post('/auth/oidc/unlink', apiAuthMw, routes.auth_oidcUnlink);
     router.post('/auth/changePassword', apiAuthMw, routes.auth_changePassword);
     router.get('/auth/getIdentifiers', apiAuthMw, routes.auth_getIdentifiers);
     router.post('/auth/changeIdentifiers', apiAuthMw, routes.auth_changeIdentifiers);

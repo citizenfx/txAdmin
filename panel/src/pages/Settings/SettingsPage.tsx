@@ -19,6 +19,7 @@ import ConfigCardGameMenu from "./tabCards/gameMenu";
 import ConfigCardGameNotifications from "./tabCards/gameNotifications";
 import ConfigCardGeneral from "./tabCards/general";
 import ConfigCardWhitelist from "./tabCards/whitelist";
+import ConfigCardSso from "./tabCards/sso";
 import SettingsCardTemplate from "./tabCards/_template";
 import SettingsCardBlank from "./tabCards/_blank";
 import { PageHeader, PageHeaderChangelog } from "@/components/page-header";
@@ -32,6 +33,7 @@ const settingsTabsBase = [
     { name: 'Bans', Component: ConfigCardBans },
     { name: 'Whitelist', Component: ConfigCardWhitelist },
     { name: 'Discord', Component: ConfigCardDiscord },
+    { name: 'SSO', Component: ConfigCardSso },
     {
         name: 'Game',
         cards: [

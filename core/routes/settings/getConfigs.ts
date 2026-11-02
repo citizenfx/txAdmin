@@ -19,6 +19,7 @@ export type GetConfigsResp = {
     storedConfigs: PartialTxConfigs,
     defaultConfigs: TxConfigs,
     forceQuietMode: boolean,
+    permissionsList: { id: string, label: string }[],
 }
 
 
@@ -50,6 +51,8 @@ export default async function GetSettingsConfigs(ctx: AuthedCtx) {
         storedConfigs: txCore.configStore.getStoredConfig(),
         defaultConfigs: ConfigStore.SchemaDefaults,
         forceQuietMode: txHostConfig.forceQuietMode,
+        permissionsList: Object.entries(txCore.adminStore.getPermissionsList() as Record<string, string>)
+            .map(([id, label]) => ({ id, label })),
     };
 
     //Redact sensitive data if the user doesn't have the write permission
@@ -60,6 +63,9 @@ export default async function GetSettingsConfigs(ctx: AuthedCtx) {
         }
         if(outData.storedConfigs.discordBot?.token) {
             toRedact.discordBot.token = '[redacted by txAdmin]';
+        }
+        if(outData.storedConfigs.oidc?.clientSecret) {
+            toRedact.oidc.clientSecret = '[redacted by txAdmin]';
         }
     }
 

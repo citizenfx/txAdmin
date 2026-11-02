@@ -19,6 +19,7 @@ import { getSchemaChainError } from '@modules/ConfigStore/schema/utils';
 import { confx } from '@modules/ConfigStore/utils';
 import { SYM_RESET_CONFIG } from '@lib/symbols';
 import { txEnv } from '@core/globalData';
+import OidcProvider from '@modules/AdminStore/providers/GenericOidc';
 const console = consoleFactory(modulename);
 
 
@@ -52,6 +53,7 @@ const cardNamesMap = {
     discord: 'Discord',
     'game-menu': 'Game Menu',
     'game-notifications': 'Game Notifications',
+    sso: 'SSO',
 } as const;
 const validCardIds = Object.keys(cardNamesMap) as [keyof typeof cardNamesMap];
 
@@ -111,6 +113,8 @@ export default async function SaveSettingsConfigs(ctx: AuthedCtx) {
             handlerResp = await handleFxserverCard(inputConfig, sendTypedResp);
         } else if (cardId === 'discord') {
             handlerResp = await handleDiscordCard(inputConfig, sendTypedResp);
+        } else if (cardId === 'sso') {
+            handlerResp = await handleSsoCard(inputConfig, sendTypedResp);
         }
     } catch (error) {
         return sendTypedResp({
@@ -405,4 +409,92 @@ const handleDiscordCard: CardHandler = async (inputConfig, sendTypedResp) => {
             msg: `${successMsg}\nIf _(and only if)_ the status embed is not being updated, check the [System > Console Log](/system/console-log) page to look for embed errors.`,
         }
     };
+}
+
+
+/**
+ * SSO (OIDC) card handler
+ */
+const PRIVILEGED_PERMISSIONS = ['all_permissions', 'manage.admins'];
+const handleSsoCard: CardHandler = async (inputConfig, sendTypedResp) => {
+    if (!inputConfig.oidc) throw new Error(`Unexpected data for the 'sso' card.`);
+    const input = inputConfig.oidc;
+    const baseError = {
+        type: 'error',
+        title: 'SSO Settings Error',
+        md: true,
+    } as const;
+
+    //Validating the permissions
+    if (Array.isArray(input.defaultPermissions)) {
+        const validPerms = Object.keys(txCore.adminStore.getPermissionsList());
+        const invalidPerms = input.defaultPermissions.filter((p) => !validPerms.includes(p));
+        if (invalidPerms.length) {
+            return sendTypedResp({
+                ...baseError,
+                msg: `Invalid permissions: \`${invalidPerms.join(', ')}\``,
+            });
+        }
+    }
+
+    //Claim filter needs both or none
+    const hasClaim = typeof input.requiredClaim === 'string' && input.requiredClaim.length;
+    const hasClaimValue = typeof input.requiredClaimValue === 'string' && input.requiredClaimValue.length;
+    if (!hasClaim && hasClaimValue) {
+        return sendTypedResp({
+            ...baseError,
+            msg: 'The **Required Claim Value** cannot be set without a **Required Claim**.',
+        });
+    }
+
+    //If disabled, nothing else to validate
+    txCore.adminStore.providers.oidc.reset();
+    if (!input.enabled) {
+        return { processedConfig: inputConfig };
+    }
+
+    //Validating required fields
+    const schemas = ConfigStore.Schema.oidc;
+    const schemaError = getSchemaChainError([
+        [schemas.issuerUrl, input.issuerUrl],
+        [schemas.clientId, input.clientId],
+        [schemas.clientSecret, input.clientSecret],
+        //NOTE: advanced options are only sent when the advanced section is open
+        [schemas.scopes, input.scopes ?? txConfig.oidc.scopes],
+        [schemas.usernameClaim, input.usernameClaim ?? txConfig.oidc.usernameClaim],
+    ]);
+    if (schemaError) {
+        return sendTypedResp({ ...baseError, msg: schemaError });
+    }
+    if (!input.issuerUrl || !input.clientId || !input.clientSecret) {
+        return sendTypedResp({
+            ...baseError,
+            msg: 'The **Issuer URL**, **Client ID** and **Client Secret** are required to enable the SSO login.',
+        });
+    }
+
+    //Keep the stored secret if the redacted placeholder was sent back
+    if (input.clientSecret === '[redacted by txAdmin]') {
+        input.clientSecret = txConfig.oidc.clientSecret as any;
+    }
+
+    //Testing the discovery
+    try {
+        await OidcProvider.testDiscovery(input.issuerUrl as string);
+    } catch (error) {
+        return sendTypedResp({
+            ...baseError,
+            msg: `Failed to discover the OIDC issuer at \`${String(input.issuerUrl)}\`:\n${(error as Error).message}`,
+        });
+    }
+
+    //Logging dangerous configs
+    if (input.autoCreateAccounts && Array.isArray(input.defaultPermissions)) {
+        const privileged = input.defaultPermissions.filter((p) => PRIVILEGED_PERMISSIONS.includes(p));
+        if (privileged.length) {
+            console.warn(`SSO auto-created accounts will receive the privileged permissions: ${privileged.join(', ')}`);
+        }
+    }
+
+    return { processedConfig: inputConfig };
 }

@@ -1,6 +1,7 @@
 import { Route, Switch } from "wouter";
 import Login from "../pages/auth/Login";
 import CfxreCallback from "../pages/auth/CfxreCallback";
+import OidcCallback from "../pages/auth/OidcCallback";
 import AddMasterPin from "../pages/auth/AddMasterPin";
 import AddMasterCallback from "../pages/auth/AddMasterCallback";
 import { Card } from "../components/ui/card";
@@ -42,6 +43,11 @@ export default function AuthShell() {
                         <Route path="/login/callback">
                             <AuthContentWrapper>
                                 <CfxreCallback />
+                            </AuthContentWrapper>
+                        </Route>
+                        <Route path="/login/oidc/callback">
+                            <AuthContentWrapper>
+                                <OidcCallback />
                             </AuthContentWrapper>
                         </Route>
                         <Route path="/addMaster/pin">

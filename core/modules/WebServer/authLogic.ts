@@ -15,6 +15,8 @@ export class AuthedAdmin {
     public readonly isMaster: boolean;
     public readonly permissions: string[];
     public readonly isTempPassword: boolean;
+    public readonly hasSsoGeneratedPassword: boolean;
+    public readonly hasOidcLink: boolean;
     public readonly profilePicture: string | undefined;
     public readonly csrfToken?: string;
 
@@ -23,6 +25,8 @@ export class AuthedAdmin {
         this.isMaster = vaultAdmin.master;
         this.permissions = vaultAdmin.permissions;
         this.isTempPassword = (typeof vaultAdmin.password_temporary !== 'undefined');
+        this.hasSsoGeneratedPassword = vaultAdmin.password_sso_generated === true;
+        this.hasOidcLink = typeof vaultAdmin.providers?.oidc === 'object';
         this.csrfToken = csrfToken;
 
         const cachedPfp = txCore.cacheStore.get(`admin:picture:${vaultAdmin.name}`);
@@ -82,6 +86,8 @@ export class AuthedAdmin {
             permissions: this.isMaster ? ['all_permissions'] : this.permissions,
             isMaster: this.isMaster,
             isTempPassword: this.isTempPassword,
+            hasSsoGeneratedPassword: this.hasSsoGeneratedPassword,
+            hasOidcLink: this.hasOidcLink,
             profilePicture: this.profilePicture,
             csrfToken: this.csrfToken ?? 'not_set',
         }
@@ -132,9 +138,20 @@ const validCfxreSessAuthSchema = z.object({
 });
 export type CfxreSessAuthType = z.infer<typeof validCfxreSessAuthSchema>;
 
+const validOidcSessAuthSchema = z.object({
+    type: z.literal('oidc'),
+    username: z.string(),
+    csrfToken: z.string(),
+    expiresAt: z.number(),
+    issuer: z.string(),
+    sub: z.string(),
+});
+export type OidcSessAuthType = z.infer<typeof validOidcSessAuthSchema>;
+
 const validSessAuthSchema = z.discriminatedUnion('type', [
     validPassSessAuthSchema,
-    validCfxreSessAuthSchema
+    validCfxreSessAuthSchema,
+    validOidcSessAuthSchema,
 ]);
 
 
@@ -196,6 +213,16 @@ export const normalAuthLogic = (
                 || vaultAdmin.providers.citizenfx.identifier !== sessAuth.identifier
             ) {
                 return failResp(`Cfxre identifier doesn't match for '${sessAuth.username}'.`);
+            }
+            return successResp(vaultAdmin, sessAuth.csrfToken);
+        } else if (sessAuth.type === 'oidc') {
+            const oidcData = vaultAdmin.providers.oidc?.data;
+            if (
+                typeof oidcData !== 'object'
+                || oidcData.issuer !== sessAuth.issuer
+                || oidcData.sub !== sessAuth.sub
+            ) {
+                return failResp(`OIDC subject doesn't match for '${sessAuth.username}'.`);
             }
             return successResp(vaultAdmin, sessAuth.csrfToken);
         } else {

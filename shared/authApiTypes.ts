@@ -12,6 +12,8 @@ export type ReactAuthDataType = {
     permissions: string[];
     isMaster: boolean;
     isTempPassword: boolean;
+    hasSsoGeneratedPassword?: boolean;
+    hasOidcLink?: boolean;
     profilePicture?: string;
     csrfToken?: string;
 }
@@ -65,6 +67,14 @@ export type ApiAddMasterSaveResp = {
     error: string;
 } | ReactAuthDataType;
 
+
+export type ApiOidcLinkStatusResp = {
+    enabled: boolean;
+    linked: boolean;
+    username?: string;
+    email?: string;
+    linkedAt?: number;
+};
 
 export type ApiChangePasswordReq = ApiChangePasswordReqSchema;
 export type ApiChangeIdentifiersReq = ApiChangeIdentifiersReqSchema;
