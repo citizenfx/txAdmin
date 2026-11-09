@@ -183,6 +183,17 @@ RegisterNetEvent('txcl:plist:updatePlayer', function(id, data)
 end)
 
 
+-- Triggered when a player name is changed with SET_PLAYER_NAME
+RegisterNetEvent('txcl:plist:updatePlayerName', function(id, name)
+    local pids = tostring(id)
+    local localPlayer = LOCAL_PLAYERLIST[pids]
+    if localPlayer == nil or type(name) ~= 'string' then return end
+    debugPrint("^2txcl:plist:updatePlayerName: ^3"..id.."^2 is now ^3"..name)
+    localPlayer.name = name
+    sendReactPlayerlist()
+end)
+
+
 -- Triggered when the "player" tab opens in the menu, and every 5s after that
 RegisterSecureNuiCallback('signalPlayersPageOpen', function(_, cb)
     TriggerServerEvent('txsv:req:plist:getDetailed', requirePlayerNames)

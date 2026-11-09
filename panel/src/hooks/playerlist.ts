@@ -34,6 +34,11 @@ export const useProcessPlayerlistEvents = () => {
             } else if (event.type === 'playerDropped') {
                 setPlayerlist((oldList) => oldList.filter(p => p.netid !== event.netid));
                 if (event.reasonCategory) pushPlayerDropEvent(event.reasonCategory);
+            } else if (event.type === 'playerNameChanged') {
+                setPlayerlist((oldList) => oldList.map((p) => {
+                    if (p.netid !== event.netid) return p;
+                    return { ...p, displayName: event.displayName, pureName: event.pureName };
+                }));
             } else {
                 console.error('Unknown playerlist event type', event);
             }

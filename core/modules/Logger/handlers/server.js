@@ -196,6 +196,12 @@ export default class ServerLogger extends LoggerBase {
             const reason = eventData.data.reason || 'UNKNOWN REASON';
             eventMessage = `disconnected (${reason})`;
 
+        } else if (eventData.type === 'playerNameChanged') {
+            const oldName = eventData.data?.oldName ?? 'UNKNOWN NAME';
+            eventMessage = (typeof eventData.data?.resource === 'string' && eventData.data.resource.length)
+                ? `changed name from "${oldName}" (by resource ${eventData.data.resource})`
+                : `changed name from "${oldName}"`;
+
         } else if (eventData.type === 'playerJoinDenied') {
             const reason = eventData.data.reason ?? 'UNKNOWN REASON';
             eventMessage = `player join denied due to ${reason}`;

@@ -3,7 +3,7 @@ import { cloneDeep } from 'lodash-es';
 import { ServerPlayer } from '@lib/player/playerClasses.js';
 import { DatabaseActionWarnType, DatabasePlayerType } from '@modules/Database/databaseTypes';
 import consoleFactory from '@lib/console';
-import { PlayerDroppedEventType, PlayerJoiningEventType } from '@shared/socketioTypes';
+import { PlayerDroppedEventType, PlayerJoiningEventType, PlayerNameChangedEventType } from '@shared/socketioTypes';
 import { SYM_SYSTEM_AUTHOR } from '@lib/symbols';
 const console = consoleFactory(modulename);
 
@@ -255,6 +255,36 @@ export default class FxPlayerlist {
             } catch (error) {
                 console.verbose.warn(`playerDropped event error: ${(error as Error).message}`);
             }
+
+        } else if (payload.event === 'playerNameChanged') {
+            try {
+                if (typeof payload.id !== 'number') throw new Error(`invalid player id`);
+                if (typeof payload.newName !== 'string') throw new Error(`invalid player name`);
+                const svPlayer = this.#playerlist[payload.id];
+                //NOTE: the event is also triggered for players still in playerConnecting (temp ids),
+                //  in which case the new name will be sent with the playerJoining event
+                if (!(svPlayer instanceof ServerPlayer) || !svPlayer.isConnected) return;
+                if (!svPlayer.updateName(payload.newName)) return;
+                txCore.logger.server.write([{
+                    type: 'playerNameChanged',
+                    src: payload.id,
+                    ts: currTs,
+                    data: {
+                        oldName: typeof payload.oldName === 'string' ? payload.oldName : undefined,
+                        resource: typeof payload.resource === 'string' ? payload.resource : undefined,
+                    }
+                }], mutex);
+                txCore.webServer.webSocket.buffer<PlayerNameChangedEventType>('playerlist', {
+                    mutex,
+                    type: 'playerNameChanged',
+                    netid: svPlayer.netid,
+                    displayName: svPlayer.displayName,
+                    pureName: svPlayer.pureName,
+                });
+            } catch (error) {
+                console.verbose.warn(`playerNameChanged event error: ${(error as Error).message}`);
+            }
+
         } else {
             console.warn(`Invalid event: ${payload?.event}`);
         }

@@ -87,7 +87,16 @@ export type PlayerJoiningEventType = {
 } & PlayerlistPlayerType;
 
 
-export type PlayerlistEventType = FullPlayerlistEventType | PlayerDroppedEventType | PlayerJoiningEventType;
+export type PlayerNameChangedEventType = {
+    mutex: string,
+    type: 'playerNameChanged',
+    netid: number,
+    displayName: string,
+    pureName: string,
+}
+
+
+export type PlayerlistEventType = FullPlayerlistEventType | PlayerDroppedEventType | PlayerJoiningEventType | PlayerNameChangedEventType;
 
 
 /**
