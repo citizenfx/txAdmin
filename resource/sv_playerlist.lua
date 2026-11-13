@@ -194,6 +194,40 @@ AddEventHandler('playerDropped', function(reason, resource, category)
     end
 end)
 
+-- Triggered when a resource changes a player name with SET_PLAYER_NAME
+-- NOTE: this event is also triggered during playerConnecting (with a temp id), in which case
+-- the player is not yet in the core playerlist and the event will be ignored by it,
+-- the new name will be picked up by the playerJoining event instead.
+AddEventHandler('onPlayerNameChanged', function(oldName, newName, resourceName)
+    -- sanity checking source
+    if source <= 0 then
+        logError('onPlayerNameChanged event with source ' .. json.encode(source))
+        return
+    end
+    if type(newName) ~= 'string' then return end
+
+    local playerName = sub(newName, 1, 128)
+    PrintStructuredTrace(json.encode({
+        type = 'txAdminPlayerlistEvent',
+        event = 'playerNameChanged',
+        id = source,
+        oldName = type(oldName) == 'string' and sub(oldName, 1, 128) or nil,
+        newName = playerName,
+        resource = resourceName,
+    }))
+
+    -- updating the cached name used by the menu playerlist
+    local cachedPlayer = TX_PLAYERLIST[tostring(source)]
+    if cachedPlayer then
+        cachedPlayer.name = sub(newName, 1, 75)
+    end
+
+    -- relaying this info to all admins
+    for adminID, _ in pairs(TX_ADMINS) do
+        TriggerClientEvent('txcl:plist:updatePlayerName', adminID, source, playerName)
+    end
+end)
+
 
 -- Handle getDetailedPlayerlist
 -- This event is only called when the menu "players" tab is opened, and every 5s while the tab is open

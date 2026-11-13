@@ -335,6 +335,29 @@ export class ServerPlayer extends BasePlayer {
 
 
     /**
+     * Updates the player name, used when a resource calls SET_PLAYER_NAME.
+     * Returns false if the name didn't change after being cleaned.
+     */
+    updateName(newName: string) {
+        if (!this.isConnected) throw new Error(`cannot update the name of a disconnected player`);
+        const { displayName, pureName } = cleanPlayerName(newName);
+        if (displayName === this.displayName && pureName === this.pureName) return false;
+        this.displayName = displayName;
+        this.pureName = pureName;
+
+        if (this.dbData) {
+            try {
+                this.mutateDbData({ displayName, pureName });
+            } catch (error) {
+                console.warn(`Failed to update name in the database for player ${this.displayName}:`);
+                console.dir(error);
+            }
+        }
+        return true;
+    }
+
+
+    /**
      * Marks this player as disconnected, and clears minute cron
      */
     disconnect() {

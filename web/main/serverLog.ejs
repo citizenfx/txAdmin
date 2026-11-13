@@ -385,7 +385,7 @@
         const getShowTypes = () => Object.keys(eventFilters)
             .filter(fn => eventFilters[fn])
             .flatMap(fn => {
-                if (fn === 'PlayerJoin') return ['playerJoining', 'playerJoinDenied'];
+                if (fn === 'PlayerJoin') return ['playerJoining', 'playerJoinDenied', 'playerNameChanged'];
                 if(fn === 'System') return ['LoggerStarted', 'DebugMessage'];
                 return fn;
             });
