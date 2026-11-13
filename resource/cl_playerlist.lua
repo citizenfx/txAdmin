@@ -37,7 +37,9 @@ function sendReactPlayerlist()
             health = playerData.health,
             dist = playerData.dist,
             vType = playerData.vType,
-            admin = playerData.admin
+            admin = playerData.admin,
+            x = playerData.x,
+            y = playerData.y,
         }
     end
     -- print("========== function sendReactPlayerlist()")
@@ -107,6 +109,9 @@ RegisterNetEvent('txcl:plist:setDetailed', function(players, admins)
 
         --Mark as updated
         LOCAL_PLAYERLIST[pidStr].inLastUpdate = true
+        -- Map position (onesync only, nil otherwise)
+        LOCAL_PLAYERLIST[pidStr].x = playerData[4]
+        LOCAL_PLAYERLIST[pidStr].y = playerData[5]
 
         -- Getting distance + health for RedM
         -- NOTE: RedM doesn't save ped health data on server, so need to get locally

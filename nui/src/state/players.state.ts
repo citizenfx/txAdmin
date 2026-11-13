@@ -135,6 +135,8 @@ debugData<LuaPlayerData[]>(
         {
           vType: VehicleStatus.Walking,
           name: "example",
+          x: 200,
+          y: -800,
           id: 1,
           dist: 0,
           health: 80,
@@ -143,6 +145,8 @@ debugData<LuaPlayerData[]>(
         {
           vType: VehicleStatus.Driving,
           name: "example2",
+          x: 230,
+          y: -810,
           id: 2,
           dist: 20,
           health: 50,
@@ -151,6 +155,8 @@ debugData<LuaPlayerData[]>(
         {
           vType: VehicleStatus.Boat,
           name: "example3",
+          x: -1500,
+          y: 4500,
           id: 3,
           dist: 700,
           health: 10,

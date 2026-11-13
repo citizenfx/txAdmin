@@ -46,11 +46,16 @@ export interface PlayerData {
    * If this player is an admin
    **/
   admin: boolean;
+  /**
+   * Player's world X and Y coordinate (onesync only, undefined if unknown)
+   **/
+  x?: number;
+  y?: number;
 }
 
 export type LuaPlayerData = Omit<PlayerData, 'displayName' | 'pureName'> & { name: string };
 
-export const usePlayerListListener = () => {
+export const usePlayerListListener = (refreshMs = 5000) => {
   const curPage = usePageValue();
   const setPlayerList = useSetPlayersState();
 
@@ -73,6 +78,8 @@ export const usePlayerListListener = () => {
         dist: player.dist,
         health: player.health,
         admin: player.admin,
+        x: player.x,
+        y: player.y,
       } satisfies PlayerData;
     });
     setPlayerList(newPlayerList);
@@ -86,13 +93,13 @@ export const usePlayerListListener = () => {
     // Getting detailed playerlist
     fetchNui("signalPlayersPageOpen");
 
-    // Getting detailed playerlist every 5 seconds
+    // Getting detailed playerlist periodically
     const updaterInterval = window.setInterval(() => {
       fetchNui("signalPlayersPageOpen");
-    }, 5000);
+    }, refreshMs);
 
     return () => {
       window.clearInterval(updaterInterval);
     };
-  }, [curPage]);
+  }, [curPage, refreshMs]);
 };
