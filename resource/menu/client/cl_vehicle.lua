@@ -22,54 +22,21 @@ local function getPedVehicle()
     end
 end
 
--- NOTE: this is not a complete list, but most others have the type "automobile"
-local vehClassNamesEnum = {
-    [8] = "bike",
-    [11] = "trailer",
-    [13] = "bike",
-    [14] = "boat",
-    [15] = "heli",
-    [16] = "plane",
-    [21] = "train",
-}
-
--- Since we don't have the vehicle types on the server, we need this translation table
--- NOTE: this list was generated for game build 2802/mpchristmas3
--- How to update the list: https://gist.github.com/tabarra/32ef90524188093ab4218ee7b5121269
-local mismatchedTypes = {
-    ["airtug"] = "automobile",       -- trailer
-    ["avisa"] = "submarine",         -- boat
-    ["blimp"] = "heli",              -- plane
-    ["blimp2"] = "heli",             -- plane
-    ["blimp3"] = "heli",             -- plane
-    ["caddy"] = "automobile",        -- trailer
-    ["caddy2"] = "automobile",       -- trailer
-    ["caddy3"] = "automobile",       -- trailer
-    ["chimera"] = "automobile",      -- bike
-    ["docktug"] = "automobile",      -- trailer
-    ["forklift"] = "automobile",     -- trailer
-    ["kosatka"] = "submarine",       -- boat
-    ["mower"] = "automobile",        -- trailer
-    ["policeb"] = "bike",            -- automobile
-    ["ripley"] = "automobile",       -- trailer
-    ["rrocket"] = "automobile",      -- bike
-    ["sadler"] = "automobile",       -- trailer
-    ["sadler2"] = "automobile",      -- trailer
-    ["scrap"] = "automobile",        -- trailer
-    ["slamtruck"] = "automobile",    -- trailer
-    ["Stryder"] = "automobile",      -- bike
-    ["submersible"] = "submarine",   -- boat
-    ["submersible2"] = "submarine",  -- boat
-    ["thruster"] = "heli",           -- automobile
-    ["towtruck"] = "automobile",     -- trailer
-    ["towtruck2"] = "automobile",    -- trailer
-    ["tractor"] = "automobile",      -- trailer
-    ["tractor2"] = "automobile",     -- trailer
-    ["tractor3"] = "automobile",     -- trailer
-    ["trailersmall2"] = "trailer",   -- automobile
-    ["utillitruck"] = "automobile",  -- trailer
-    ["utillitruck2"] = "automobile", -- trailer
-    ["utillitruck3"] = "automobile", -- trailer
+local VEHICLE_TYPES = {
+    [0] = 'automobile', -- also fallback
+    [1] = 'plane',
+    [2] = 'trailer',
+    [3] = 'quadbike',
+    [5] = 'submarinecar',
+    [6] = 'amphibious_automobile',
+    [7] = 'amphibious_quadbike',
+    [8] = 'heli',
+    [9] = 'blimp',
+    [11] = 'bike',
+    [12] = 'bicycle',
+    [13] = 'boat',
+    [14] = 'train',
+    [15] = 'submarine'
 }
 
 local function handleSpawnRequestFivem(model)
@@ -78,16 +45,19 @@ local function handleSpawnRequestFivem(model)
         return false
     end
 
-    --Resolve vehicle type, required for server setter
-    --NOTE: check if GetVehicleTypeFromName is already available
-    local modelType
-    if mismatchedTypes[model] then
-        modelType = mismatchedTypes[model]
-    else
-        local modelClassNumber = GetVehicleClassFromName(model)
-        modelType = vehClassNamesEnum[modelClassNumber] or "automobile"
+    local coords = vec3(0.0, 0.0, 0.0)
+    
+    RequestModel(model)
+    while not HasModelLoaded(model) do
+        Wait(0)
     end
 
+    local vehicle = CreateVehicle(model, coords.x, coords.y, coords.z, 0.0, false, false)
+    local modelType = VEHICLE_TYPES[GetVehicleTypeRaw(vehicle)] or 'automobile'
+    
+    DeleteEntity(vehicle)
+    -- allow the game to free it up.
+    SetModelAsNoLongerNeeded(model)
     --Request from server
     TriggerServerEvent('txsv:req:vehicle:spawn:fivem', model, modelType)
     return true
