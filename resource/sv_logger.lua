@@ -225,7 +225,20 @@ AddEventHandler('txsv:logger:menuEvent', function(source, action, allowed, data)
 end)
 
 -- Extra handlers
-RegisterNetEvent('txsv:logger:deathEvent', function(killer, cause)
+RegisterNetEvent('txsv:logger:deathEvent', function(killer, weaponHash)
+
+    local cause
+    local weaponName = deathHashTable[weaponHash] or 'unknown'
+    if not killer then
+        if weaponName ~= "unknown" then
+            cause = "suicide (" .. weaponName .. ")"
+        else
+            cause = "suicide"
+        end
+    else
+        cause = weaponName
+    end
+
     local logData = {
         cause = cause,
         killer = killer
