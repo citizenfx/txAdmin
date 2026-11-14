@@ -31,9 +31,25 @@ const resourceStartingTolerance = typeDefinedConfig({
     fixer: SYM_FIXER_DEFAULT,
 });
 
+const onlyWhenEmpty = typeDefinedConfig({
+    name: 'Delay Restart Until Empty',
+    default: false,
+    validator: z.boolean(),
+    fixer: SYM_FIXER_DEFAULT,
+});
+
+const maxRestartDelayMinutes = typeDefinedConfig({
+    name: 'Max Restart Delay',
+    default: 30,
+    validator: z.number().int().min(1).max(120),
+    fixer: SYM_FIXER_DEFAULT,
+});
+
 
 export default {
     schedule,
     bootGracePeriod,
     resourceStartingTolerance,
+    onlyWhenEmpty,
+    maxRestartDelayMinutes,
 } as const;

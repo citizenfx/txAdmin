@@ -94,7 +94,10 @@ export default function ServerSchedule() {
         const tempFlag = (scheduler.nextIsTemp) ? '(temp)' : '';
         const relativeTime = msToDuration(scheduler.nextRelativeMs, { units: ['h', 'm'] });
         const isLessThanMinute = scheduler.nextRelativeMs < 60_000;
-        if (isLessThanMinute) {
+        if (scheduler.nextIsDelayed) {
+            disableAddEditBtn = true;
+            nextScheduledText = `delayed, waiting for players to leave ${tempFlag}`;
+        } else if (isLessThanMinute) {
             disableAddEditBtn = true;
             nextScheduledText = `right now ${tempFlag}`;
         } else {
@@ -108,7 +111,7 @@ export default function ServerSchedule() {
             }
         } else {
             nextScheduledClasses = 'text-warning-inline';
-            if (!isLessThanMinute) {
+            if (!isLessThanMinute || scheduler.nextIsDelayed) {
                 showCancelBtn = true;
             }
         }

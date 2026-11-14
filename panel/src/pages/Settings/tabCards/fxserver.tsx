@@ -191,6 +191,8 @@ export const pageConfigs = {
     onesync: getPageConfig('server', 'onesync', true),
     autoStart: getPageConfig('server', 'autoStart', true),
     resourceTolerance: getPageConfig('restarter', 'resourceStartingTolerance', true),
+    restarterOnlyWhenEmpty: getPageConfig('restarter', 'onlyWhenEmpty'),
+    restarterMaxDelay: getPageConfig('restarter', 'maxRestartDelayMinutes', true),
 } as const;
 
 export default function ConfigCardFxserver({ cardCtx, pageCtx }: SettingsCardProps) {
@@ -389,6 +391,20 @@ export default function ConfigCardFxserver({ cardCtx, pageCtx }: SettingsCardPro
                     <strong>Note:</strong> Make sure your schedule matches your server time and not your local time.
                 </SettingItemDesc>
             </SettingItem>
+            <SettingItem label="Delay Restart Until Empty">
+                <SwitchText
+                    id={cfg.restarterOnlyWhenEmpty.eid}
+                    checkedLabel="Enabled"
+                    uncheckedLabel="Disabled"
+                    checked={states.restarterOnlyWhenEmpty}
+                    onCheckedChange={cfg.restarterOnlyWhenEmpty.state.set}
+                    disabled={pageCtx.isReadOnly}
+                />
+                <SettingItemDesc>
+                    Postpone a scheduled restart while there are players online, instead of restarting at the exact scheduled time. <br />
+                    The restart is forced once the max delay below is reached.
+                </SettingItemDesc>
+            </SettingItem>
             <SettingItem label="Quiet Mode">
                 <SwitchText
                     id={cfg.quietMode.eid}
@@ -492,6 +508,26 @@ export default function ConfigCardFxserver({ cardCtx, pageCtx }: SettingsCardPro
                 <SettingItemDesc>
                     At server boot, how much time to wait for any single resource to start before restarting the server. <br />
                     <strong>Note:</strong> If you are getting <InlineCode>failed to start in time</InlineCode> errors, increase this value.
+                </SettingItemDesc>
+            </SettingItem>
+            <SettingItem label="Max Restart Delay" htmlFor={cfg.restarterMaxDelay.eid} showIf={showAdvanced && states.restarterOnlyWhenEmpty}>
+                <Select
+                    value={selectNumberUtil.toUi(states.restarterMaxDelay)}
+                    onValueChange={(val) => cfg.restarterMaxDelay.state.set(selectNumberUtil.toCfg(val))}
+                    disabled={pageCtx.isReadOnly}
+                >
+                    <SelectTrigger id={cfg.restarterMaxDelay.eid}>
+                        <SelectValue placeholder="Select..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="15">15 minutes</SelectItem>
+                        <SelectItem value="30">30 minutes (default)</SelectItem>
+                        <SelectItem value="60">1 hour</SelectItem>
+                        <SelectItem value="120">2 hours</SelectItem>
+                    </SelectContent>
+                </Select>
+                <SettingItemDesc>
+                    How long to postpone a scheduled restart for before forcing it, even if players are still online.
                 </SettingItemDesc>
             </SettingItem>
         </SettingsCardShell>

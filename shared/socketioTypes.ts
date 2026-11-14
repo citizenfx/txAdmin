@@ -25,10 +25,12 @@ export type GlobalStatusType = {
         nextRelativeMs: number;
         nextSkip: boolean;
         nextIsTemp: boolean;
+        nextIsDelayed: boolean;
     } | {
         nextRelativeMs: false;
         nextSkip: false;
         nextIsTemp: false;
+        nextIsDelayed: false;
     };
 }
 
