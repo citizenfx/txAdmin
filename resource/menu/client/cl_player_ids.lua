@@ -130,7 +130,8 @@ local function showGamerTags()
             or not IsMpGamerTagActive(playerGamerTags[pid].gamerTag)
         then
             local playerName = string.sub(GetPlayerName(pid) or "unknown", 1, 75)
-            local playerStr = '[' .. GetPlayerServerId(pid) .. ']' .. ' ' .. playerName
+            local convertedPlayerName = string.gsub(playerName, "[^%w_]", "")
+            local playerStr = '[' .. GetPlayerServerId(pid) .. ']' .. ' ' .. convertedPlayerName
             playerGamerTags[pid] = {
                 gamerTag = CreateFakeMpGamerTag(targetPed, playerStr, false, false, 0),
                 ped = targetPed
