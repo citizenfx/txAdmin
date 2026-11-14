@@ -31,9 +31,33 @@ const resourceStartingTolerance = typeDefinedConfig({
     fixer: SYM_FIXER_DEFAULT,
 });
 
+const updateFileEnabled = typeDefinedConfig({
+    name: 'Auto-Restart on Update File',
+    default: false,
+    validator: z.boolean(),
+    fixer: SYM_FIXER_DEFAULT,
+});
+
+const updateFileName = typeDefinedConfig({
+    name: 'Update File Name',
+    default: '.update',
+    validator: z.string().trim().min(1).max(255),
+    fixer: SYM_FIXER_DEFAULT,
+});
+
+const updateFileDelay = typeDefinedConfig({
+    name: 'Update File Restart Delay',
+    default: 2, //minutes
+    validator: z.number().int().min(1).max(1439),
+    fixer: SYM_FIXER_DEFAULT,
+});
+
 
 export default {
     schedule,
     bootGracePeriod,
     resourceStartingTolerance,
+    updateFileEnabled,
+    updateFileName,
+    updateFileDelay,
 } as const;

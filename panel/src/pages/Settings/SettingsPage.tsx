@@ -15,6 +15,7 @@ import SettingsTab from "./SettingsTab";
 import ConfigCardBans from "./tabCards/bans";
 import ConfigCardDiscord from "./tabCards/discord";
 import ConfigCardFxserver from "./tabCards/fxserver";
+import ConfigCardFxserverCICD from "./tabCards/fxserverCICD";
 import ConfigCardGameMenu from "./tabCards/gameMenu";
 import ConfigCardGameNotifications from "./tabCards/gameNotifications";
 import ConfigCardGeneral from "./tabCards/general";
@@ -28,7 +29,13 @@ import { PageHeader, PageHeaderChangelog } from "@/components/page-header";
 //Tab configuration
 const settingsTabsBase = [
     { name: 'General', Component: ConfigCardGeneral }, //TODO: cards [Server Listing, txAdmin]
-    { name: 'FXServer', Component: ConfigCardFxserver },
+    {
+        name: 'FXServer',
+        cards: [
+            { name: 'Settings', Component: ConfigCardFxserver },
+            { name: 'CI/CD', Component: ConfigCardFxserverCICD },
+        ]
+    },
     { name: 'Bans', Component: ConfigCardBans },
     { name: 'Whitelist', Component: ConfigCardWhitelist },
     { name: 'Discord', Component: ConfigCardDiscord },

@@ -1,4 +1,6 @@
 const modulename = 'FxScheduler';
+import path from 'node:path';
+import fsp from 'node:fs/promises';
 import { parseSchedule } from '@lib/misc';
 import consoleFactory from '@lib/console';
 import { SYM_SYSTEM_AUTHOR } from '@lib/symbols';
@@ -6,10 +8,15 @@ import type { UpdateConfigKeySet } from './ConfigStore/utils';
 const console = consoleFactory(modulename);
 
 
+//Consts
+const UPDATE_FILE_REASON_MAX_LENGTH = 150;
+
+
 //Types
 type RestartInfo = {
     string: string;
     minuteFloorTs: number;
+    reason?: string;
 }
 type ParsedTime = {
     string: string;
@@ -53,6 +60,7 @@ export default class FxScheduler {
     private nextTempSchedule: RestartInfo | false = false;
     private calculatedNextRestartMinuteFloorTs: number | false = false;
     private nextSkip: number | false = false;
+    private isCheckingUpdateFile = false;
 
     constructor() {
         //Initial check to update status
@@ -60,9 +68,10 @@ export default class FxScheduler {
             this.checkSchedule();
         });
 
-        //Cron Function 
+        //Cron Function
         setInterval(() => {
             this.checkSchedule();
+            this.checkUpdateFile();
             txCore.webServer.webSocket.pushRefresh('status');
         }, 60 * 1000);
     }
@@ -174,8 +183,9 @@ export default class FxScheduler {
     /**
      * Sets this.nextTempSchedule.
      * The value MUST be before the next setting scheduled time.
+     * An optional reason can be provided to be shown in the logs and restart message.
      */
-    setNextTempSchedule(timeString: string) {
+    setNextTempSchedule(timeString: string, reason?: string) {
         //Process input
         if (typeof timeString !== 'string') throw new Error('expected string');
         const thisMinuteTs = new Date().setSeconds(0, 0);
@@ -218,6 +228,7 @@ export default class FxScheduler {
         this.nextTempSchedule = {
             string: scheduledString,
             minuteFloorTs: scheduledMinuteFloorTs,
+            reason: typeof reason === 'string' && reason.length ? reason : undefined,
         };
 
         //This is needed to refresh this.calculatedNextRestartMinuteFloorTs
@@ -225,6 +236,68 @@ export default class FxScheduler {
 
         //Refresh UI
         txCore.webServer.webSocket.pushRefresh('status');
+    }
+
+
+    /**
+     * Checks the server data folder for an "update file" (eg. `.update`) and, if found,
+     * deletes it and schedules a temporary restart.
+     * This is meant to help servers that use CI/CD pipelines to deploy updates: the pipeline
+     * just needs to drop the configured file in the server data folder.
+     * The file content (if any) is used as the restart reason/message.
+     */
+    async checkUpdateFile() {
+        //Check if feature is enabled and not already running
+        if (!txConfig.restarter.updateFileEnabled) return;
+        if (this.isCheckingUpdateFile) return;
+
+        //Only act when the server is actually running, otherwise leave the file
+        //to be picked up once the server is up (and a restart makes sense)
+        if (txCore.fxRunner.isIdle || !txCore.fxRunner.child?.isAlive) return;
+
+        //Resolve the file path (basename to prevent path traversal via config)
+        const dataPath = txCore.fxRunner.serverPaths?.dataPath;
+        if (!dataPath) return;
+        const updateFilePath = path.join(dataPath, path.basename(txConfig.restarter.updateFileName));
+
+        this.isCheckingUpdateFile = true;
+        try {
+            //Check if the file exists and is a file
+            const fileStat = await fsp.stat(updateFilePath).catch(() => null);
+            if (!fileStat?.isFile()) return;
+
+            //Read the content to use as restart reason (before deleting)
+            let reason: string | undefined;
+            try {
+                const raw = await fsp.readFile(updateFilePath, 'utf8');
+                const sanitized = raw.replace(/\s+/g, ' ').trim().slice(0, UPDATE_FILE_REASON_MAX_LENGTH);
+                if (sanitized.length) reason = sanitized;
+            } catch (error) {
+                console.verbose.warn(`Failed to read update file content: ${(error as Error).message}`);
+            }
+
+            //Delete the file first so we never loop on it, even if scheduling fails
+            await fsp.unlink(updateFilePath);
+            const logReason = reason ? ` (${reason})` : '';
+            txCore.logger.admin.write('SCHEDULER', `Update file detected${logReason}, scheduling a restart.`);
+
+            //Don't override an already pending temp restart
+            if (this.nextTempSchedule) {
+                console.verbose.log('A temporary restart is already scheduled, skipping the update file restart.');
+                return;
+            }
+
+            //Schedule the restart
+            try {
+                this.setNextTempSchedule(`+${txConfig.restarter.updateFileDelay}`, reason);
+            } catch (error) {
+                console.warn(`Update file detected but couldn't schedule a restart: ${(error as Error).message}`);
+            }
+        } catch (error) {
+            console.error(`Error while checking the update file: ${(error as Error).message}`);
+        } finally {
+            this.isCheckingUpdateFile = false;
+        }
     }
 
 
@@ -262,8 +335,10 @@ export default class FxScheduler {
         if (nextDistMins === 0) {
             //restart server
             this.triggerServerRestart(
-                `scheduled restart at ${nextRestart.string}`,
-                txCore.translator.t('restarter.schedule_reason', { time: nextRestart.string }),
+                nextRestart.reason
+                    ? `update file restart (${nextRestart.reason})`
+                    : `scheduled restart at ${nextRestart.string}`,
+                nextRestart.reason ?? txCore.translator.t('restarter.schedule_reason', { time: nextRestart.string }),
             );
 
             //Check if server is in boot cooldown
@@ -291,10 +366,12 @@ export default class FxScheduler {
                 }
             });
 
-            //Dispatch `txAdmin:events:scheduledRestart` 
+            //Dispatch `txAdmin:events:scheduledRestart`
+            let translatedMessage = txCore.translator.t('restarter.schedule_warn', tOptions);
+            if (nextRestart.reason) translatedMessage += ` (${nextRestart.reason})`;
             txCore.fxRunner.sendEvent('scheduledRestart', {
                 secondsRemaining: nextDistMins * 60,
-                translatedMessage: txCore.translator.t('restarter.schedule_warn', tOptions)
+                translatedMessage,
             });
         }
     }

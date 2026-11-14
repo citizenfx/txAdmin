@@ -45,7 +45,8 @@ type CardHandler = (
 //Known cards
 const cardNamesMap = {
     general: 'General',
-    fxserver: 'FXServer',
+    'fxserver-settings': 'FXServer',
+    'fxserver-ci-cd': 'CI/CD',
     bans: 'Bans',
     // FIXME:NEXT:UPDATE rename
     whitelist: 'Whitelist',
@@ -107,7 +108,7 @@ export default async function SaveSettingsConfigs(ctx: AuthedCtx) {
     try {
         if (cardId === 'general') {
             handlerResp = await handleGeneralCard(inputConfig, sendTypedResp);
-        } else if (cardId === 'fxserver') {
+        } else if (cardId === 'fxserver-settings') {
             handlerResp = await handleFxserverCard(inputConfig, sendTypedResp);
         } else if (cardId === 'discord') {
             handlerResp = await handleDiscordCard(inputConfig, sendTypedResp);
@@ -211,7 +212,7 @@ const handleFxserverCard: CardHandler = async (inputConfig, sendTypedResp) => {
     //     inputConfig.server.dataPath = cleanPath(inputConfig.server.dataPath + '/');
     // }
     if (typeof inputConfig.server?.dataPath !== 'string' || !inputConfig.server?.dataPath.length) {
-        throw new Error(`Unexpected data for the 'fxserver' card.`);
+        throw new Error(`Unexpected data for the 'fxserver-settings' card.`);
     }
     if (txEnv.fxsIsGen9) delete inputConfig.server.onesync;
 
