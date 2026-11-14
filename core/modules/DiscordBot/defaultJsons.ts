@@ -52,7 +52,7 @@ export const defaultEmbedConfigJson = JSON.stringify({
         {
             "emoji": "1062339910654246964",
             "label": "txAdmin Discord",
-            "url": "https://discord.gg/txAdmin"
+            "url": "https://txadmin.gg/discord"
         },
     ].filter(Boolean)
 });

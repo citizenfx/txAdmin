@@ -60,7 +60,7 @@ function fatalError(code: number, msg: ErrorMsgType, err?: any): never {
     }
     console.error(console.DIVIDER);
     console.error(chalk.inverse(
-        padStartEnd('For support: https://discord.gg/txAdmin')
+        padStartEnd('For support: https://txadmin.gg/discord')
     ));
     console.error(console.DIVIDER);
     quitProcess(code);

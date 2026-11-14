@@ -23,12 +23,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/tabarra/txAdmin.git"
+    "url": "git+https://github.com/citizenfx/txAdmin.git"
   },
   "author": "André Tabarra",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/tabarra/txAdmin/issues"
+    "url": "https://github.com/citizenfx/txAdmin/issues"
   },
   "homepage": "https://txadmin.gg/",
   "dependencies": {

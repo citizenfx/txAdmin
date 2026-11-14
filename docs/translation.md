@@ -3,7 +3,7 @@ txAdmin supports translation for over 30 languages for the in-game interface (me
 
 
 ## Custom locales:
-If your language is not available, or you want to customize the messages, create a `locale.json` file in inside the `txData` folder based on any language file found on [our repository](https://github.com/tabarra/txAdmin/tree/master/locale). Then go to the settings and select the "Custom" language option.  
+If your language is not available, or you want to customize the messages, create a `locale.json` file in inside the `txData` folder based on any language file found on [our repository](https://github.com/citizenfx/txAdmin/tree/master/locale). Then go to the settings and select the "Custom" language option.  
   
 The `$meta.humanizer_language` key must be compatible with the library [humanize-duration](https://www.npmjs.com/package/humanize-duration), check their page for a list of compatible languages.
 
@@ -15,7 +15,7 @@ For that you will need to:
 - Name the file using the language code in [this page](https://www.science.co.il/language/Locale-codes.php);
 - The `$meta.label` must be the language name in English (eg `Spanish` instead of `Español`);
 - If you create a new translation, make sure to add it to `shared/localeMap.ts`, and maintain the alphabetical order;
-- Do a [Pull Request](https://github.com/tabarra/txAdmin/pulls) posting a few screenshots of evidence that you tested what you changed in-game.
+- Do a [Pull Request](https://github.com/citizenfx/txAdmin/pulls) posting a few screenshots of evidence that you tested what you changed in-game.
 - An automatic check will run, make sure to read the output in case of any errors.
 
 > [!TIP]

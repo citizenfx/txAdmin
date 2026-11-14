@@ -86,7 +86,7 @@ export function InnerWarningBar({ titleIcon, title, description, isImportant, ca
                             asChild
                             className={isImportant ? "text-foreground border-foreground" : 'dark:border-primary-foreground dark:hover:border-primary'}
                         >
-                            <a href="https://discord.gg/uAmsGa2" target="_blank">
+                            <a href="https://txadmin.gg/discord" target="_blank">
                                 <FaDiscord size="14" className="mr-1" /> Support
                             </a>
                         </Button>

@@ -34,7 +34,7 @@ export const licenseBanner = (baseDir = '.', isBundledFile = false) => {
         ...txAdminASCII().split('\n').map((x) => logoPad + x),
         lineSep,
         'Author: André Tabarra (https://github.com/tabarra)',
-        'Repository: https://github.com/tabarra/txAdmin',
+        'Repository: https://github.com/citizenfx/txAdmin',
         'txAdmin is a free open source software provided under the license below.',
         lineSep,
         ...fs.readFileSync(licensePath, 'utf8').trim().split('\n'),

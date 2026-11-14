@@ -23,9 +23,9 @@ export default function TmpPageHeader() {
                 <PageHeader title="Simple + links" icon={<Settings2Icon />}>
                     <PageHeaderLinks
                         topLabel="Documentation"
-                        topLink="https://github.com/tabarra/txAdmin"
+                        topLink="https://github.com/citizenfx/txAdmin"
                         bottomLabel="Support"
-                        bottomLink="https://discord.gg/txAdmin"
+                        bottomLink="https://txadmin.gg/discord"
                     />
                 </PageHeader>
             </Wrapper>

@@ -104,10 +104,10 @@ const SuccessContent = ({ reportId }: { reportId: string }) => (
         </div>
         <p className="text-muted-foreground pt-2">
             Please send this ID to the support team in <TxAnchor
-                href="https://discord.gg/uAmsGa2"
+                href="https://txadmin.gg/discord"
                 className="font-semibold tracking-wide text-primary"
             >
-                discord.gg/txAdmin
+                txadmin.gg/discord
             </TxAnchor>.
         </p>
     </div>
@@ -124,7 +124,7 @@ const ErrorContent = ({ error }: { error: string }) => (
 
 export const DiscordBadge = ({ className }: { className?: string }) => (
     <a
-        href="https://discord.gg/uAmsGa2"
+        href="https://txadmin.gg/discord"
         target="_blank"
         rel="noopener noreferrer"
         className={cn("inline-block ml-1", className)}

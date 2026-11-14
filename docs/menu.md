@@ -107,11 +107,11 @@ positions, `top-center`, `top-left`, `top-right`, `bottom-center`, `bottom-left`
 - If you can't authenticate and the reason id `Invalid Request: source`, this means the source IP of the HTTP request being made by fxserver to txAdmin is not a "localhost" one, which might occur if your host has multiple IPs. To disable this protection, edit your `config.json` file and add `webServer.disableNuiSourceCheck` with value `true` then restart txAdmin.
 
 ## Development
-You can find development instructions regarding the menu [here.](https://github.com/tabarra/txAdmin/blob/master/docs/development.md#menu-development)
+You can find development instructions regarding the menu [here.](https://github.com/citizenfx/txAdmin/blob/master/docs/development.md#menu-development)
 
 ## FAQ
 - **Q**: Why don't the 'Heal' options revive a player when using ESX/QBCore/etc?
 - **A**: Many frameworks independently handle a "dead" state for a player, meaning
   the menu is unable to reset this state in an resource agnostic form directly. To establish compatibility 
-  with any framework, txAdmin will emit an [txAdmin:events:playerHealed](https://github.com/tabarra/txAdmin/blob/master/docs/events.md#txadmineventsplayerhealed) 
+  with any framework, txAdmin will emit an [txAdmin:events:playerHealed](https://github.com/citizenfx/txAdmin/blob/master/docs/events.md#txadmineventsplayerhealed) 
   for developers to handle.

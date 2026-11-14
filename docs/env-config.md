@@ -172,5 +172,5 @@ TXHOST_DEFAULT_ACCOUNT=tabarra:271816
 
 # Provider details
 TXHOST_PROVIDER_NAME=ExampleHosting
-TXHOST_PROVIDER_LOGO=https://github.com/tabarra/txAdmin/raw/master/docs/banner.png
+TXHOST_PROVIDER_LOGO=https://github.com/citizenfx/txAdmin/raw/master/docs/banner.png
 ```

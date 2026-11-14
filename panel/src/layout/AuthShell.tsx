@@ -70,7 +70,7 @@ export default function AuthShell() {
                 <div className="mx-auto flex flex-wrap gap-4 justify-center mb-2">
                     <DynamicAdvert placement='login' />
                     <a
-                        href='https://discord.gg/uAmsGa2'
+                        href='https://txadmin.gg/discord'
                         onClick={handleExternalLinkClick}
                         target='_blank'
                         className='w-48 h-16 relative group shadow-sm opacity-90 hover:opacity-100 brightness-110

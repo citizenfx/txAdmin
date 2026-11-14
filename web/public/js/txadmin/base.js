@@ -102,7 +102,7 @@ const updateMarkdownNotification = (data, notify) => {
         if (data.type === 'danger') {
             msgHtml += `<div class="text-right">
                 <small>
-                    For support, visit <strong><a href="http://discord.gg/txAdmin" target="_blank" class="text-dark">discord.gg/txAdmin</a></strong>.
+                    For support, visit <strong><a href="https://txadmin.gg/discord" target="_blank" class="text-dark">txadmin.gg/discord</a></strong>.
                 </small>
             </div>`;
         }

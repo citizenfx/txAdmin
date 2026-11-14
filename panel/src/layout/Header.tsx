@@ -119,7 +119,7 @@ function AuthedHeaderFragment() {
         setAccountModalOpen(true);
     }
     const gotoSupportDiscord = () => {
-        openExternalLink('https://discord.gg/uAmsGa2');
+        openExternalLink('https://txadmin.gg/discord');
     }
     const doLogout = () => logout();
 

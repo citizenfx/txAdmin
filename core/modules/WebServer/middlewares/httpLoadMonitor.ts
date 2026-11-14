@@ -60,7 +60,7 @@ const checkHttpLoad = () => {
                 `Node.js's V8 engine heap is almost full: ${(heapUsed * 100).toFixed(2)}% (${heapSize}/${heapLimit})`,
                 `All HTTP requests will be blocked for the next ${REQ_BLOCKER_DURATION} seconds to prevent a crash.`,
                 'Make sure you have a proper firewall setup and/or a reverse proxy with rate limiting.',
-                'You can join https://discord.gg/txAdmin for support.'
+                'You can join https://txadmin.gg/discord for support.'
             ]);
             //Resetting counter
             reqCounter = 0;

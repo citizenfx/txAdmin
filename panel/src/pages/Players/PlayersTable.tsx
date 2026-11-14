@@ -76,7 +76,7 @@ function LastRow({ playersCount, hasReachedEnd, isFetching, loadError, retryFetc
     } else {
         content = <span>
             You've found the end of the rainbow, but there's no pot of gold here. <br />
-            <i>(this is a bug, please report it in <TxAnchor href="https://discord.gg/txAdmin" target="_blank" rel="noopener noreferrer">discord.gg/txAdmin</TxAnchor>)</i>
+            <i>(this is a bug, please report it in <TxAnchor href="https://txadmin.gg/discord" target="_blank" rel="noopener noreferrer">txadmin.gg/discord</TxAnchor>)</i>
         </span>
     }
 

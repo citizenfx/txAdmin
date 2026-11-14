@@ -143,7 +143,7 @@ export default function ConfigCardGeneral({ cardCtx, pageCtx }: SettingsCardProp
                 <SettingItemDesc>
                     The language to use on Chat/Discord messages. <br />
                     You can customize the phrases/words by using the <InlineCode>Custom</InlineCode> option. <br />
-                    For more information, please read the <TxAnchor href="https://github.com/tabarra/txAdmin/blob/master/docs/translation.md">documentation</TxAnchor>.
+                    For more information, please read the <TxAnchor href="https://github.com/citizenfx/txAdmin/blob/master/docs/translation.md">documentation</TxAnchor>.
                 </SettingItemDesc>
             </SettingItem>
         </SettingsCardShell>

@@ -220,7 +220,7 @@ export default function TmpJsonEditor() {
                     description={(<>
                         The server status embed is customizable by editing the JSON below. <br />
                         You can use the placeholders to include dynamic server information in the embed. <br />
-                        For information refer to <TxAnchor href="https://github.com/tabarra/txAdmin/blob/master/docs/discord-status.md">our docs</TxAnchor>.
+                        For information refer to <TxAnchor href="https://github.com/citizenfx/txAdmin/blob/master/docs/discord-status.md">our docs</TxAnchor>.
                     </>)}
                 />
             </div>
