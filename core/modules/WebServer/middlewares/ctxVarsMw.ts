@@ -29,9 +29,9 @@ const ctxVarsMw = (ctx: CtxWithSession, next: Next) => {
 
     //Setting up the user's host type
     const host = ctx.request.host ?? 'none';
-    if (host.startsWith('localhost') || host.startsWith('127.')) {
+    if (host.startsWith('localhost') || host.startsWith('127.') || host.startsWith('[::1]')) {
         txVars.hostType = 'localhost';
-    } else if (/^\d+\.\d+\.\d+\.\d+(?::\d+)?$/.test(host)) {
+    } else if (/^\d+\.\d+\.\d+\.\d+(?::\d+)?$/.test(host) || /^\[[\da-fA-F:]+\](?::\d+)?$/.test(host)) {
         txVars.hostType = 'ip';
     }
 

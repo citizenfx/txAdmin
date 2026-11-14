@@ -2,6 +2,7 @@ import fsp from 'node:fs/promises';
 import type { ChildProcessWithoutNullStreams } from "node:child_process";
 import { Readable, Writable } from "node:stream";
 import { txEnv, txHostConfig } from "@core/globalData";
+import { formatHostPort } from "@lib/host/isIpAddressLocal";
 import { redactStartupSecrets } from "@lib/misc";
 import path from "path";
 
@@ -94,7 +95,7 @@ export const mutableConvarConfigDependencies = [
  * Pre calculating HOST dependent spawn variables
  */
 const txCoreEndpoint = txHostConfig.netInterface
-    ? `${txHostConfig.netInterface}:${txHostConfig.txaPort}`
+    ? formatHostPort(txHostConfig.netInterface, txHostConfig.txaPort)
     : `127.0.0.1:${txHostConfig.txaPort}`;
 let osSpawnVars: OsSpawnVars;
 if (txEnv.isWindows) {

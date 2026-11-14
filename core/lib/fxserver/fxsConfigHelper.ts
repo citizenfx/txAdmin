@@ -3,6 +3,7 @@ import fsp from 'node:fs/promises';
 import path from 'node:path';
 import isLocalhost from 'is-localhost-ip';
 import { txHostConfig } from '@core/globalData';
+import { formatHostPort } from '@lib/host/isIpAddressLocal';
 import consoleFactory from '@lib/console';
 const console = consoleFactory();
 
@@ -591,7 +592,7 @@ const getConnectEndpoint = (endpoints: EndpointsObjectType, hasEndpointCommand: 
             : 'Please'
         const suggestedPort = txHostConfig.fxsPort ?? 30120;
         const suggestedInterface = txHostConfig.netInterface ?? '0.0.0.0';
-        const desidredEndpoint = `${suggestedInterface}:${suggestedPort}`;
+        const desidredEndpoint = formatHostPort(suggestedInterface, suggestedPort);
         const msg = [
             `Your config file does not specify a valid endpoints for FXServer to use. ${instruction} add the following to the start of the file:`,
             `\t\`endpoint_add_tcp "${desidredEndpoint}"\``,

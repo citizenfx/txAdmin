@@ -8,7 +8,7 @@ import got from '@lib/got';
 import getOsDistro from '@lib/host/getOsDistro.js';
 import { txDevEnv, txEnv, txHostConfig } from '@core/globalData';
 import consoleFactory from '@lib/console';
-import { addLocalIpAddress } from '@lib/host/isIpAddressLocal';
+import { addLocalIpAddress, formatHostPort } from '@lib/host/isIpAddressLocal';
 import { chalkInversePad } from '@lib/misc';
 const console = consoleFactory();
 
@@ -136,7 +136,7 @@ export const startReadyWatcher = async (cb: () => void) => {
 
     //Addresses
     let detectedUrls;
-    if (txHostConfig.netInterface && txHostConfig.netInterface !== '0.0.0.0') {
+    if (txHostConfig.netInterface && txHostConfig.netInterface !== '0.0.0.0' && txHostConfig.netInterface !== '::') {
         detectedUrls = [txHostConfig.netInterface];
     } else {
         detectedUrls = [
@@ -149,7 +149,7 @@ export const startReadyWatcher = async (cb: () => void) => {
     }
     const bannerUrls = txHostConfig.txaUrl
         ? [txHostConfig.txaUrl]
-        : detectedUrls.map((addr) => `http://${addr}:${txHostConfig.txaPort}/`);
+        : detectedUrls.map((addr) => `http://${formatHostPort(addr, txHostConfig.txaPort)}/`);
 
     //Admin PIN
     const adminMasterPin = 'value' in adminPinRes && adminPinRes.value ? adminPinRes.value : false;
