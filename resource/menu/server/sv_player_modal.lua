@@ -12,7 +12,7 @@ if not TX_MENU_ENABLED then return end
 RegisterNetEvent('txsv:req:tpToPlayer', function(tgtId)
   local src = source
 
-  if type(tgtId) ~= 'number' then
+  if type(tgtId) ~= 'number' or GetPlayerName(tgtId) == nil then
     return
   end
 
@@ -47,7 +47,7 @@ end)
 
 RegisterNetEvent('txsv:req:bringPlayer', function(id)
   local src = source
-  if type(id) ~= 'number' then
+  if type(id) ~= 'number' or GetPlayerName(id) == nil then
     return
   end
   local allow = PlayerHasTxPermission(src, 'players.teleport')

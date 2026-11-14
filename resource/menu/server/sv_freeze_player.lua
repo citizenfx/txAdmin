@@ -15,6 +15,7 @@ end
 
 RegisterNetEvent('txsv:req:freezePlayer', function(targetId)
   local src = source
+  if type(targetId) ~= 'number' or GetPlayerName(targetId) == nil then return end
   local allow = PlayerHasTxPermission(src, 'players.freeze')
   TriggerEvent('txsv:logger:menuEvent', src, 'freezePlayer', allow, targetId)
   if allow then
