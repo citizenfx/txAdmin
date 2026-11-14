@@ -211,7 +211,7 @@ export default class ServerLogger extends LoggerBase {
             if (typeof eventData.data.killer === 'number' && eventData.data.killer > 0) {
                 const killer = txCore.fxPlayerlist.getPlayerById(eventData.data.killer);
                 if (killer) {
-                    eventMessage = `died from ${cause} by ${killer.displayName}`;
+                    eventMessage = `died from ${cause} by [${eventData.data.killer}] ${killer.displayName}`;
                 } else {
                     eventMessage = `died from ${cause} by unknown killer`;
                 }
