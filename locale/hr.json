@@ -14,7 +14,11 @@
     "kick_messages": {
         "everyone": "Svi igrači izbačeni: %{reason}.",
         "player": "Izbačen si: %{reason}.",
-        "unknown_reason": "iz nepoznatog razloga"
+        "unknown_reason": "iz nepoznatog razloga",
+        "embed": {
+            "title": "Player Kicked",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
     },
     "ban_messages": {
         "kick_temporary": "(%{author}) Zabranjeni ste sa servera zbog \"%{reason}\". Vaša zabrana ističe za: %{expiration}.",
@@ -29,6 +33,11 @@
             "label_id": "ID zabrane",
             "note_multiple_bans": "Poruka: Imaš više od jedne zabrane na ovom profilu.",
             "note_diff_license": "Poruka: Gornja zabrana je stavljen na <code>license</code>, što znači da jedan od tvojih IDova/HWIDova se slažu sa tim koji ima zabranu."
+        },
+        "embed": {
+            "title": "Player Banned",
+            "idban_description": "**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```",
+            "playerban_description": "**Player:** %{player}\n**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```"
         }
     },
     "whitelist_messages": {
@@ -362,6 +371,24 @@
                 "previous_ids": "Prijašnji igračevi profili",
                 "all_hwids": "Svi HWID-ovi"
             }
+        }
+    },
+    "warning_messages": {
+        "embed": {
+            "title": "Player Warned",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "revocation_messages": {
+        "embed": {
+            "title": "Action Revoked",
+            "description": "**Action Type:** %{action} (`#%{actionId}`)\n**Target:** %{target}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "dm_messages": {
+        "embed": {
+            "title": "Admin DM Sent",
+            "description": "**Recipient:** %{player}\n**Message:**\n%{message}"
         }
     }
 }

@@ -14,7 +14,11 @@
     "kick_messages": {
         "everyone": "All players kicked: %{reason}.",
         "player": "You have been kicked: %{reason}.",
-        "unknown_reason": "for unknown reason"
+        "unknown_reason": "for unknown reason",
+        "embed": {
+            "title": "Player Kicked",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
     },
     "ban_messages": {
         "kick_temporary": "(%{author}) Has sido baneado del servidor por \"%{reason}\". Tu baneo expirará en: %{expiration}.",
@@ -29,6 +33,11 @@
             "label_id": "Ban ID",
             "note_multiple_bans": "Nota: tiene más de una prohibición activa en sus identificadores.",
             "note_diff_license": "Nota: el baneo de arriba fue aplicado para otra <code>license</code>, lo que significa que alguno de tus IDs/HWIDs coinciden con los del baneo asociado."
+        },
+        "embed": {
+            "title": "Player Banned",
+            "idban_description": "**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```",
+            "playerban_description": "**Player:** %{player}\n**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```"
         }
     },
     "whitelist_messages": {
@@ -362,6 +371,24 @@
                 "previous_ids": "Identificadores utilizados anteriormente",
                 "all_hwids": "All Hardware IDs"
             }
+        }
+    },
+    "warning_messages": {
+        "embed": {
+            "title": "Player Warned",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "revocation_messages": {
+        "embed": {
+            "title": "Action Revoked",
+            "description": "**Action Type:** %{action} (`#%{actionId}`)\n**Target:** %{target}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "dm_messages": {
+        "embed": {
+            "title": "Admin DM Sent",
+            "description": "**Recipient:** %{player}\n**Message:**\n%{message}"
         }
     }
 }

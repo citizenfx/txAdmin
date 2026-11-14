@@ -14,7 +14,11 @@
     "kick_messages": {
         "everyone": "Alle spillere ble sparket ut: %{reason}.",
         "player": "Du har blitt sparket ut: %{reason}.",
-        "unknown_reason": "av en ukjent grunn"
+        "unknown_reason": "av en ukjent grunn",
+        "embed": {
+            "title": "Player Kicked",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
     },
     "ban_messages": {
         "kick_temporary": "(%{author}) Du har blitt utestengt fra denne serveren grunnet \"%{reason}\". Utestengelsen din oppheves om: %{expiration}.",
@@ -29,6 +33,11 @@
             "label_id": "Utestengelse ID",
             "note_multiple_bans": "NB: du har flere aktive utestengelser.",
             "note_diff_license": "NB: utestengelsen over var tilegnet en annen <code>license</code>, dette betyr at en eller flere av dine identifikatorer/maskinvare-ID'er er assosiert med den utestengelsen."
+        },
+        "embed": {
+            "title": "Player Banned",
+            "idban_description": "**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```",
+            "playerban_description": "**Player:** %{player}\n**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```"
         }
     },
     "whitelist_messages": {
@@ -362,6 +371,24 @@
                 "helper_text": "Venligst spesifiser varigheten",
                 "submit": "Utesteng"
             }
+        }
+    },
+    "warning_messages": {
+        "embed": {
+            "title": "Player Warned",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "revocation_messages": {
+        "embed": {
+            "title": "Action Revoked",
+            "description": "**Action Type:** %{action} (`#%{actionId}`)\n**Target:** %{target}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "dm_messages": {
+        "embed": {
+            "title": "Admin DM Sent",
+            "description": "**Recipient:** %{player}\n**Message:**\n%{message}"
         }
     }
 }

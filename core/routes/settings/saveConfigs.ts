@@ -334,7 +334,8 @@ const handleDiscordCard: CardHandler = async (inputConfig, sendTypedResp) => {
         [schemas.enabled, inputConfig.discordBot.enabled],
         [schemas.token, inputConfig.discordBot.token],
         [schemas.guild, inputConfig.discordBot.guild],
-        [schemas.warningsChannel, inputConfig.discordBot.warningsChannel],
+        [schemas.announcementsChannel, inputConfig.discordBot.announcementsChannel],
+        [schemas.punishmentsChannel, inputConfig.discordBot.punishmentsChannel],
     ]);
     if (validationError) {
         return sendTypedResp({
@@ -362,7 +363,7 @@ const handleDiscordCard: CardHandler = async (inputConfig, sendTypedResp) => {
             //They have been validated, so this is fine
             token: inputConfig.discordBot.token as any,
             guild: inputConfig.discordBot.guild as any,
-            warningsChannel: inputConfig.discordBot.warningsChannel as any,
+            punishmentsChannel: inputConfig.discordBot.punishmentsChannel as any,
         });
     } catch (error) {
         const errorCode = (error as any).code;

@@ -14,7 +14,11 @@
     "kick_messages": {
         "everyone": "تم طرد جميع اللاعبين: %{reason}.",
         "player": "تم طردك: %{reason}.",
-        "unknown_reason": "لسبب مجهول"
+        "unknown_reason": "لسبب مجهول",
+        "embed": {
+            "title": "Player Kicked",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
     },
     "ban_messages": {
         "kick_temporary": ".%{expiration} :ستنتهي صلاحية حظرك في .\"%{reason}\"  لقد تم حظرك من هذا الخادم لسبب (%{author})",
@@ -29,6 +33,11 @@
             "label_id": "معرف الحظر",
             "note_multiple_bans": ".ملاحظة: لديك أكثر من حظر نشط على المعرفات الخاصة بك",
             "note_diff_license": ".تتطابق مع تلك المرتبطة بهذا الحظر HWID مما يعني أن بعض معرفاتك <code>license</code> ملاحظة: تم تطبيق الحظر أعلاه على شخص آخر"
+        },
+        "embed": {
+            "title": "Player Banned",
+            "idban_description": "**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```",
+            "playerban_description": "**Player:** %{player}\n**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```"
         }
     },
     "whitelist_messages": {
@@ -362,6 +371,24 @@
                 "previous_ids": "المعرفات المستخدمة سابقًا",
                 "all_hwids": "كافة معرفات الأجهزة"
             }
+        }
+    },
+    "warning_messages": {
+        "embed": {
+            "title": "Player Warned",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "revocation_messages": {
+        "embed": {
+            "title": "Action Revoked",
+            "description": "**Action Type:** %{action} (`#%{actionId}`)\n**Target:** %{target}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "dm_messages": {
+        "embed": {
+            "title": "Admin DM Sent",
+            "description": "**Recipient:** %{player}\n**Message:**\n%{message}"
         }
     }
 }

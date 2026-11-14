@@ -26,7 +26,8 @@ export const pageConfigs = {
     botEnabled: getPageConfig('discordBot', 'enabled'),
     botToken: getPageConfig('discordBot', 'token'),
     discordGuild: getPageConfig('discordBot', 'guild'),
-    warningsChannel: getPageConfig('discordBot', 'warningsChannel'),
+    announcementsChannel: getPageConfig('discordBot', 'announcementsChannel'),
+    punishmentsChannel: getPageConfig('discordBot', 'punishmentsChannel'),
     embedJson: getPageConfig('discordBot', 'embedJson'),
     embedConfigJson: getPageConfig('discordBot', 'embedConfigJson'),
 } as const;
@@ -49,7 +50,8 @@ export default function ConfigCardDiscord({ cardCtx, pageCtx }: SettingsCardProp
     //Refs for configs that don't use state
     const botTokenRef = useRef<HTMLInputElement | null>(null);
     const discordGuildRef = useRef<HTMLInputElement | null>(null);
-    const warningsChannelRef = useRef<HTMLInputElement | null>(null);
+    const punishmentsChannelRef = useRef<HTMLInputElement | null>(null);
+    const restartsChannelRef = useRef<HTMLInputElement | null>(null);
 
     //Marshalling Utils
     const emptyToNull = (str?: string) => {
@@ -63,7 +65,8 @@ export default function ConfigCardDiscord({ cardCtx, pageCtx }: SettingsCardProp
         const overwrites = {
             botToken: emptyToNull(botTokenRef.current?.value),
             discordGuild: emptyToNull(discordGuildRef.current?.value),
-            warningsChannel: emptyToNull(warningsChannelRef.current?.value),
+            punishmentsChannel: emptyToNull(punishmentsChannelRef.current?.value),
+            announcementsChannel: emptyToNull(restartsChannelRef.current?.value),
         };
 
         const res = getConfigDiff(cfg, states, overwrites, false);
@@ -144,17 +147,32 @@ export default function ConfigCardDiscord({ cardCtx, pageCtx }: SettingsCardProp
                     To get the Server ID, go to Discord's settings and <TxAnchor href="https://support.discordapp.com/hc/article_attachments/115002742731/mceclip0.png">enable developer mode</TxAnchor>, then right-click on the guild icon select "Copy ID".
                 </SettingItemDesc>
             </SettingItem>
-            <SettingItem label="Warnings Channel ID" htmlFor={cfg.warningsChannel.eid} showOptional>
+            <SettingItem label="Announcements Channel ID" htmlFor={cfg.announcementsChannel.eid} showOptional>
                 <Input
-                    id={cfg.warningsChannel.eid}
-                    ref={warningsChannelRef}
-                    defaultValue={cfg.warningsChannel.initialValue}
+                    id={cfg.announcementsChannel.eid}
+                    ref={restartsChannelRef}
+                    defaultValue={cfg.announcementsChannel.initialValue}
                     onInput={updatePageState}
                     disabled={pageCtx.isReadOnly}
                     placeholder='000000000000000000'
                 />
                 <SettingItemDesc>
                     The ID of the channel to send Announcements (eg server restarts). <br />
+                    You can leave it blank to disable this feature. <br />
+                    To get the channel ID, go to Discord's settings and <TxAnchor href="https://support.discordapp.com/hc/article_attachments/115002742731/mceclip0.png">enable developer mode</TxAnchor>, then right-click on the channel name and select "Copy ID".
+                </SettingItemDesc>
+            </SettingItem>
+            <SettingItem label="Punishments Channel ID" htmlFor={cfg.punishmentsChannel.eid} showOptional>
+                <Input
+                    id={cfg.punishmentsChannel.eid}
+                    ref={punishmentsChannelRef}
+                    defaultValue={cfg.punishmentsChannel.initialValue}
+                    onInput={updatePageState}
+                    disabled={pageCtx.isReadOnly}
+                    placeholder='000000000000000000'
+                />
+                <SettingItemDesc>
+                    The ID of the channel to send Punishments (eg warns, kicks, bans). <br />
                     You can leave it blank to disable this feature. <br />
                     To get the channel ID, go to Discord's settings and <TxAnchor href="https://support.discordapp.com/hc/article_attachments/115002742731/mceclip0.png">enable developer mode</TxAnchor>, then right-click on the channel name and select "Copy ID".
                 </SettingItemDesc>

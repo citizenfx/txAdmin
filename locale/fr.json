@@ -11,10 +11,20 @@
         "schedule_warn": "Le serveur redémarrera dans %{smart_count} minute. Merci de vous déconnecter. |||| Le serveur redémarrera dans %{smart_count} minutes.",
         "schedule_warn_discord": "**%{servername}** redémarrera dans %{smart_count} minute. |||| **%{servername}** redémarrera dans %{smart_count} minutes."
     },
+    "warning_messages": {
+        "embed": {
+            "title": "Joueur averti",
+            "description": "**Joueur :** %{player}\n**Raison :** %{reason}\n\n**Identifiants :**\n```%{identifiers}```"
+        }
+    },
     "kick_messages": {
         "everyone": "All players kicked: %{reason}.",
         "player": "You have been kicked: %{reason}.",
-        "unknown_reason": "for unknown reason"
+        "unknown_reason": "for unknown reason",
+        "embed": {
+            "title": "Joueur expulsé",
+            "description": "**Joueur :** %{player}\n**Raison :** %{reason}\n\n**Identifiants :**\n```%{identifiers}```"
+        }
     },
     "ban_messages": {
         "kick_temporary": "(%{author}) Vous avez été banni pour: \"%{reason}\". Votre bannissement expirera dans: %{expiration}.",
@@ -29,6 +39,23 @@
             "label_id": "ID de sanction",
             "note_multiple_bans": "Note : vous avez plus d'un bannissement sur votre identifiant.",
             "note_diff_license": "Note: the ban above was applied for another <code>license</code>, which means some of your IDs/HWIDs match the ones associated with that ban."
+        },
+        "embed": {
+            "title": "Joueur banni",
+            "idban_description": "**Raison :** %{reason}\n**Expiration :** %{expiration}\n\n**Identifiants :**\n```%{identifiers}```",
+            "playerban_description": "**Joueur :** %{player}\n**Raison :** %{reason}\n**Expiration :** %{expiration}\n\n**Identifiants :**\n```%{identifiers}```"
+        }
+    },
+    "revocation_messages": {
+        "embed": {
+            "title": "Sanction annulée",
+            "description": "**Type d'action :** %{action} (`#%{actionId}`)\n**Cible :** %{target}\n\n**Identifiants :**\n```%{identifiers}```"
+        }
+    },
+    "dm_messages": {
+        "embed": {
+            "title": "Message privé admin envoyé",
+            "description": "**Expéditeur :** %{author}\n**Destinataire :** %{player}\n\n**Message :**\n%{message}\n\n**Identifiants du destinataire :**\n```%{identifiers}```"
         }
     },
     "whitelist_messages": {

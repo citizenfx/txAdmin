@@ -14,7 +14,11 @@
     "kick_messages": {
         "everyone": "Всіх гравців викинуто: %{reason}.",
         "player": "Ви були викинуті: %{reason}.",
-        "unknown_reason": "з невідомої причини"
+        "unknown_reason": "з невідомої причини",
+        "embed": {
+            "title": "Player Kicked",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
     },
     "ban_messages": {
         "kick_temporary": "(%{author}) Ви були забанені на цьому сервері за \"%{reason}\". Ваш бан закінчиться через: %{expiration}.",
@@ -29,6 +33,11 @@
             "label_id": "ID бана",
             "note_multiple_bans": "Примітка: у вас є кілька активних банів на ваших ідентифікаторах.",
             "note_diff_license": "Примітка: бан вище був застосований до іншої <code>license</code>, що означає, що деякі з ваших ID/HWID збігаються з тими, що асоціюються з цим баном."
+        },
+        "embed": {
+            "title": "Player Banned",
+            "idban_description": "**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```",
+            "playerban_description": "**Player:** %{player}\n**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```"
         }
     },
     "whitelist_messages": {
@@ -362,6 +371,24 @@
                 "helper_text": "Будь ласка, виберіть тривалість",
                 "submit": "Застосувати бан"
             }
+        }
+    },
+    "warning_messages": {
+        "embed": {
+            "title": "Player Warned",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "revocation_messages": {
+        "embed": {
+            "title": "Action Revoked",
+            "description": "**Action Type:** %{action} (`#%{actionId}`)\n**Target:** %{target}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "dm_messages": {
+        "embed": {
+            "title": "Admin DM Sent",
+            "description": "**Recipient:** %{player}\n**Message:**\n%{message}"
         }
     }
 }

@@ -99,6 +99,22 @@ async function handleBandIds(ctx: AuthedCtx): Promise<GenericApiOkResp> {
             expiration,
             false
         );
+
+        txCore.discordBot.sendPunishment({
+            admin: ctx.admin,
+            type: 'danger',
+            title: {
+                key: 'ban_messages.embed.title',
+            },
+            description: {
+                key: 'ban_messages.embed.idban_description',
+                data: {
+                    expiration: expiration ? `<t:${expiration}>` : 'X',
+                    reason,
+                    identifiers: identifiers.join('\n'),
+                }
+            }
+        });
     } catch (error) {
         return { error: `Failed to ban identifiers: ${(error as Error).message}` };
     }
@@ -162,6 +178,26 @@ async function handleRevokeAction(ctx: AuthedCtx): Promise<GenericApiOkResp> {
     try {
         action = txCore.database.actions.revoke(actionId, ctx.admin.name, perms) as DatabaseActionType;
         ctx.admin.logAction(`Revoked ${action.type} id ${actionId} from ${action.playerName ?? 'identifiers'}`);
+        
+        txCore.discordBot.sendPunishment({
+            admin: ctx.admin,
+            type: 'info',
+            title: {
+                key: 'revocation_messages.embed.title',
+                data: {
+                    action: action.type,
+                },
+            },
+            description: {
+                key: 'revocation_messages.embed.description',
+                data: {
+                    actionId,
+                    action: action.type,
+                    target: action.playerName ?? 'identifiers',
+                    identifiers: action.ids.join('\n'),
+                },
+            },
+        });
     } catch (error) {
         return { error: `Failed to revoke action: ${(error as Error).message}` };
     }

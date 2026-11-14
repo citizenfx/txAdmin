@@ -14,7 +14,11 @@
     "kick_messages": {
         "everyone": "已踢出所有玩家。原因: %{reason}.",
         "player": "您已被踢出。原因: %{reason}.",
-        "unknown_reason": "未知原因"
+        "unknown_reason": "未知原因",
+        "embed": {
+            "title": "Player Kicked",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
     },
     "ban_messages": {
         "kick_temporary": "您因 \"%{reason}\" 而被封禁。您可在 %{expiration} 后再次登录服务器。操作人：%{author}",
@@ -29,6 +33,11 @@
             "label_id": "封禁ID",
             "note_multiple_bans": "提示：您还有其他激活的封禁。",
             "note_diff_license": "提示：上述封禁适用于另一个<code>license</code>，这意味着您的一些ID/HWID与该禁令相关的ID/HWID匹配。"
+        },
+        "embed": {
+            "title": "Player Banned",
+            "idban_description": "**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```",
+            "playerban_description": "**Player:** %{player}\n**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```"
         }
     },
     "whitelist_messages": {
@@ -362,6 +371,24 @@
                 "previous_ids": "曾使用过的标识符",
                 "all_hwids": "所有硬件ID(HWID)"
             }
+        }
+    },
+    "warning_messages": {
+        "embed": {
+            "title": "Player Warned",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "revocation_messages": {
+        "embed": {
+            "title": "Action Revoked",
+            "description": "**Action Type:** %{action} (`#%{actionId}`)\n**Target:** %{target}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "dm_messages": {
+        "embed": {
+            "title": "Admin DM Sent",
+            "description": "**Recipient:** %{player}\n**Message:**\n%{message}"
         }
     }
 }

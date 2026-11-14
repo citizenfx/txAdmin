@@ -14,7 +14,11 @@
     "kick_messages": {
         "everyone": "Semua pemain dikeluarkan: %{reason}.",
         "player": "Anda telah dikeluarkan: %{reason}.",
-        "unknown_reason": "karena alasan yang tidak diketahui"
+        "unknown_reason": "karena alasan yang tidak diketahui",
+        "embed": {
+            "title": "Player Kicked",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
     },
     "ban_messages": {
         "kick_temporary": "(%{author}) Anda telah diblokir dari server ini karena \"%{reason}\". Blokir Anda akan berakhir dalam: %{expiration}.",
@@ -29,6 +33,11 @@
             "label_id": "ID Blokir",
             "note_multiple_bans": "Catatan: Anda memiliki lebih dari satu blokir aktif pada identitas Anda.",
             "note_diff_license": "Catatan: blokir di atas diterapkan untuk <code>license</code> yang berbeda, yang berarti beberapa ID/HWID Anda cocok dengan yang terkait dengan blokir tersebut."
+        },
+        "embed": {
+            "title": "Player Banned",
+            "idban_description": "**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```",
+            "playerban_description": "**Player:** %{player}\n**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```"
         }
     },
     "whitelist_messages": {
@@ -362,6 +371,24 @@
                 "helper_text": "Pilih durasi",
                 "submit": "Terapkan ban"
             }
+        }
+    },
+    "warning_messages": {
+        "embed": {
+            "title": "Player Warned",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "revocation_messages": {
+        "embed": {
+            "title": "Action Revoked",
+            "description": "**Action Type:** %{action} (`#%{actionId}`)\n**Target:** %{target}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "dm_messages": {
+        "embed": {
+            "title": "Admin DM Sent",
+            "description": "**Recipient:** %{player}\n**Message:**\n%{message}"
         }
     }
 }

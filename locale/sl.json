@@ -14,7 +14,12 @@
     "kick_messages": {
         "everyone": "Vsi igralci so bili kick-ani: %{reason}.",
         "player": "Bili ste kick-ani: %{reason}.",
-        "unknown_reason": "iz neznanega razloga"
+        "unknown_reason": "iz neznanega razloga",
+        "embed": {
+            "title": "Player Kicked",
+            "playerban_description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
     },
     "ban_messages": {
         "kick_temporary": "(%{author}) Bil si odstranjen iz strežnika zaradi \"%{reason}\". Tvoj BAN se izteče čez: %{expiration}.",
@@ -29,6 +34,11 @@
             "label_id": "Ban ID",
             "note_multiple_bans": "Opomba: Imate več kot en ban na vaših identifierjih.",
             "note_diff_license": "Opomba: zgoraj omenjen ban, je bil dodeljen drugi <code>licenci</code>, torej se tvoji in njihovi IDs/HWIDs, ki so povezani z banom, ujemajo."
+        },
+        "embed": {
+            "title": "Player Banned",
+            "idban_description": "**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```",
+            "playerban_description": "**Player:** %{player}\n**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```"
         }
     },
     "whitelist_messages": {
@@ -362,6 +372,24 @@
                 "previous_ids": "Prej uporabljeni identifierji",
                 "all_hwids": "Strojni IDs"
             }
+        }
+    },
+    "warning_messages": {
+        "embed": {
+            "title": "Player Warned",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "revocation_messages": {
+        "embed": {
+            "title": "Action Revoked",
+            "description": "**Action Type:** %{action} (`#%{actionId}`)\n**Target:** %{target}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "dm_messages": {
+        "embed": {
+            "title": "Admin DM Sent",
+            "description": "**Recipient:** %{player}\n**Message:**\n%{message}"
         }
     }
 }

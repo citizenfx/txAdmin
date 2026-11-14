@@ -14,7 +14,11 @@
     "kick_messages": {
         "everyone": "All players kicked: %{reason}.",
         "player": "You have been kicked: %{reason}.",
-        "unknown_reason": "for unknown reason"
+        "unknown_reason": "for unknown reason",
+        "embed": {
+            "title": "Player Kicked",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
     },
     "ban_messages": {
         "kick_temporary": "(%{author}) Ki lettél tiltva a szerverről. Indok: \"%{reason}\". Lejár: %{expiration}.",
@@ -29,6 +33,11 @@
             "label_id": "Kitiltás ID",
             "note_multiple_bans": "Figyelem: Több mint egy aktív kitiltásod van ezen a fiókon.",
             "note_diff_license": "Megjegyzés: a kitiltás a <code>license</code> miatt van, ami azt jelenti, hogy néhány azonosítód/hardver azonosítód egyezik a kiltiltásban lévő adatokkal."
+        },
+        "embed": {
+            "title": "Player Banned",
+            "idban_description": "**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```",
+            "playerban_description": "**Player:** %{player}\n**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```"
         }
     },
     "whitelist_messages": {
@@ -362,6 +371,24 @@
                 "previous_ids": "Előző azonosítók",
                 "all_hwids": "Összes hardver ID"
             }
+        }
+    },
+    "warning_messages": {
+        "embed": {
+            "title": "Player Warned",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "revocation_messages": {
+        "embed": {
+            "title": "Action Revoked",
+            "description": "**Action Type:** %{action} (`#%{actionId}`)\n**Target:** %{target}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "dm_messages": {
+        "embed": {
+            "title": "Admin DM Sent",
+            "description": "**Recipient:** %{player}\n**Message:**\n%{message}"
         }
     }
 }

@@ -34,7 +34,8 @@ const restructureOldConfig = (old: any) => {
             enabled: old?.discordBot?.enabled,
             token: old?.discordBot?.token,
             guild: old?.discordBot?.guild,
-            warningsChannel: old?.discordBot?.announceChannel, //NOTE:renamed
+            punishmentsChannel: old?.discordBot?.punishmentsChannel,
+            announcementsChannel: old?.discordBot?.announceChannel, //NOTE:renamed
             embedJson: old?.discordBot?.embedJson,
             embedConfigJson: old?.discordBot?.embedConfigJson,
         },

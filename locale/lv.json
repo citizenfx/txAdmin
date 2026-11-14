@@ -14,7 +14,11 @@
     "kick_messages": {
         "everyone": "Visi spēlētāji tika izmesti: %{reason}.",
         "player": "Tu tiki izmests no servera: %{reason}.",
-        "unknown_reason": "nezināma iemesla dēļ"
+        "unknown_reason": "nezināma iemesla dēļ",
+        "embed": {
+            "title": "Player Kicked",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
     },
     "ban_messages": {
         "kick_temporary": "(%{author}) Tu esi uz laiku bloķēts no šī servera par \"%{reason}\". Tava bloķēšana beigsies pēc: %{expiration}.",
@@ -29,6 +33,11 @@
             "label_id": "Ban ID",
             "note_multiple_bans": "Piezīme: Tev ir vairāk nekā viena aktīva bloķēšana taviem identifikatoriem.",
             "note_diff_license": "Piezīme: augstāk redzamā bloķēšana tika piemērota citai <code>license</code>, kas nozīmē, ka daži no taviem ID/HWID sakrīt ar tiem, kas saistīti ar šo bloķēšanu."
+        },
+        "embed": {
+            "title": "Player Banned",
+            "idban_description": "**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```",
+            "playerban_description": "**Player:** %{player}\n**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```"
         }
     },
     "whitelist_messages": {
@@ -362,6 +371,24 @@
                 "previous_ids": "Iepriekš izmantotie identifikatori",
                 "all_hwids": "Visi HWID ID"
             }
+        }
+    },
+    "warning_messages": {
+        "embed": {
+            "title": "Player Warned",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "revocation_messages": {
+        "embed": {
+            "title": "Action Revoked",
+            "description": "**Action Type:** %{action} (`#%{actionId}`)\n**Target:** %{target}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "dm_messages": {
+        "embed": {
+            "title": "Admin DM Sent",
+            "description": "**Recipient:** %{player}\n**Message:**\n%{message}"
         }
     }
 }

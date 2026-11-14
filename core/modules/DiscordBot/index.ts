@@ -7,6 +7,7 @@ import consoleFactory from '@lib/console';
 import { embedColors } from './discordHelpers';
 import { DiscordBotStatus } from '@shared/enums';
 import { UpdateConfigKeySet } from '@modules/ConfigStore/utils';
+import { AuthedAdmin } from '@modules/WebServer/authLogic';
 const console = consoleFactory(modulename);
 
 
@@ -20,10 +21,16 @@ type AnnouncementType = {
     description: string | MessageTranslationType;
     type: keyof typeof embedColors;
 }
+type PunishmentType = {
+    admin: AuthedAdmin;
+    title?: string | MessageTranslationType;
+    description: string | MessageTranslationType;
+    type: keyof typeof embedColors;
+}
 
 type SpawnConfig = Pick<
     TxConfigs['discordBot'],
-    'enabled' | 'token' | 'guild' | 'warningsChannel'
+    'enabled' | 'token' | 'guild' | 'punishmentsChannel' | 'announcementsChannel'
 >;
 
 
@@ -59,6 +66,7 @@ export default class DiscordBot {
     guild: Discord.Guild | undefined;
     guildName: string | undefined;
     announceChannel: Discord.TextBasedChannel | undefined;
+    punishmentsChannel: Discord.TextBasedChannel | undefined;
     #lastDisallowedIntentsError: number = 0; //ms
     #lastGuildMembersCacheRefresh: number = 0; //ms
     #lastStatus = DiscordBotStatus.Disabled;
@@ -161,7 +169,7 @@ export default class DiscordBot {
     async sendAnnouncement(content: AnnouncementType) {
         if (!txConfig.discordBot.enabled) return;
         if (
-            !txConfig.discordBot.warningsChannel
+            !txConfig.discordBot.punishmentsChannel
             || !this.#client?.isReady()
             || !this.announceChannel
         ) {
@@ -187,6 +195,47 @@ export default class DiscordBot {
             await this.announceChannel.send({ embeds: [embed] });
         } catch (error) {
             console.error(`Error sending Discord announcement: ${(error as Error).message}`);
+        }
+    }
+
+
+    /**
+     * Send an announcement to the configured channel
+     */
+    async sendPunishment(content: PunishmentType) {
+        if (!txConfig.discordBot.enabled) return;
+        if (
+            !txConfig.discordBot.punishmentsChannel
+            || !this.#client?.isReady()
+            || !this.punishmentsChannel
+        ) {
+            console.verbose.warn('not ready yet to send announcement');
+            return false;
+        }
+
+        try {
+            let title;
+            if (content.title) {
+                title = (typeof content.title === 'string')
+                    ? content.title
+                    : txCore.translator.t(content.title.key, content.title.data);
+            }
+            let description;
+            if (content.description) {
+                description = (typeof content.description === 'string')
+                    ? content.description
+                    : txCore.translator.t(content.description.key, content.description.data);
+            }
+
+            const embed = new EmbedBuilder({ title, description })
+                .setColor(embedColors[content.type])
+                .setAuthor({
+                    name: content.admin.name,
+                    iconURL: content.admin.profilePicture,
+                });
+            await this.punishmentsChannel.send({ embeds: [embed] });
+        } catch (error) {
+            console.error(`Error sending Discord punishment: ${(error as Error).message}`);
         }
     }
 
@@ -239,7 +288,8 @@ export default class DiscordBot {
             enabled: txConfig.discordBot.enabled,
             token: txConfig.discordBot.token,
             guild: txConfig.discordBot.guild,
-            warningsChannel: txConfig.discordBot.warningsChannel,
+            punishmentsChannel: txConfig.discordBot.punishmentsChannel,
+            announcementsChannel: txConfig.discordBot.announcementsChannel,
         }
         if (!botCfg.enabled) return;
 
@@ -354,13 +404,25 @@ export default class DiscordBot {
                     }
                 }
 
-                //Fetching announcements channel
-                if (botCfg.warningsChannel) {
-                    const fetchedChannel = this.#client.channels.cache.find((x) => x.id === botCfg.warningsChannel);
+                //Fetching warnings channel
+                if (botCfg.punishmentsChannel) {
+                    const fetchedChannel = this.#client.channels.cache.find((x) => x.id === botCfg.punishmentsChannel);
                     if (!fetchedChannel) {
-                        return sendError(`Channel ${botCfg.warningsChannel} not found.`);
+                        return sendError(`Channel ${botCfg.punishmentsChannel} not found.`);
                     } else if (fetchedChannel.type !== ChannelType.GuildText && fetchedChannel.type !== ChannelType.GuildAnnouncement) {
-                        return sendError(`Channel ${botCfg.warningsChannel} - ${(fetchedChannel as any)?.name} is not a text or announcement channel.`);
+                        return sendError(`Channel ${botCfg.punishmentsChannel} - ${(fetchedChannel as any)?.name} is not a text or announcement channel.`);
+                    } else {
+                        this.punishmentsChannel = fetchedChannel;
+                    }
+                }
+
+                //Fetching announcements channel
+                if (botCfg.announcementsChannel) {
+                    const fetchedChannel = this.#client.channels.cache.find((x) => x.id === botCfg.announcementsChannel);
+                    if (!fetchedChannel) {
+                        return sendError(`Channel ${botCfg.announcementsChannel} not found.`);
+                    } else if (fetchedChannel.type !== ChannelType.GuildText && fetchedChannel.type !== ChannelType.GuildAnnouncement) {
+                        return sendError(`Channel ${botCfg.announcementsChannel} - ${(fetchedChannel as any)?.name} is not a text or announcement channel.`);
                     } else {
                         this.announceChannel = fetchedChannel;
                     }

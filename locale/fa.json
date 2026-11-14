@@ -14,7 +14,11 @@
     "kick_messages": {
         "everyone": "همه بازیکنان اخراج شدند: %{reason}.",
         "player": "شما اخراج شدید: %{reason}.",
-        "unknown_reason": "به دلیل نامشخص"
+        "unknown_reason": "به دلیل نامشخص",
+        "embed": {
+            "title": "Player Kicked",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
     },
     "ban_messages": {
         "kick_temporary": "(%{author}) شما از این سرور بن شدید، به دلیل: \"%{reason}\". اتمام بن شما: %{expiration}.",
@@ -29,6 +33,11 @@
             "label_id": "شناسه بن",
             "note_multiple_bans": "توجه: شما بیش از یک بن فعال در شناسه‌های خود دارید.",
             "note_diff_license": "توجه: بن فوق برای <code>license</code> دیگری اعمال شده است، به این معنی که برخی از شناسه‌ها/HWIDهای شما با موارد مرتبط با آن بن مطابقت دارند."
+        },
+        "embed": {
+            "title": "Player Banned",
+            "idban_description": "**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```",
+            "playerban_description": "**Player:** %{player}\n**Reason:** %{reason}\n**Expires:** %{expiration}\n\n**Identifiers:**\n```%{identifiers}```"
         }
     },
     "whitelist_messages": {
@@ -362,6 +371,24 @@
                 "previous_ids": "شناسه‌های استفاده شده قبلی",
                 "all_hwids": "همه شناسه‌های سخت‌افزاری"
             }
+        }
+    },
+    "warning_messages": {
+        "embed": {
+            "title": "Player Warned",
+            "description": "**Player:** %{player}\n**Reason:** %{reason}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "revocation_messages": {
+        "embed": {
+            "title": "Action Revoked",
+            "description": "**Action Type:** %{action} (`#%{actionId}`)\n**Target:** %{target}\n\n**Identifiers:**\n```%{identifiers}```"
+        }
+    },
+    "dm_messages": {
+        "embed": {
+            "title": "Admin DM Sent",
+            "description": "**Recipient:** %{player}\n**Message:**\n%{message}"
         }
     }
 }

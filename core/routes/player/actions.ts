@@ -117,6 +117,22 @@ async function handleWarning(ctx: AuthedCtx, player: PlayerClass): Promise<Gener
             reason,
             player.displayName,
         );
+        
+        txCore.discordBot.sendPunishment({
+            admin: ctx.admin,
+            type: 'warning',
+            title: {
+                key: 'warning_messages.embed.title',
+            },
+            description: {
+                key: 'warning_messages.embed.description',
+                data: {
+                    player: player.displayName,
+                    reason,
+                    identifiers: `${player.allIdentifiers.join('\n')}`,
+                },
+            },
+        });
     } catch (error) {
         return { error: `Failed to warn player: ${(error as Error).message}` };
     }
@@ -189,6 +205,23 @@ async function handleBan(ctx: AuthedCtx, player: PlayerClass): Promise<GenericAp
             player.displayName,
             allHwids
         );
+        
+        txCore.discordBot.sendPunishment({
+            admin: ctx.admin,
+            type: 'danger',
+            title: {
+                key: 'ban_messages.embed.title',
+            },
+            description: {
+                key: 'ban_messages.embed.playerban_description',
+                data: {
+                    player: player.displayName,
+                    reason,
+                    expiration: expiration ? `<t:${expiration}>` : 'X',
+                    identifiers: player.allIdentifiers.join('\n'),
+                }
+            }
+        });
     } catch (error) {
         return { error: `Failed to ban player: ${(error as Error).message}` };
     }
@@ -359,6 +392,21 @@ async function handleDirectMessage(ctx: AuthedCtx, player: PlayerClass): Promise
 
     try {
         ctx.admin.logAction(`DM to "${player.displayName}": ${message}`);
+        
+        txCore.discordBot.sendPunishment({
+            admin: ctx.admin,
+            type: 'danger',
+            title: {
+                key: 'dm_messages.embed.title',
+            },
+            description: {
+                key: 'dm_messages.embed.description',
+                data: {
+                    player: player.displayName,
+                    message,
+                }
+            }
+        });
 
         // Dispatch `txAdmin:events:playerDirectMessage`
         txCore.fxRunner.sendEvent('playerDirectMessage', {
@@ -406,6 +454,22 @@ async function handleKick(ctx: AuthedCtx, player: PlayerClass): Promise<GenericA
             'kick_messages.player',
             { reason: kickReason }
         );
+        
+        txCore.discordBot.sendPunishment({
+            admin: ctx.admin,
+            type: 'danger',
+            title: {
+                key: 'kick_messages.embed.title',
+            },
+            description: {
+                key: 'kick_messages.embed.description',
+                data: {
+                    player: player.displayName,
+                    reason: kickReason,
+                    identifiers: player.allIdentifiers.join('\n'),
+                }
+            }
+        });
 
         // Dispatch `txAdmin:events:playerKicked`
         txCore.fxRunner.sendEvent('playerKicked', {
