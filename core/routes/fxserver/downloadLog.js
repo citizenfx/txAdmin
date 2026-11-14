@@ -21,6 +21,7 @@ export default async function FXServerDownloadLog(ctx) {
         readFile = fs.readFileSync(txCore.logger.fxserver.activeFilePath);
     } catch (error) {
         console.error(`Could not read log file ${txCore.logger.fxserver.activeFilePath}.`);
+        return ctx.utils.error(500, 'Could not read the log file.');
     }
     const now = (new Date() / 1000).toFixed();
     ctx.attachment(`fxserver_${now}.log`);
