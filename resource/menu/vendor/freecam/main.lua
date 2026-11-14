@@ -141,6 +141,10 @@ function StartFreecamThread()
     --cleanup of the scaleform movie
     if IS_FIVEM then
       SetScaleformMovieAsNoLongerNeeded()
+    else
+      for _, prompt in pairs(redmInstructionGroup.prompts) do
+        UiPromptDelete(prompt)
+      end
     end
   end)
 end
