@@ -137,6 +137,23 @@ end)
 
 --[[ EVENT HANDLERS + FUNCTION LOGIC ]]
 
+--- Finds the ground Z, retrying while the world loads
+---@param x number
+---@param y number
+---@return number|nil
+local function resolveGroundZ(x, y)
+    local finalZ
+    local DELAY = 500
+    for i = 1, 5 do
+        debugPrint("Z calc attempt #" .. i .. " (" .. (i * DELAY) .. "ms)")
+        finalZ = FindZForCoords(x, y)
+        if finalZ ~= nil then break end
+        debugPrint("Didn't resolve! Trying again in " .. DELAY)
+        Wait(DELAY)
+    end
+    return finalZ
+end
+
 local function handleTpNormally(x, y, z)
     local ped = PlayerPedId()
     local veh = GetVehiclePedIsIn(ped, false)
@@ -172,20 +189,7 @@ local function handleTpNormally(x, y, z)
 
     -- Automatically calculate ground Z
     if z == 0 then
-        local _finalZ
-        local DELAY = 500
-        for i = 1, 5 do
-            if _finalZ ~= nil then break end
-            debugPrint("Z calc attempt #" .. i .. " (" .. (i * DELAY) .. "ms)")
-            _finalZ = FindZForCoords(x, y)
-            if _z == nil then
-                debugPrint("Didn't resolve! Trying again in " .. DELAY)
-                Wait(DELAY)
-            end
-        end
-        if _finalZ ~= nil then
-            z = _finalZ
-        end
+        z = resolveGroundZ(x, y) or z
     end
 
     -- Teleport to targert
@@ -234,6 +238,21 @@ local function handleTpForFreecam(x, y, z)
     -- sure to teleport this as well
     local veh = GetVehiclePedIsIn(ped, false)
     debugPrint('Freecam has vehicle attached: ' .. tostring(veh))
+
+    -- Automatically calculate ground Z
+    if z == 0 then
+        SetFreecamPosition(x, y, 100.0)
+        SetEntityCoords(ped, x, y, 100.0, false, false, false, false)
+        RequestCollisionAtCoord(x, y, 100.0)
+        while IsEntityWaitingForWorldCollision(ped) do
+            debugPrint("waiting for collision...")
+            Wait(100)
+        end
+        local groundZ = resolveGroundZ(x, y)
+        z = groundZ and groundZ + 2.0 or 100.0
+    end
+
+    SetEntityCoords(ped, x, y, z, false, false, false, false)
     if veh and veh > 0 then
         SetEntityCoords(veh, x, y, z)
     end
