@@ -37,6 +37,8 @@ export const defaultEmbedJson = JSON.stringify({
 });
 
 export const defaultEmbedConfigJson = JSON.stringify({
+    "maintenanceString": "🟠 Maintenance",
+    "maintenanceColor": "#FD8C4C",
     "onlineString": "🟢 Online",
     "onlineColor": "#0BA70B",
     "partialString": "🟡 Partial",

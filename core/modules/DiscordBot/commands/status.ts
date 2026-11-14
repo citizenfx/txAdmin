@@ -94,8 +94,9 @@ export const generateStatusMessage = (
 
     //Prepare status placeholders
     if (fxMonitorStatus.health === FxMonitorHealth.ONLINE) {
-        placeholders.statusString = embedConfigJson?.onlineString ?? '🟢 Online';
-        placeholders.statusColor = embedConfigJson?.onlineColor ?? "#0BA70B";
+        const isAdminOnly = txConfig.whitelist.mode === 'adminOnly';
+        placeholders.statusString = isAdminOnly ? embedConfigJson?.maintenanceString ?? '🟠 Maintenance' : embedConfigJson?.onlineString ?? '🟢 Online';
+        placeholders.statusColor = isAdminOnly ? embedConfigJson?.maintenanceColor ?? "#FD8C4C" : embedConfigJson?.onlineColor ?? "#0BA70B";
     } else if (fxMonitorStatus.health === FxMonitorHealth.PARTIAL) {
         placeholders.statusString = embedConfigJson?.partialString ?? '🟡 Partial';
         placeholders.statusColor = embedConfigJson?.partialColor ?? "#FFF100";
