@@ -620,7 +620,10 @@ export default class AdminStore {
      */
     async refreshOnlineAdmins() {
         //Refresh auth of all admins connected to socket.io
-        txCore.webServer.webSocket.reCheckAdminAuths().catch((e) => { });
+        txCore.webServer.webSocket.reCheckAdminAuths().catch((error) => {
+            console.verbose.error('Failed to reCheckAdminAuths() with error:');
+            console.verbose.dir(error);
+        });
 
         try {
             //Getting all admin identifiers

@@ -110,7 +110,8 @@ export default class WebSocket {
             );
             if (!authResult.success) {
                 //@ts-ignore
-                return terminateSession(socket, 'session invalidated by websocket.reCheckAdminAuths()', true);
+                terminateSession(socket, 'session invalidated by websocket.reCheckAdminAuths()', true);
+                continue;
             }
 
             //Sending auth data update - even if nothing changed
@@ -121,6 +122,7 @@ export default class WebSocket {
             for (const roomName of socket.rooms) {
                 if (roomName === socket.id) continue;
                 const roomData = this.#rooms[roomName as RoomNames];
+                if (!roomData) continue;
                 if (roomData.permission !== true && !authedAdmin.hasPermission(roomData.permission)) {
                     socket.leave(roomName);
                 }
