@@ -22,6 +22,7 @@ import SettingsPage from "@/pages/Settings/SettingsPage";
 import UnauthorizedPage from "@/pages/UnauthorizedPage";
 import DiagnosticsPage from "@/pages/Diagnostics/DiagnosticsPage";
 import AdvancedPage from "@/pages/AdvancedPage";
+import OidcLinkCallbackPage from "@/pages/OidcLinkCallbackPage";
 
 
 type RouteType = {
@@ -175,6 +176,7 @@ export function MainRouterInner() {
             {allRoutes.map((route) => <Route key={route.path} {...route} />)}
 
             {/* Other Routes - they need to set the title manuually */}
+            <WouterRoute path="/account/oidc/callback"><OidcLinkCallbackPage /></WouterRoute>
             {import.meta.env.DEV && (
                 <WouterRoute path="/test"><TestingPage /></WouterRoute>
             )}

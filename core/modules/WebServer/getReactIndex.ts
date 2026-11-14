@@ -157,6 +157,10 @@ export default async function getReactIndex(ctx: CtxWithVars | AuthedCtx) {
 
         //auth
         preAuth: authedAdmin && authedAdmin.getAuthData(),
+        oidc: {
+            enabled: txCore.adminStore.providers.oidc.isEnabled,
+            buttonLabel: txConfig.oidc.buttonLabel,
+        },
     };
 
     //Prepare placeholders

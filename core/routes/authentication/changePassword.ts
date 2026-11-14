@@ -41,7 +41,11 @@ export default async function AuthChangePassword(ctx: AuthedCtx) {
     //Get vault admin
     const vaultAdmin = txCore.adminStore.getAdminByName(ctx.admin.name);
     if (!vaultAdmin) throw new Error('Wait, what? Where is that admin?');
-    if (!ctx.admin.isTempPassword) {
+    //Admins auto-created via SSO don't know their random password
+    const sessType = ctx.sessTools.get()?.auth?.type;
+    const canSkipOldPassword = ctx.admin.isTempPassword
+        || (vaultAdmin.password_sso_generated === true && sessType === 'oidc');
+    if (!canSkipOldPassword) {
         if (!oldPassword || !await verifyPassword(oldPassword, vaultAdmin.password_hash)) {
             return ctx.send<GenericApiResp>({ error: 'Wrong current password.' });
         }

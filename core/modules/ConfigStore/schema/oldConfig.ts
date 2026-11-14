@@ -81,6 +81,7 @@ const restructureOldConfig = (old: any) => {
             fxserver: old?.logger?.fxserver,
             server: old?.logger?.server,
         },
+        oidc: {} as TxConfigs['oidc'], //NOTE: did not exist in the old config
     }
 
     return remapped;

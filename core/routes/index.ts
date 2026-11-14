@@ -17,6 +17,14 @@ export { default as auth_self } from './authentication/self';
 export { default as auth_logout } from './authentication/logout';
 export { default as auth_getIdentifiers } from './authentication/getIdentifiers';
 export { default as auth_changeIdentifiers } from './authentication/changeIdentifiers';
+export {
+    oidcLoginRedirect as auth_oidcLoginRedirect,
+    oidcLoginCallback as auth_oidcLoginCallback,
+    oidcLinkStatus as auth_oidcLinkStatus,
+    oidcLinkRedirect as auth_oidcLinkRedirect,
+    oidcLinkCallback as auth_oidcLinkCallback,
+    oidcUnlink as auth_oidcUnlink,
+} from './authentication/oidc';
 
 export { default as adminManager_page } from './adminManager/page.js';
 export { default as adminManager_getModal } from './adminManager/getModal';

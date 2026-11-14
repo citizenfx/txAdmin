@@ -72,6 +72,33 @@ export function AuthError({ error }: AuthErrorProps) {
             The account above with identifier <InlineCode>{fivemId}</InlineCode> is not assigned to any account registered on txAdmin. <br />
             You can also try to login using your username and backup password.
         </ErrorText>
+    } else if (error.errorCode === 'invalid_state') {
+        titleNode = 'Invalid Login State.';
+        bodyNode = <ErrorText>
+            The login request could not be validated. This usually happens when the login was started in another tab. <br />
+            Please return and try again.
+        </ErrorText>
+    } else if (error.errorCode === 'not_admin_oidc') {
+        const name = error.errorContext?.name ?? 'unknown';
+        titleNode = `The SSO account '${name}' is not an admin.`;
+        bodyNode = <ErrorText>
+            This SSO account is not linked to any account registered on txAdmin. <br />
+            Login with your username and password, then link your SSO account in the account settings.
+        </ErrorText>
+    } else if (error.errorCode === 'oidc_claim_denied') {
+        const name = error.errorContext?.name ?? 'unknown';
+        titleNode = 'Access Denied.';
+        bodyNode = <ErrorText>
+            The SSO account '{name}' is not allowed to access this txAdmin. <br />
+            Please contact the server owner if you think this is a mistake.
+        </ErrorText>
+    } else if (error.errorCode === 'oidc_link_denied') {
+        const name = error.errorContext?.name ?? 'unknown';
+        titleNode = 'Automatic Account Linking Denied.';
+        bodyNode = <ErrorText>
+            The txAdmin account <InlineCode>{name}</InlineCode> cannot be linked automatically, because it is either a privileged account or already linked to another SSO account. <br />
+            Login with your username and password, then link your SSO account in the account settings.
+        </ErrorText>
     } else {
         titleNode = 'Unknown Error:';
         bodyNode = <div className="text-left rounded-sm text-muted-foreground bg-muted p-1">

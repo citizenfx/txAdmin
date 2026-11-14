@@ -9,7 +9,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/auth";
 import { useEffect, useState } from "react";
 import { TabsTrigger, TabsList, TabsContent, Tabs } from "@/components/ui/tabs";
-import { ApiChangeIdentifiersReq, ApiChangePasswordReq } from "@shared/authApiTypes";
+import { ApiChangeIdentifiersReq, ApiChangePasswordReq, ApiOauthRedirectResp, ApiOidcLinkStatusResp } from "@shared/authApiTypes";
 import { useAccountModal, useCloseAccountModal } from "@/hooks/dialogs";
 import { GenericApiOkResp } from "@shared/genericApiTypes";
 import { fetchWithTimeout, useAuthedFetcher, useBackendApi } from "@/hooks/fetch";
@@ -30,6 +30,7 @@ function ChangePasswordTab() {
         method: 'POST',
         path: '/auth/changePassword'
     });
+    const skipOldPassword = authData && (authData.isTempPassword || authData.hasSsoGeneratedPassword);
 
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
@@ -54,7 +55,7 @@ function ChangePasswordTab() {
         changePasswordApi({
             data: {
                 newPassword,
-                oldPassword: authData.isTempPassword ? undefined : oldPassword,
+                oldPassword: skipOldPassword ? undefined : oldPassword,
             },
             error: (error) => {
                 setIsSaving(false);
@@ -71,6 +72,12 @@ function ChangePasswordTab() {
                         });
                     } else {
                         txToast.success('Password changed successfully!');
+                        if (authData.hasSsoGeneratedPassword) {
+                            setAuthData({
+                                ...authData,
+                                hasSsoGeneratedPassword: false,
+                            });
+                        }
                         closeAccountModal();
                     }
                 } else {
@@ -87,11 +94,14 @@ function ChangePasswordTab() {
                 {authData.isTempPassword ? (<p className="text-sm text-warning-inline">
                     Your account has a temporary password that needs to be changed before you can use this web panel. <br />
                     <strong>Make sure to take note of your new password before saving.</strong>
+                </p>) : authData.hasSsoGeneratedPassword ? (<p className="text-sm text-muted-foreground">
+                    Your account was created via SSO and has no password yet. <br />
+                    You can set one to be able to login without SSO.
                 </p>) : (<p className="text-sm text-muted-foreground">
                     You can use your password to login to the txAdmin inferface even without using the Cfx login button.
                 </p>)}
                 <div className="space-y-3 pt-2 pb-6">
-                    {!authData.isTempPassword && (
+                    {!skipOldPassword && (
                         <div className="space-y-1">
                             <Label htmlFor="current-password">Current Password</Label>
                             <Input
@@ -314,6 +324,135 @@ function ChangeIdentifiersTab() {
 
 
 /**
+ * SSO (OIDC) link tab
+ */
+function SsoLinkTab() {
+    const authedFetcher = useAuthedFetcher();
+    const { authData, setAuthData } = useAuth();
+    const [error, setError] = useState('');
+    const [isBusy, setIsBusy] = useState(false);
+    const [confirmUnlink, setConfirmUnlink] = useState(false);
+
+    const statusResp = useSWR<ApiOidcLinkStatusResp>(
+        '/auth/oidc/link',
+        () => authedFetcher<ApiOidcLinkStatusResp>('/auth/oidc/link'),
+        {
+            revalidateOnMount: true,
+            revalidateOnFocus: false,
+        }
+    );
+
+    const unlinkApi = useBackendApi<GenericApiOkResp>({
+        method: 'POST',
+        path: '/auth/oidc/unlink'
+    });
+
+    const handleLink = async () => {
+        setError('');
+        setIsBusy(true);
+        try {
+            const data = await authedFetcher<ApiOauthRedirectResp>(
+                `/auth/oidc/link/redirect?origin=${encodeURIComponent(window.location.origin)}`
+            );
+            if ('error' in data) {
+                setError(data.error);
+                setIsBusy(false);
+            } else {
+                window.location.href = data.authUrl;
+            }
+        } catch (error) {
+            setError((error as Error).message);
+            setIsBusy(false);
+        }
+    }
+
+    const handleUnlink = () => {
+        if (!confirmUnlink) {
+            setConfirmUnlink(true);
+            return;
+        }
+        setError('');
+        setIsBusy(true);
+        unlinkApi({
+            data: {},
+            error: (error) => {
+                setIsBusy(false);
+                setError(error);
+            },
+            success: (data) => {
+                setIsBusy(false);
+                setConfirmUnlink(false);
+                if ('success' in data) {
+                    txToast.success('SSO account unlinked.');
+                    if (authData) setAuthData({ ...authData, hasOidcLink: false });
+                    statusResp.mutate();
+                } else {
+                    setError(data.error);
+                }
+            }
+        });
+    }
+
+    const status = statusResp.data;
+    return (
+        <TabsContent value="sso" tabIndex={undefined}>
+            <p className="text-sm text-muted-foreground">
+                Link your account to the Single Sign-On (SSO) provider configured for this server, so you can login using the <strong>{window.txConsts.oidc?.buttonLabel ?? 'SSO'}</strong> button.
+            </p>
+            <div className="py-6 text-center">
+                {statusResp.isLoading ? (
+                    <span className="text-muted-foreground">loading...</span>
+                ) : status?.linked ? (
+                    <div className="space-y-1">
+                        <div className="text-success-inline font-semibold">Linked</div>
+                        {(status.username || status.email) && (
+                            <div className="text-sm">{status.username ?? status.email}</div>
+                        )}
+                        {status.linkedAt && (
+                            <div className="text-xs text-muted-foreground">
+                                since {new Date(status.linkedAt).toLocaleString()}
+                            </div>
+                        )}
+                    </div>
+                ) : (
+                    <div className="text-muted-foreground">Not linked</div>
+                )}
+            </div>
+
+            {confirmUnlink && (
+                <p className="text-sm text-warning-inline text-center mb-4">
+                    You will not be able to login via SSO anymore. If you are currently logged in via SSO, you will be logged out. <br />
+                    Click again to confirm.
+                </p>
+            )}
+            {error && <p className="text-destructive text-center mb-4">{error}</p>}
+
+            {status && !status.enabled && !status.linked ? (
+                <p className="text-sm text-center text-muted-foreground">SSO login is not enabled on this server.</p>
+            ) : status?.linked ? (
+                <Button
+                    className="w-full"
+                    variant={confirmUnlink ? 'destructive' : 'outline'}
+                    disabled={isBusy}
+                    onClick={handleUnlink}
+                >
+                    {isBusy ? 'Unlinking...' : confirmUnlink ? 'Confirm Unlink' : 'Unlink SSO Account'}
+                </Button>
+            ) : (
+                <Button
+                    className="w-full"
+                    disabled={isBusy || !status}
+                    onClick={handleLink}
+                >
+                    {isBusy ? 'Redirecting...' : 'Link SSO Account'}
+                </Button>
+            )}
+        </TabsContent>
+    );
+}
+
+
+/**
  * Account Dialog
  */
 export default function AccountDialog() {
@@ -341,6 +480,8 @@ export default function AccountDialog() {
     }
 
     if (!authData) return;
+    //NOTE: the OIDC redirects don't work inside the NUI
+    const showSsoTab = window.txConsts.isWebInterface && (window.txConsts.oidc?.enabled || authData.hasOidcLink);
     return (
         <Dialog
             open={isAccountModalOpen}
@@ -357,12 +498,16 @@ export default function AccountDialog() {
                     value={accountModalTab}
                     onValueChange={setAccountModalTab}
                 >
-                    <TabsList className="grid w-full grid-cols-2 mb-4">
+                    <TabsList className={`grid w-full mb-4 ${showSsoTab ? 'grid-cols-3' : 'grid-cols-2'}`}>
                         <TabsTrigger value="password">Password</TabsTrigger>
                         <TabsTrigger value="identifiers" disabled={authData.isTempPassword}>Identifiers</TabsTrigger>
+                        {showSsoTab && (
+                            <TabsTrigger value="sso" disabled={authData.isTempPassword}>SSO</TabsTrigger>
+                        )}
                     </TabsList>
                     <ChangePasswordTab />
                     <ChangeIdentifiersTab />
+                    {showSsoTab && <SsoLinkTab />}
                 </Tabs>
             </DialogContent>
         </Dialog>

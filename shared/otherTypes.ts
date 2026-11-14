@@ -61,6 +61,10 @@ export type InjectedTxConsts = {
 
     //Auth
     preAuth: ReactAuthDataType | false;
+    oidc: {
+        enabled: boolean;
+        buttonLabel: string;
+    };
 }
 
 

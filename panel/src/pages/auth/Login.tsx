@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, LogInIcon } from "lucide-react";
+import { KeyRoundIcon, Loader2, LogInIcon } from "lucide-react";
 import { ApiOauthRedirectResp, ApiVerifyPasswordReq, ApiVerifyPasswordResp } from '@shared/authApiTypes';
 import { useAuth } from '@/hooks/auth';
 import './cfxreLoginButton.css';
@@ -117,11 +117,11 @@ export default function Login() {
         }
     }
 
-    const handleRedirect = async () => {
+    const handleRedirect = async (provider: 'cfxre' | 'oidc' = 'cfxre') => {
         try {
             setIsFetching(true);
             const data = await fetchWithTimeout<ApiOauthRedirectResp>(
-                `/auth/cfxre/redirect?origin=${encodeURIComponent(window.location.origin)}`
+                `/auth/${provider}/redirect?origin=${encodeURIComponent(window.location.origin)}`
             );
             if ('error' in data) {
                 onErrorResponse(data.error);
@@ -228,7 +228,7 @@ export default function Login() {
                     className="cfxrebtn"
                     variant='outline'
                     disabled={isFetching}
-                    onClick={handleRedirect}
+                    onClick={() => handleRedirect('cfxre')}
                 >
                     {isFetching ? (
                         <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -236,6 +236,20 @@ export default function Login() {
                         <LogInIcon className="inline mr-2 h-4 w-4" />
                     )} Login with Cfx
                 </Button>
+                {window.txConsts.oidc?.enabled && (
+                    <Button
+                        type="button"
+                        variant='outline'
+                        disabled={isFetching}
+                        onClick={() => handleRedirect('oidc')}
+                    >
+                        {isFetching ? (
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        ) : (
+                            <KeyRoundIcon className="inline mr-2 h-4 w-4" />
+                        )} {window.txConsts.oidc.buttonLabel}
+                    </Button>
+                )}
             </CardContent>
         </form>
     );
