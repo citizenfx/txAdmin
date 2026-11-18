@@ -477,7 +477,7 @@ const validateCommands = async (parsedCommands: (ExecRecursionError | Command)[]
             }
 
             //Extracting parts & validating format
-            const endpointsRegex = /^\[?(([0-9.]{7,15})|([a-z0-9:]{2,29}))\]?:(\d{1,5})$/gi;
+            const endpointsRegex = /^\[?(([0-9.]{7,15})|([a-f0-9:]{2,39}))\]?:(\d{1,5})$/gi;
             const matches = [...cmd.args[0].matchAll(endpointsRegex)];
             if (!Array.isArray(matches) || !matches.length) {
                 errors.add(
@@ -607,7 +607,11 @@ const getConnectEndpoint = (endpoints: EndpointsObjectType, hasEndpointCommand: 
         throw new Error('Your config file does not not contain a ip:port used in both `endpoint_add_tcp` and `endpoint_add_udp` commands. Players would not be able to connect.');
     }
 
-    return tcpudpEndpoint.replace(/(0\.0\.0\.0|\[::\])/, '127.0.0.1');
+    //Replacing the "any" interfaces with their loopback equivalent of the same family
+    //NOTE: [::] must become [::1] because on some OSs (eg Windows) IPv6 sockets are v6-only by default
+    return tcpudpEndpoint
+        .replace(/^0\.0\.0\.0:/, '127.0.0.1:')
+        .replace(/^\[::\]:/, '[::1]:');
 };
 
 
