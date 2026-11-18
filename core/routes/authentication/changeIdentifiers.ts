@@ -78,11 +78,41 @@ export default async function AuthChangeIdentifiers(ctx: AuthedCtx) {
     const vaultAdmin = txCore.adminStore.getAdminByName(ctx.admin.name);
     if (!vaultAdmin) throw new Error('Wait, what? Where is that admin?');
 
+    //Prepare log message
+    const changes: string[] = [];
+    const oldCfx = vaultAdmin.providers.citizenfx?.identifier;
+    const newCfx = citizenfxData ? citizenfxData.identifier : undefined;
+    if (oldCfx !== newCfx) {
+        if (!oldCfx && newCfx) {
+            changes.push(`added ${newCfx}`);
+        } else if (oldCfx && !newCfx) {
+            changes.push(`removed ${oldCfx}`);
+        } else if (oldCfx && newCfx) {
+            changes.push(`changed ${oldCfx} → ${newCfx}`);
+        }
+    }
+
+    const oldDiscord = vaultAdmin.providers.discord?.identifier;
+    const newDiscord = discordData ? discordData.identifier : undefined;
+    if (oldDiscord !== newDiscord) {
+        if (!oldDiscord && newDiscord) {
+            changes.push(`added ${newDiscord}`);
+        } else if (oldDiscord && !newDiscord) {
+            changes.push(`removed ${oldDiscord}`);
+        } else if (oldDiscord && newDiscord) {
+            changes.push(`changed ${oldDiscord} → ${newDiscord}`);
+        }
+    }
+
+    const logMessage = changes.length
+        ? `Modified own identifiers: ${changes.join(', ')}`
+        : 'Modified own identifiers: No changes detected.';
+
     //Edit admin and give output
     try {
         await txCore.adminStore.editAdmin(ctx.admin.name, null, citizenfxData, discordData);
 
-        ctx.admin.logAction('Changing own identifiers.');
+        ctx.admin.logAction(logMessage);
         return ctx.send<GenericApiResp>({ success: true });
     } catch (error) {
         return ctx.send<GenericApiResp>({ error: (error as Error).message });

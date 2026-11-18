@@ -149,7 +149,7 @@ Event Data:
 ### txAdmin:events:actionRevoked
 Broadcasted when an admin revokes a database action (ex. ban, warn).  
 Event Data:
-- `actionId`: The id of the player to receive the DM.
+- `actionId`: The id of the action that was revoked.
 - `actionType`: The type of the action that was revoked.
 - `actionReason`: The action reason.
 - `actionAuthor`: The name of the admin that issued the action.

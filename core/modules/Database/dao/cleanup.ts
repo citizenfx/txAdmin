@@ -2,6 +2,7 @@ import { DbInstance, SavePriority } from "../instance";
 import consoleFactory from '@lib/console';
 import { DatabasePlayerType, DatabaseWhitelistApprovalsType, DatabaseWhitelistRequestsType } from '../databaseTypes';
 import { now } from '@lib/misc';
+import chalk from "chalk";
 const console = consoleFactory('DatabaseDao');
 
 
@@ -100,7 +101,7 @@ export default class CleanupDao {
 
         //Optimize players
         //Players that have not joined the last 16 days, and have less than 2 hours of playtime
-        let playerRemoved;
+        let playerRemoved = 0;
         try {
             const sixteenDaysAgo = now() - (16 * oneDay);
             const filter = (p: DatabasePlayerType) => {
@@ -114,7 +115,8 @@ export default class CleanupDao {
 
         //Optimize whitelistRequests + whitelistApprovals
         //Removing the ones older than 7 days
-        let wlRequestsRemoved, wlApprovalsRemoved;
+        let wlRequestsRemoved = 0;
+        let wlApprovalsRemoved = 0;
         const sevenDaysAgo = now() - (7 * oneDay);
         try {
             const wlRequestsFilter = (req: DatabaseWhitelistRequestsType) => {
@@ -131,10 +133,19 @@ export default class CleanupDao {
             console.error(msg);
         }
 
-        this.db.writeFlag(SavePriority.LOW);
-        console.ok(`Internal Database optimized. This applies only for the txAdmin internal database, and does not affect your MySQL or framework (ESX/QBCore/etc) databases.`);
-        console.ok(`- ${playerRemoved} players that haven't connected in the past 16 days and had less than 2 hours of playtime.`);
-        console.ok(`- ${wlRequestsRemoved} whitelist requests older than a week.`);
-        console.ok(`- ${wlApprovalsRemoved} whitelist approvals older than a week.`);
+        //Skip if failed or nothing was removed
+        if (playerRemoved || wlRequestsRemoved || wlApprovalsRemoved) {
+            this.db.writeFlag(SavePriority.LOW);
+            console.ok(`Internal Database optimized. This applies only for the txAdmin internal database, and does not affect your MySQL or framework (ESX/QBCore/etc) databases.`);
+        }
+        if (playerRemoved) {
+            console.ok(chalk.dim(`- ${playerRemoved} players that haven't connected in the past 16 days and had less than 2 hours of playtime.`));
+        }
+        if (wlRequestsRemoved) {
+            console.ok(chalk.dim(`- ${wlRequestsRemoved} whitelist requests older than a week.`));
+        }
+        if (wlApprovalsRemoved) {
+            console.ok(chalk.dim(`- ${wlApprovalsRemoved} whitelist approvals older than a week.`));
+        }
     }
 }

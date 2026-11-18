@@ -1,6 +1,6 @@
 //NOTE: must be imported first to setup the environment
 import { txEnv, txHostConfig } from './globalData';
-import consoleFactory, { setTTYTitle } from '@lib/console';
+import consoleFactory from '@lib/console';
 
 //Can be imported after
 import fs from 'node:fs';
@@ -16,7 +16,6 @@ const console = consoleFactory();
 try {
     process.title = 'txAdmin'; //doesn't work for now
     setupProcessHandlers();
-    setTTYTitle();
     checkPreRelease();
 } catch (error) {
     fatalError.Boot(0, 'Failed early process setup.', error);

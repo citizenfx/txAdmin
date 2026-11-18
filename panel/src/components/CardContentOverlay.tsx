@@ -1,15 +1,24 @@
+import { cn } from "@/lib/utils";
 import { Loader2Icon, OctagonXIcon } from "lucide-react";
 
 type CardContentOverlayProps = {
-    loading?: boolean;
+    loading?: boolean | string;
     error?: React.ReactNode;
     message?: React.ReactNode;
+    className?: string;
 };
-export default function CardContentOverlay({ loading, error, message }: CardContentOverlayProps) {
+export default function CardContentOverlay({ loading, error, message, className }: CardContentOverlayProps) {
     let innerNode: React.ReactNode;
     if (loading) {
         innerNode = (
-            <Loader2Icon className="animate-spin size-20 opacity-75" />
+            <>
+                <Loader2Icon className="animate-spin size-20 opacity-75" />
+                {typeof loading === 'string' && (
+                    <span className="max-w-4xl text-2xl tracking-wider text-muted-foreground/75">
+                        {loading}
+                    </span>
+                )}
+            </>
         )
     } else if (error) {
         innerNode = (
@@ -28,7 +37,7 @@ export default function CardContentOverlay({ loading, error, message }: CardCont
         return null;
     }
     return (
-        <div className="absolute inset-0 z-10 min-h-20 px-4 py-6 rounded-[inherit] dark:bg-black/25 backdrop-blur-sm flex flex-col items-center justify-center gap-2 text-center">
+        <div className={cn("absolute inset-0 z-10 min-h-20 px-4 py-6 rounded-[inherit] dark:bg-black/25 backdrop-blur-sm flex flex-col items-center justify-center gap-2 text-center", className)}>
             {innerNode}
         </div>
     )

@@ -13,10 +13,12 @@ import './LiveConsole/xtermOverrides.css';
 import '@xterm/xterm/css/xterm.css';
 import { openExternalLink } from '@/lib/navigation';
 import { handleHotkeyEvent } from '@/lib/hotkeyEventListener';
-import terminalOptions from './LiveConsole/xtermOptions';
+import xtermOptions from './LiveConsole/xtermOptions';
 import ScrollDownAddon from './LiveConsole/ScrollDownAddon';
 import LiveConsoleSearchBar from './LiveConsole/LiveConsoleSearchBar';
 import { useBackendApi } from '@/hooks/fetch';
+import { useIsDarkMode } from '@/hooks/theme';
+import { darkThemeColors, lightThemeColors } from './LiveConsole/liveConsoleColors';
 
 
 //Helpers
@@ -31,6 +33,7 @@ export default function SystemLogPage({ pageName }: SystemLogPageProps) {
     const [isLoading, setIsLoading] = useState(true);
     const [loadError, setLoadError] = useState('');
     const [showSearchBar, setShowSearchBar] = useState(false);
+    const isDarkTheme = useIsDarkMode();
     const refreshPage = useContentRefresh();
     const getLogsApi = useBackendApi<{ data: string }>({
         method: 'GET',
@@ -44,7 +47,10 @@ export default function SystemLogPage({ pageName }: SystemLogPageProps) {
      */
     const jumpBottomBtnRef = useRef<HTMLButtonElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const term = useMemo(() => new Terminal(terminalOptions), []);
+    const term = useMemo(() => new Terminal({
+        ...xtermOptions,
+        theme: isDarkTheme ? darkThemeColors : lightThemeColors,
+    }), []);
     const fitAddon = useMemo(() => new FitAddon(), []);
     const searchAddon = useMemo(() => new SearchAddon(), []);
     const termLinkHandler = (event: MouseEvent, uri: string) => {
@@ -73,6 +79,14 @@ export default function SystemLogPage({ pageName }: SystemLogPageProps) {
         }
     }
     useEventListener('resize', debounce(100, refitTerminal));
+
+    useEffect(() => {
+        if (term.element) {
+            term.options.theme = isDarkTheme ? darkThemeColors : lightThemeColors;
+            term.refresh(0, term.rows - 1);
+            refitTerminal();
+        }
+    }, [term, isDarkTheme]);
 
     useEffect(() => {
         if (containerRef.current && jumpBottomBtnRef.current && !term.element) {
@@ -194,7 +208,7 @@ export default function SystemLogPage({ pageName }: SystemLogPageProps) {
     }
 
     return (
-        <div className="dark text-primary flex flex-col h-full w-full bg-card border md:rounded-xl overflow-clip">
+        <div className="text-primary flex flex-col h-full w-full bg-card border md:rounded-xl overflow-clip">
             <div className="flex flex-col flex-shrink px-1 sm:px-4 py-2 space-y-4 border-b">
                 <div className="flex items-center space-x-2">
                     <svg

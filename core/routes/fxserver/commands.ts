@@ -2,18 +2,11 @@ const modulename = 'WebServer:FXServerCommands';
 import { AuthedCtx } from '@modules/WebServer/ctxTypes';
 import consoleFactory from '@lib/console';
 import { ApiToastResp } from '@shared/genericApiTypes';
-import { txEnv } from '@core/globalData';
 const console = consoleFactory(modulename);
-
-//Helper functions
-const delay = async (ms: number) => {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-};
 
 
 /**
  * Handle all the server commands
- * @param {object} ctx
  */
 export default async function FXServerCommands(ctx: AuthedCtx) {
     if (
@@ -47,29 +40,7 @@ export default async function FXServerCommands(ctx: AuthedCtx) {
 
 
     //==============================================
-    //DEBUG: Only available in the /advanced page
-    //FIXME: move to the advanced route, give button for profiling, saving mem snapshot, verbose, etc.
-    if (action == 'profile_monitor') {
-        if (!ensurePermission(ctx, 'all_permissions')) return false;
-        ctx.admin.logAction('Profiling txAdmin instance.');
-
-        const profileDuration = 5;
-        const savePath = `${txEnv.profilePath}/data/txProfile.bin`;
-        ExecuteCommand('profiler record start');
-        await delay(profileDuration * 1000);
-        ExecuteCommand('profiler record stop');
-        await delay(150);
-        ExecuteCommand(`profiler save "${savePath}"`);
-        await delay(150);
-        console.ok(`Profile saved to: ${savePath}`);
-        txCore.fxRunner.sendCommand('profiler', ['view', savePath], ctx.admin.name);
-        return ctx.send<ApiToastResp>({
-            type: 'success',
-            msg: 'Check your live console in a few seconds.',
-        });
-
-    //==============================================
-    } else if (action == 'admin_broadcast') {
+    if (action == 'admin_broadcast') {
         if (!ensurePermission(ctx, 'announcement')) return false;
         const message = (parameter ?? '').trim();
 

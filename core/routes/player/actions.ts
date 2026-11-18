@@ -1,5 +1,4 @@
 const modulename = 'WebServer:PlayerActions';
-import humanizeDuration, { Unit } from 'humanize-duration';
 import playerResolver from '@lib/player/playerResolver';
 import { GenericApiResp } from '@shared/genericApiTypes';
 import { PlayerClass, ServerPlayer } from '@lib/player/playerClasses';
@@ -7,7 +6,17 @@ import { anyUndefined, calcExpirationFromDuration } from '@lib/misc';
 import consoleFactory from '@lib/console';
 import { AuthedCtx } from '@modules/WebServer/ctxTypes';
 import { SYM_CURRENT_MUTEX } from '@lib/symbols';
+import { z } from 'zod';
+import { shortenId } from '@shared/utils';
+import { summarizeIdsArray } from '@lib/player/idUtils';
 const console = consoleFactory(modulename);
+
+
+//Schemas
+const removeIdsBodySchema = z.object({
+    ids: z.array(z.string().min(4, 'invalid identifier')),
+});
+export type ApiRemoveIdsReqSchema = z.infer<typeof removeIdsBodySchema>;
 
 
 /**
@@ -40,6 +49,8 @@ export default async function PlayerActions(ctx: AuthedCtx) {
         return sendTypedResp(await handleBan(ctx, player));
     } else if (action === 'whitelist') {
         return sendTypedResp(await handleSetWhitelist(ctx, player));
+    } else if (action === 'removeIds') {
+        return sendTypedResp(await handleRemoveIds(ctx, player));
     } else if (action === 'message') {
         return sendTypedResp(await handleDirectMessage(ctx, player));
     } else if (action === 'kick') {
@@ -92,7 +103,7 @@ async function handleWarning(ctx: AuthedCtx, player: PlayerClass): Promise<Gener
     }
 
     //Validating server & player
-    const allIds = player.getAllIdentifiers();
+    const allIds = player.allIdentifiers;
     if (!allIds.length) {
         return { error: 'Cannot warn a player with no identifiers.' };
     }
@@ -161,8 +172,8 @@ async function handleBan(ctx: AuthedCtx, player: PlayerClass): Promise<GenericAp
     }
 
     //Validating player - hwids.length can be zero 
-    const allIds = player.getAllIdentifiers();
-    const allHwids = player.getAllHardwareIdentifiers();
+    const allIds = player.allIdentifiers;
+    const allHwids = player.allHardwareIdentifiers;
     if (!allIds.length) {
         return { error: 'Cannot ban a player with no identifiers.' }
     }
@@ -215,8 +226,8 @@ async function handleBan(ctx: AuthedCtx, player: PlayerClass): Promise<GenericAp
         durationInput,
         durationTranslated,
         targetNetId: (player instanceof ServerPlayer) ? player.netid : null,
-        targetIds: player.ids,
-        targetHwids: player.hwids,
+        targetIds: allIds,
+        targetHwids: allHwids,
         targetName: player.displayName,
         kickMessage,
     });
@@ -262,6 +273,53 @@ async function handleSetWhitelist(ctx: AuthedCtx, player: PlayerClass): Promise<
             playerName: player.displayName,
             adminName: ctx.admin.name,
         });
+
+        return { success: true };
+    } catch (error) {
+        return { error: `Failed to save whitelist status: ${(error as Error).message}` };
+    }
+}
+
+
+/**
+ * Handle Player Removal of IDs
+ */
+async function handleRemoveIds(ctx: AuthedCtx, player: PlayerClass): Promise<GenericApiResp> {
+    //Checking request
+    const schemaRes = removeIdsBodySchema.safeParse(ctx.request.body);
+    if (!schemaRes.success) {
+        return { error: 'Invalid request body.' };
+    }
+    const { ids: idsToDelete } = schemaRes.data;
+
+    //Check permissions
+    if (!ctx.admin.testPermission('players.remove_ids', modulename)) {
+        return { error: 'You don\'t have permission to execute this action.' }
+    }
+
+    //Checking IDs
+    if (!player.license || !player.isRegistered) {
+        return { error: 'This player is not registered in the database, so there is no saved ID to delete.' };
+    }
+    if (idsToDelete.includes(player.license)) {
+        return { error: 'You cannot remove the player\'s license from their IDs.' };
+    }
+    if (player instanceof ServerPlayer && player.isConnected) {
+        // If the player is connected, player.ids/hwids only contain the active IDs
+        const onlineIdFound = idsToDelete.find(id => player.idsOnline.includes(id));
+        if (onlineIdFound) {
+            return { error: `The player #${player.netid} currently has the ID ${shortenId(onlineIdFound)}, so you need to wait for them to disconnect from the server to be able to delete it from the player history.` };
+        }
+        const onlineHwidFound = idsToDelete.find(id => player.hwidsOnline.includes(id));
+        if (onlineHwidFound) {
+            return { error: `The player #${player.netid} currently has the HWID ${shortenId(onlineHwidFound, 6)}, so you need to wait for them to disconnect from the server to be able to delete it from the player history.` };
+        }
+    }
+
+    try {
+        player.removeIds(idsToDelete);
+        const summarizedIds = summarizeIdsArray(idsToDelete);
+        ctx.admin.logAction(`Deleted IDs/HWIDs ${summarizedIds} from player "${player.displayName}" with license ${player.license}.`);
 
         return { success: true };
     } catch (error) {

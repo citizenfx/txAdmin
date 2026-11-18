@@ -113,5 +113,5 @@ You can find development instructions regarding the menu [here.](https://github.
 - **Q**: Why don't the 'Heal' options revive a player when using ESX/QBCore/etc?
 - **A**: Many frameworks independently handle a "dead" state for a player, meaning
   the menu is unable to reset this state in an resource agnostic form directly. To establish compatibility 
-  with any framework, txAdmin will emit an [txAdmin:events:healedPlayer](https://github.com/tabarra/txAdmin/blob/master/docs/events.md#txadmineventshealedplayer-v48) 
+  with any framework, txAdmin will emit an [txAdmin:events:playerHealed](https://github.com/tabarra/txAdmin/blob/master/docs/events.md#txadmineventsplayerhealed) 
   for developers to handle.

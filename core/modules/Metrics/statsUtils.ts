@@ -145,20 +145,25 @@ export class QuantileArray {
     /**
      * Processes the cache and returns the count and quantiles, if enough data.
      */
-    result(): QuantileArrayOutput {
+    result(round = false): QuantileArrayOutput {
         if (this.#cache.size < this.#minSize) {
             return {
                 enoughData: false,
             }
         } else {
+            const p5 = d3array.quantile(this.#cache.values(), 0.05)!;
+            const p25 = d3array.quantile(this.#cache.values(), 0.25)!;
+            const p50 = d3array.quantile(this.#cache.values(), 0.50)!;
+            const p75 = d3array.quantile(this.#cache.values(), 0.75)!;
+            const p95 = d3array.quantile(this.#cache.values(), 0.95)!;
             return {
                 enoughData: true,
                 count: this.#cache.size,
-                p5: d3array.quantile(this.#cache.values(), 0.05)!,
-                p25: d3array.quantile(this.#cache.values(), 0.25)!,
-                p50: d3array.quantile(this.#cache.values(), 0.50)!,
-                p75: d3array.quantile(this.#cache.values(), 0.75)!,
-                p95: d3array.quantile(this.#cache.values(), 0.95)!,
+                p5: round ? Math.round(p5) : p5,
+                p25: round ? Math.round(p25) : p25,
+                p50: round ? Math.round(p50) : p50,
+                p75: round ? Math.round(p75) : p75,
+                p95: round ? Math.round(p95) : p95,
             };
         }
     }
@@ -185,11 +190,11 @@ export class QuantileArray {
     }
 
     toJSON() {
-        return this.result();
+        return this.result(false);
     }
 
     [inspect.custom]() {
-        return this.result();
+        return this.result(true);
     }
 }
 type QuantileArrayOutput = {
@@ -201,8 +206,9 @@ type QuantileArrayOutput = {
     p75: number;
     p95: number;
 } | {
+    //if less than min size
     enoughData: false;
-}; //if less than min size
+};
 
 type QuantileArraySummary = QuantileArrayOutput & {
     summary: string,
@@ -255,7 +261,7 @@ export const estimateArrayJsonSize = (srcArray: any[], minLength: number): JsonE
     if (srcArray.length <= minLength) {
         return { enoughData: false };
     }
-    
+
     // Determine a reasonable sample size:
     // - At least 100 elements
     // - Up to 10% of the buffer length

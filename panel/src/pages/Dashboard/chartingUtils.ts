@@ -1,5 +1,4 @@
 import type { SvRtLogFilteredType, SvRtPerfCountsThreadType } from "@shared/otherTypes";
-import { cloneDeep } from "lodash-es";
 import * as d3 from 'd3';
 
 
@@ -120,11 +119,11 @@ export type PerfLifeSpanType = {
 type PerfProcessorType = (perfLog: SvRtPerfCountsThreadType) => number[];
 const minPerfTime = 60 * 1000;
 const maxPerfTimeGap = 15 * 60 * 1000; //15 minutes
-const emptyPerfLifeSpan: PerfLifeSpanType = {
+const getEmptyPerfLifeSpan = (): PerfLifeSpanType => ({
     bootDuration: undefined,
     closeReason: undefined,
     log: [],
-};
+});
 
 
 /**
@@ -135,10 +134,10 @@ export const processPerfLog = (perfLog: SvRtLogFilteredType, perfProcessor: Perf
     let dataEnd: Date | undefined;
     let lifespans: PerfLifeSpanType[] = [];
 
-    let currentLifespan: PerfLifeSpanType = cloneDeep(emptyPerfLifeSpan);
+    let currentLifespan: PerfLifeSpanType = getEmptyPerfLifeSpan();
     for (const currEntry of perfLog) {
         if (currentLifespan === undefined) {
-            currentLifespan = cloneDeep(emptyPerfLifeSpan);
+            currentLifespan = getEmptyPerfLifeSpan();
         }
         const hasDataLogStarted = currentLifespan?.log?.length;
 
@@ -146,7 +145,7 @@ export const processPerfLog = (perfLog: SvRtLogFilteredType, perfProcessor: Perf
             if (hasDataLogStarted) {
                 //last lifespan finished without a svClose
                 lifespans.push(currentLifespan);
-                currentLifespan = cloneDeep(emptyPerfLifeSpan);
+                currentLifespan = getEmptyPerfLifeSpan();
             }
             //start a new lifespan
             currentLifespan.bootTime = new Date(currEntry.ts);
@@ -157,7 +156,7 @@ export const processPerfLog = (perfLog: SvRtLogFilteredType, perfProcessor: Perf
                 currentLifespan.closeTime = new Date(currEntry.ts);
                 currentLifespan.closeReason = currEntry.reason;
                 lifespans.push(currentLifespan);
-                currentLifespan = cloneDeep(emptyPerfLifeSpan);
+                currentLifespan = getEmptyPerfLifeSpan();
             }
         } else if (currEntry.type === 'data') {
             const minAcceptableStartTs = currEntry.ts - maxPerfTimeGap;
@@ -170,7 +169,7 @@ export const processPerfLog = (perfLog: SvRtLogFilteredType, perfProcessor: Perf
                     perfStartTs = lastDataEndTs;
                 } else {
                     lifespans.push(currentLifespan);
-                    currentLifespan = cloneDeep(emptyPerfLifeSpan);
+                    currentLifespan = getEmptyPerfLifeSpan();
                 }
             } else if (currentLifespan.bootTime) {
                 const currentLifespanBootTs = currentLifespan.bootTime.getTime();
@@ -178,7 +177,7 @@ export const processPerfLog = (perfLog: SvRtLogFilteredType, perfProcessor: Perf
                 if (currentLifespanBootTs >= minAcceptableStartTs) {
                     perfStartTs = currentLifespanBootTs;
                 } else {
-                    currentLifespan = cloneDeep(emptyPerfLifeSpan);
+                    currentLifespan = getEmptyPerfLifeSpan();
                 }
             }
             const perfStartTime = new Date(perfStartTs);

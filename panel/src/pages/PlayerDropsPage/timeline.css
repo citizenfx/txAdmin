@@ -1,0 +1,14 @@
+.interaction-highlight:not([data-mousedown="true"] *) {
+    fill: rgba(255, 255, 255, 0.1);
+}
+
+.interaction-chart[data-mousedown="true"] {
+    cursor: col-resize;
+}
+.interaction-chart[data-selected="true"]:not([data-mousedown="true"]) {
+    cursor: zoom-out;
+    /* cursor: pointer; */
+}
+.interaction-chart[data-selected="false"]:not([data-mousedown="true"]) {
+    cursor: pointer;
+}

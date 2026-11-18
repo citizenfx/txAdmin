@@ -5,10 +5,10 @@ import { Loader2Icon } from "lucide-react";
 import { useRef, useState } from "react";
 import { useBackendApi } from "@/hooks/fetch";
 import { GenericApiOkResp } from "@shared/genericApiTypes";
-import ModalCentralMessage from "@/components/ModalCentralMessage";
 import type { BanTemplatesDataType } from "@shared/otherTypes";
 import BanForm, { BanFormType } from "@/components/BanForm";
 import { txToast } from "@/components/TxToaster";
+import { ModalTabInner, ModalTabMessage } from "@/components/modal-tabs";
 
 
 type PlayerBanTabProps = {
@@ -28,9 +28,9 @@ export default function PlayerBanTab({ playerRef, banTemplates }: PlayerBanTabPr
     });
 
     if (!hasPerm('players.ban')) {
-        return <ModalCentralMessage>
+        return <ModalTabMessage>
             You don't have permission to ban players.
-        </ModalCentralMessage>;
+        </ModalTabMessage>;
     }
 
     const handleSave = () => {
@@ -51,18 +51,13 @@ export default function PlayerBanTab({ playerRef, banTemplates }: PlayerBanTabPr
             genericHandler: {
                 successMsg: 'Player banned.',
             },
-            success: (data) => {
-                setIsSaving(false);
-                closeModal();
-            },
-            error: (error) => {
-                setIsSaving(false);
-            }
+            finally: () => setIsSaving(false),
+            success: () => closeModal(),
         });
     };
 
     return (
-        <div className="grid gap-4 p-1">
+        <ModalTabInner className="grid gap-4">
             <BanForm
                 ref={banFormRef}
                 banTemplates={banTemplates}
@@ -83,6 +78,6 @@ export default function PlayerBanTab({ playerRef, banTemplates }: PlayerBanTabPr
                     ) : 'Apply Ban'}
                 </Button>
             </div>
-        </div>
+        </ModalTabInner>
     );
 }

@@ -70,7 +70,8 @@ export default class ActionsDao {
                 .filter(customFilter as (a: DatabaseActionType) => a is T)
                 .filter(idsMatchFilter)
                 .cloneDeep()
-                .value();
+                .value()
+                .sort((a, b) => a.timestamp - b.timestamp); //FIXME: shouldn't be needed, remove after the autosort migration
         } catch (error) {
             const msg = `Failed to search for a registered action database with error: ${(error as Error).message}`;
             console.verbose.error(msg);

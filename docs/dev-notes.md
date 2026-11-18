@@ -4,119 +4,57 @@ Legend:
 - [!] -> Release Blocker
 - [?] -> Lower priority or pending investigation
 
+## Before Updating:
+- Search for all FIXME:NEXT:UPDATE
+- Search for all FIXME:REMOVE:NEXT:UPDATE
+- Re-enable diagnostics report
+
+
+## Newer TODOs
+- [ ] be able to VIEW your own permissions on the admins page 
+- [ ] save a log of the previous server data paths
+- [ ] Use [GetPlayerPeerStatistics](https://docs.fivem.net/natives/?_0x9A928294) somewhere
+- [ ] Be able to set a nickname to a player
+    - Ref: https://discord.com/channels/577993482761928734/1459523232163041464/1459523232163041464
+- [?] Check: E:\TMP\test-cache-size\index.ts
+    - I don't recall what is that tho 🤷‍♀️
+    - Maybe a way to show to the users the size of their assets
+
+## Feat
+- [x] Option to delete player identifiers
+    - Ref: https://github.com/tabarra/txAdmin/issues/751
+- [ ] Option to delete "expire now" bans
+- [ ] Option to delete bans/warns
+
 ## Small feat
-- [x] improve UX for debugging bans
-    - tweak: improved readability on player join/leave events on server log
-    - feat(core): added server log for blocked joins of banned players
-    - feat(panel): added button to compare player/action ids
-    - feat(panel): added copy IDs button to player and action modals
-- [x] feat(core): implement custom serveStatic middleware
-- [x] feat(panel/console): added hidden copy options
 
 ## Fixes
-- [x] fix double server boot message:
-    - happens when some page starts the server and redirects you to the live console
-    - you join the room and gets initial data (directly from logger)
-    - while the websocket out buffer still haven't sent the boot message
-- [x] fix: crashes table overflowing (DrilldownCrashesSubcard.tsx)
-    - [x] reported cases of crash reason too big without word break causing page to scroll horizontal 
 - [!] radix select/dropdown inside dialog
     - test the settings one as well as the ban form inside the player modal
 - [ ] the console lines are shorter on first full render (ctrl+f5) and on f5 it fixes itself
     - didn't happen in v7.2.2, not sure about v7.3.2
     - doesn't seem to be neither fontSize nor lineHeight
     - NOTE: this might solve itself with the WebGL renderer update, so try that first
-
-## Refactor + DX
-- [x] deprecate fxRunner.srvCmd
-    - deprecate liveConsoleCmdHandler 
-    - turn srvCmd into sendRawCommand
-    - use sendRawCommand in sendCommand (leave the fxserver.log*Command in sendRawCommand)
-- [x] setup txData+profile on `index.js` before instantiating TxAdmin
-- [x] process.exit reorg into lib/fatalError
-- [x] move `ConfigVault.setupFolderStructure();` to index
-- [x] improve db downgrade message
-- [x] txGlobal.database.[players/actions/whitelist/cleanup].*
-- [x] txGlobal/globals
-- [x] txManager should be managing the deployer, not the modules
-- [x] txManager should be exposing methods to get the status
-- [x] em vários módilos eu fiz `this.config = txConfig.xxxxx`, mas tem que checar se o módulo não exige que o config não mude sem o this.refreshConfig
-    - provavelmente melhor esperar o refactor das configs
-    - [x] discord bot
-    - [x] fxrunner
-    - [x] health monitor
-    - [x] logger(s)
-    - [x] player database
-    - [x] scheduler
-    - [x] REFERENCIAS EXTERNAS?
-- [x] .env
-    - [x] convert builders to use txDevEnv
-    - [x] convert tx code use txDevEnv
-- [x] Config migrations:
-    - [x] commit renaming wip
-    - [x] decide on the REVIEW_SAVE_EMPTY_STRING vars
-    - [x] write schemas
-    - [x] write parser + migration
-    - [x] migrate the scope `fxRunner` -> `server`
-    - [x] migrate txConfig.logger 
-    - [x] implement config saving
-    - [x] migrate txConfig.banTemplates
-    - [x] migrate txConfig.gameFeatures.playerModePtfx
-    - [x] implement changelog
-    - [x] implement the refreshConfig() stuff
-    - [x] migrate the old uses of refreshConfig to new config watcher
-    - [x] update `./core/boot/setup.ts` to use `public static ConfigStore.getEmptyConfigFile()`
-    - [x] migrate setup webroute
-    - [x] migrate deployer webroute
-    - [x] migrate masterActions->reset webroute
-    - [x] New Settings Page:
-        - [x] hide onesync
-        - [x] new layout
-        - [x] move all options from old page to new page (no code just yet)
-        - [x] make route to get all settings
-        - [x] create template tab for easy copy paste
-        - [x] figure out the use of id/names in the pathParams, confirm modal, error msg
-        - [x] apply template to all tabs
-        - [ish] json input modals
-        - [x] write down the client-side validations
-        - [x] perms: message if no settings.write perms (no token)
-        - [x] write saveConfigs.ts
-        - [x] perms: message if no settings.view perms (page error)
-        - [x] double check:
-            - [x] FIXME:NC
-            - [x] check if all disabled={pageCtx.isReadOnly} were applied
-            - [x] check if all text fields and selects have the `htmlFor`
-            - [x] check if all textarea fields are auto-sized
-            - [x] If shutdownNoticeDelayMs & restartSpawnDelayMs are really ms, and being migrated from secs for the case of shutdownNoticeDelay
-    - [x] remove `settings.ejs` and `core/routes/settings/get-old.ts`
-    - [x] migrate discord bot `refreshConfig()` and settings save
-    - [x] remove `./core/configMapping.tmp.ts` (was committed)
-    - [x] test `txConfig.server.startupArgs`
-        - [x] test if `server.startupArgs = ['+set']`, breaks the next 2 args 
-    - [x] check all ConfigStore methods (including txCore.configStore.getRawFile())
-    - [x] remap configs in `core/routes/diagnostics/sendReport.ts` and test it
-    - [x] change setup & deployer page to suggest relative `server.cfg`
-    - [x] check all modules to remove their
-        - [x] config validation at constructor
-        - [x] type definitions
-    - [x] check all typescript errors in all files
-    - [x] test setting up new profile from scratch
-    - [x] disable the "view changelog" button, or write the modal code
-    - [x] write dev notes on the config system (README.md in the panel settings and core configstore?)
-- [x] Full FXRunner rewrite
-- [x] add `.yarn.installed` to the dist? even in dev
+- [!] if you put the cfg path in the server data path (as in, full path including `server.cfg`), the error message is silly suggesting `.` as the correct path. Instead, it should just detect the server.cfg file and remove it, without warning.
+- [!] add new env var to disable tty titles
+- [ ] change deployer path picking because `FiveMBasicServerCFXDefault_1B7632.base` is obnoxious
+    - [ ] try to avoind doing the hex timestamp, instead just adding a suffix for conflict resolution like windows does
+    - [ ] maybe hardcode something for the cfx default recipes to shorten it, or some generic solution
+    - [ ] maybe just lowercase it all, with `-` for separation
 
 ## Other stuff
-- [x] new env vars
-- [x] remove dynamicAds from the modules
-- [x] fix custom locale
+- [ ] Review & merge manually https://github.com/tabarra/txAdmin/pull/1004/files
 - [!] add stats tracking for the framework team (ask them, idk)
 - [!] package updates - test radix stuff
 - [!] commit stashed stuff
 - [!] check txAdmin-private
 - [ ] implement `cleanFullPath.ts` in settings save ui & api for comparison consistency
     - [ ] add it to `setup/save.js -> handleValidateLocalDataFolder()` as well
-
+- probably use the new natives:
+    - GET_PLAYER_PEER_STATISTICS 
+    - ADD_CONVAR_CHANGE_LISTENER
+    - GET_CONVAR_FLOAT
+    - GET_CONVAR_BOOL
 
 
 =======================================================================
@@ -174,6 +112,8 @@ Legend:
 - [ ] fix circular dependencies
     - search for `circular_dependency`
     - use `madge` (command at the bottom of file)
+- [ ] migrate shadcn to use the radix monorepo vis its migration tool
+    - ref: https://x.com/shadcn/status/1932819652524355998
 
 ## Previous bugs
 - [ ] use `ScanResourceRoot()`
@@ -183,7 +123,7 @@ Legend:
 
 ## Pending Improvements
 - [ ] Settings Page:
-    - [ ] bake in the defaults, so so SwitchText's don't show fale initial value
+    - [ ] bake in the defaults, so so SwitchText's don't show false initial value
     - [ ] check for pending changes on the navigate-away buttons
     - [ ] use jsonForgivingParse for embed jsons and custom locale
     - [ ] use the standalone json editor page
@@ -194,9 +134,9 @@ Legend:
         - try messing with the canvas size +- 0.5px
     - [ ] review page layout: 
         - [ ] make it less card-y
-        - [ ] fix crashes table is not responsive
-        - [ ] fix scroll popping in/out
-    - [ ] switch from `useSWRImmutable` to `useSWR`
+        - [x] fix crashes table is not responsive
+        - [x] fix scroll popping in/out
+    - [x] switch from `useSWRImmutable` to `useSWR`
     - [ ] add drilldown interval buttons
 - Dashboard stuff:
     - [ ] add testing for getServerStatsData
@@ -232,6 +172,7 @@ Legend:
     - [ref](/core/playerLogic/playerClasses.ts#L281)
     - [ ] create simple page to list top 100 players by playtime in the last 30d, 14d, 7d, yesterday, today
     - if storing in a linear UInt16Array, 100k players * 120d * 4bytes per date = 48mb
+- [ ] on migration, sort all the actions and players, due to the search sorting bug
 
 
 
@@ -353,8 +294,8 @@ https://tailwindcss.com/blog/automatic-class-sorting-with-prettier
 - [ ] live console
     - [ ] if socket connects but no data received, add a warning to the console and wipe it after first write
     - [ ] persistent cls via ts offsets
+        - make sure it accounts for empty lines created by pressing enter on empty input
     - [ ] improve the bufferization to allow just loading most recent "block" and loading prev blocks via button
-    - [ ] options dropdown?
     - [ ] console nav button to jump to server start or errors? 
         - Or maybe filter just error lines (with margin)
         - Or maybe even detect all channels and allow you to filter them, show dropdown sorted by frequency
@@ -383,7 +324,8 @@ https://tailwindcss.com/blog/automatic-class-sorting-with-prettier
 - [ ] remove more pending DynamicNewBadge/DynamicNewItem (settings page as well)
 - [ ] reevaluate globals?.tmpSetHbDataTracking
 - [ ] fix socket.io multiple connections - start a single instance when page opens, commands to switch rooms
-- [ ] switch tx to lua54
+- [ ] considering lua54 is enabled by default, use new options
+- [ ] test `node_version '22'`
 
 - [ ] build: generate fxmanifest files list dynamically
     - node 22 use fs.glob
@@ -423,6 +365,8 @@ https://tailwindcss.com/blog/automatic-class-sorting-with-prettier
     - change deployer and some other path manipulations to use `path.matchesGlob`
     - replace all `global.*` to `globalThis.*`
     - use `@tsconfig/node22`
+    - Update discord.js and remove the hacky error catching solution 
+        - ref: https://github.com/discordjs/discord.js/issues/9621#event-9828143455
 
 
 - [ ] Migrate all log routes
@@ -436,9 +380,6 @@ https://tailwindcss.com/blog/automatic-class-sorting-with-prettier
     - might be worth to debounce the search
     - add tags to the players page search box (separate dropdown?)
     - maybe https://shadcnui-expansions.typeart.cc/docs/multiple-selector
-
-- [ ] create new "Remove Player Data" permission which would allow to delete bans/warns, players and player identifiers
-    - Ref: https://github.com/tabarra/txAdmin/issues/751
 
 - [ ] maybe use [this lib](https://www.npmjs.com/package/ntp-time-sync) to check for clock skew so I can remove the complexity of dealing with possible desync between core and ui on player modal, scheduler, etc;
     - even better: clients2.google.com/time/1/current - there are alternatives
@@ -464,6 +405,7 @@ https://tailwindcss.com/blog/automatic-class-sorting-with-prettier
 - reset fxserver - becomes server add/remove/edit, or just an option in settings -> fxserver
 - clean database - "bulk changes" button at the players page
 - revoke whitelists - button to whitelist pages
+- option to revoke all bans/warns (Issue #910)
 
 ### Admin manager:
 - stats on admins
@@ -499,7 +441,7 @@ https://tailwindcss.com/blog/automatic-class-sorting-with-prettier
 
 ### Action Modal:
 - feat requests:
-    - be able to delete bans/warns with new permission (Issue #910)
+    - be able to delete bans/warns with new permission (Issue #751)
     - top server asked for the option to edit ban duration (expire now / change)
     - Thought: need to add an edit log like the one we have for player notes
     - Thought: maybe we could use some dedicated icons for Expired, Edited, Revoked
@@ -699,6 +641,7 @@ https://uicolors.app/create
 https://www.tailwindshades.com/
 https://contrast.tools/?tab=apca
 https://atmos.style/contrast-checker
+https://tweakcn.com/editor/theme
 https://realtimecolors.com/
 https://www.learnui.design/blog/color-in-ui-design-a-practical-framework.html
 https://www.refactoringui.com/previews/building-your-color-palette

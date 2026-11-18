@@ -1,5 +1,6 @@
 import type { PlayerIdsObjectType } from "@shared/otherTypes";
 import consts from "@shared/consts";
+import { shortenId } from "@shared/utils";
 
 
 /**
@@ -137,33 +138,11 @@ export const getIdFromOauthNameid = (nameid: string) => {
 
 
 /**
- * Shortens an ID/HWID string to just leading and trailing 4 characters.
- * Unicode symbol alternatives: ‥,…,~,≈,-,•,◇
- */
-export const shortenId = (id: string) => {
-    if (typeof id !== 'string') throw new Error(`id is not a string`);
-    
-    const [idType, idValue] = id.split(':', 2);
-    if (!idType || !idValue) {
-        return id; // Invalid format, return as is
-    }
-    
-    if (idValue.length <= 10) {
-        return id; // Do not shorten if ID value is 10 characters or fewer
-    }
-    
-    const start = idValue.slice(0, 4);
-    const end = idValue.slice(-4);
-    return `${idType}:${start}…${end}`;
-}
-
-
-/**
  * Returns a string of shortened IDs/HWIDs
  */
 export const summarizeIdsArray = (ids: string[]) => {
     if (!Array.isArray(ids)) return '<invalid list>';
     if (ids.length === 0) return '<empty list>';
-    const shortList = ids.map(shortenId).join(', ');
+    const shortList = ids.map(id => shortenId(id)).join(', ');
     return `[${shortList}]`;
 }

@@ -1,5 +1,3 @@
-import { txEnv } from "@core/globalData";
-
 export const defaultEmbedJson = JSON.stringify({
     "title": "{{serverName}}",
     "url": "{{serverBrowserUrl}}",
@@ -56,10 +54,5 @@ export const defaultEmbedConfigJson = JSON.stringify({
             "label": "txAdmin Discord",
             "url": "https://discord.gg/txAdmin"
         },
-        txEnv.displayAds ? {
-            "emoji": "😏",
-            "label": "ZAP-Hosting",
-            "url": "https://zap-hosting.com/txadmin6"
-        } : undefined,
     ].filter(Boolean)
 });

@@ -65,15 +65,14 @@ export default function AddLegacyBanPage() {
             genericHandler: {
                 successMsg: 'Identifiers banned.',
             },
+            finally: () => setIsSaving(false),
             success: (data) => {
-                setIsSaving(false);
                 idsTextareaRef.current!.value = '';
                 idsTextareaRef.current!.focus();
             },
             error: (error) => {
-                setIsSaving(false);
                 idsTextareaRef.current!.focus();
-            }
+            },
         });
     };
 

@@ -7,22 +7,22 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/auth";
-import { memo, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { TabsTrigger, TabsList, TabsContent, Tabs } from "@/components/ui/tabs";
 import { ApiChangeIdentifiersReq, ApiChangePasswordReq } from "@shared/authApiTypes";
 import { useAccountModal, useCloseAccountModal } from "@/hooks/dialogs";
 import { GenericApiOkResp } from "@shared/genericApiTypes";
-import { ApiTimeout, fetchWithTimeout, useAuthedFetcher, useBackendApi } from "@/hooks/fetch";
+import { fetchWithTimeout, useAuthedFetcher, useBackendApi } from "@/hooks/fetch";
 import consts from "@shared/consts";
-import { txToast } from "./TxToaster";
+import { txToast } from "@/components/TxToaster";
 import useSWR from 'swr';
-import TxAnchor from "./TxAnchor";
+import TxAnchor from "@/components/TxAnchor";
 
 
 /**
  * Change Password tab
  */
-const ChangePasswordTab = memo(function () {
+function ChangePasswordTab() {
     const { authData, setAuthData } = useAuth();
     const { setAccountModalTab } = useAccountModal();
     const closeAccountModal = useCloseAccountModal();
@@ -151,7 +151,7 @@ const ChangePasswordTab = memo(function () {
             </form>
         </TabsContent>
     );
-})
+}
 
 
 /**

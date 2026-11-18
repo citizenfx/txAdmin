@@ -71,7 +71,6 @@ export type PlayerlistPlayerType = {
     netid: number,
     displayName: string,
     pureName: string,
-    ids: string[],
     license: string | null,
 }
 

@@ -1,3 +1,4 @@
+import { LocalStorageKey } from "@/lib/localStorage";
 import { cn } from "@/lib/utils";
 import { cva, VariantProps } from "class-variance-authority";
 import React from "react";
@@ -27,7 +28,7 @@ const badgeVariants = cva(
  * NOTE: always on for dev mode to make sure I doesn't forget to remove it.
  */
 function DynamicNewItemInner({ featName, durationDays, children }: DynamicNewItemProps) {
-    const storageKeyName = `dynamicNewFeatTs-${featName}`;
+    const storageKeyName = LocalStorageKey.NewFeatureSeenTs + featName;
     const storedTs = parseInt(localStorage.getItem(storageKeyName) ?? '');
     if (isNaN(storedTs) || window.txConsts.showAdvanced) {
         localStorage.setItem(storageKeyName, Date.now().toString());

@@ -27,7 +27,11 @@ export const childProcessEventBlackHole = (...args: any[]) => {
  * Returns a tuple with the convar name and value, formatted for the server command line
  */
 export const getMutableConvars = (isCmdLine = false) => {
-    const checkPlayerJoin = txConfig.banlist.enabled || txConfig.whitelist.mode !== 'disabled';
+    const checkPlayerJoin = txConfig.banlist.enabled || (
+        txConfig.whitelist.mode !== 'disabled'
+        && txConfig.whitelist.mode !== 'external'
+    );
+
     const convars: RawConvarSetTuple[] = [
         ['setr', 'locale', txConfig.general.language ?? 'en'],
         ['set', 'serverName', txConfig.general.serverName ?? 'txAdmin'],
@@ -42,9 +46,26 @@ export const getMutableConvars = (isCmdLine = false) => {
         ['set', 'hideDefaultWarning', txConfig.gameFeatures.hideDefaultWarning],
         ['set', 'hideDefaultScheduledRestartWarning', txConfig.gameFeatures.hideDefaultScheduledRestartWarning],
 
+        //Server variables
+        ['sets', 'sv_appearAllowlisted', txConfig.whitelist.mode !== 'disabled'],
+
         // //NOTE: no auto update, maybe we shouldn't tie core and server verbosity anyways
         // ['setr', 'verbose', console.isVerbose],
     ];
+
+    if (
+        txConfig.whitelist.mode !== 'disabled'
+        && txConfig.whitelist.mode !== 'adminOnly'
+        && txConfig.whitelist.rejectionMessage
+    ) {
+        const instructions = isCmdLine
+            ? txConfig.whitelist.rejectionMessage.replaceAll('\n', '\\n')
+            : txConfig.whitelist.rejectionMessage;
+        convars.push(['sets', 'sv_allowlistInstructions', instructions]);
+    } else {
+        convars.push(['sets', 'sv_allowlistInstructions', '']);
+    }
+
     return convars.map((c) => polishConvarSetTuple(c, isCmdLine));
 };
 
@@ -54,7 +75,7 @@ type ConvarSetTuple = [setter: string, name: string, value: string];
 const polishConvarSetTuple = ([setter, name, value]: RawConvarSetTuple, isCmdLine = false): ConvarSetTuple => {
     return [
         isCmdLine ? `+${setter}` : setter,
-        'txAdmin-' + name,
+        name.startsWith('sv_') ? name : 'txAdmin-' + name,
         value.toString(),
     ];
 }
@@ -64,6 +85,7 @@ export const mutableConvarConfigDependencies = [
     'gameFeatures.*',
     'banlist.enabled',
     'whitelist.mode',
+    'whitelist.rejectionMessage',
 ];
 
 

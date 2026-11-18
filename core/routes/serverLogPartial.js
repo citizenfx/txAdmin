@@ -5,7 +5,7 @@ const console = consoleFactory(modulename);
 
 /**
  * Returns the output page containing the admin log.
- * @param {object} ctx
+ * @param {import('@modules/WebServer/ctxTypes').AuthedCtx} ctx
  */
 export default async function ServerLogPartial(ctx) {
     //Check permissions

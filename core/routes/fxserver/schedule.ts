@@ -7,7 +7,6 @@ const console = consoleFactory(modulename);
 
 /**
  * Handle all the server scheduler commands
- * @param {object} ctx
  */
 export default async function FXServerSchedule(ctx: AuthedCtx) {
     if (

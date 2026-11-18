@@ -34,6 +34,7 @@ export default function BreakpointDebugger() {
             <h1 className="px-1 bg-red-500 lg:bg-green-500">lg</h1>
             <h1 className="px-1 bg-red-500 xl:bg-green-500">xl</h1>
             <h1 className="px-1 bg-red-500 2xl:bg-green-500">2xl</h1>
+            <h1 className="px-1 bg-red-500 3xl:bg-green-500">3xl</h1>
         </div>
     </div>;
 }

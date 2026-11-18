@@ -33,28 +33,28 @@
     },
     "whitelist_messages": {
         "admin_only": {
-            "mode_title": "This server is in <strong>Admin-only</strong> mode.",
+            "mode_title": "This server is in <strong>Admin-only (maintenance)</strong>.",
             "insufficient_ids": "You do not have <code>discord</code> or <code>fivem</code> identifiers, and at least one of them is required to validate if you are a txAdmin administrator.",
             "deny_message": "Your identifiers are not assigned to any txAdmin administrator."
         },
         "guild_member": {
-            "mode_title": "This server is in <strong>Discord server Member Whitelist</strong> mode.",
+            "mode_title": "This server is in <strong>Discord server Member Allowlist</strong> mode.",
             "insufficient_ids": "You do not have the <code>discord</code> identifier, which is required to validate if you have joined our Discord server. Please open the Discord Desktop app and try again (the Web app won't work).",
             "deny_title": "You are required to join our Discord server to connect.",
             "deny_message": "Please join the guild %{guildname} then try again."
         },
         "guild_roles": {
-            "mode_title": "This server is in <strong>Discord Role Whitelist</strong> mode.",
+            "mode_title": "This server is in <strong>Discord Role Allowlist</strong> mode.",
             "insufficient_ids": "You do not have the <code>discord</code> identifier, which is required to validate if you have joined our Discord server. Please open the Discord Desktop app and try again (the Web app won't work).",
             "deny_notmember_title": "You are required to join our Discord server to connect.",
             "deny_notmember_message": "Please join %{guildname}, get one of the required roles, then try again.",
-            "deny_noroles_title": "You do not have a whitelisted role required to join.",
-            "deny_noroles_message": "To join this server you are required to have at least one of the whitelisted roles on the guild %{guildname}."
+            "deny_noroles_title": "You do not have a allowlisted role required to join.",
+            "deny_noroles_message": "To join this server you are required to have at least one of the allowlisted roles on the guild %{guildname}."
         },
         "approved_license": {
-            "mode_title": "This server is in <strong>License Whitelist</strong> mode.",
+            "mode_title": "This server is in <strong>License Allowlist</strong> mode.",
             "insufficient_ids": "You do not have the <code>license</code> identifier, which means the server has <code>sv_lan</code> enabled. If you are the server owner, you can disable it in the <code>server.cfg</code> file.",
-            "deny_title": "You are not whitelisted to join this server.",
+            "deny_title": "You are not allowlisted to join this server.",
             "request_id_label": "Request ID"
         }
     },

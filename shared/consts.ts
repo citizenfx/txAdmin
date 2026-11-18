@@ -41,5 +41,9 @@ export default {
     regexValidIP: /^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}$/,
     actionIdAlphabet,
     nuiWebpipePath: 'https://monitor/WebPipe/',
-    regexCustomThemeName: /^[a-z0-9]+(-[a-z0-9]+)*$/
+    regexCustomThemeName: /^[a-z0-9]+(-[a-z0-9]+)*$/,
+    cookies: {
+        theme: 'txa:theme',
+        session: 'txa:sess',
+    }
 } as const;

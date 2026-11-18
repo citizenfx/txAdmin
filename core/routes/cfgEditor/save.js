@@ -9,7 +9,7 @@ const isUndefined = (x) => (x === undefined);
 
 /**
  * Saves the server.cfg
- * @param {object} ctx
+ * @param {import('@modules/WebServer/ctxTypes').AuthedCtx} ctx
  */
 export default async function CFGEditorSave(ctx) {
     //Sanity check

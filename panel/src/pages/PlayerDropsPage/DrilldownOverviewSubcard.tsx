@@ -42,12 +42,9 @@ export default function DrilldownOverviewSubcard({ dropTypes }: DrilldownOvervie
     return (
         <div className="px-4 py-4 flex flex-wrap justify-evenly gap-4 text-muted-foreground">
             {categories.map(([reasonId, reasonData]) => (
-                <Tooltip>
+                <Tooltip key={reasonId}>
                     <TooltipTrigger asChild>
-                        <div
-                            key={reasonId}
-                            className="px-4 flex flex-col gap-1 items-center justify-center"
-                        >
+                        <div className="px-4 flex flex-col gap-1 items-center justify-center">
                             <span
                                 className="text-xl tracking-wider border-b-2 font-semibold"
                                 style={{ borderColor: reasonData.color }}

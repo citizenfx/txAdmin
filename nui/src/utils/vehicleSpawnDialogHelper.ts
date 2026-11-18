@@ -48,17 +48,19 @@ const redmShortcuts: ShortcutsDataType = {
  * Returns the input string or replaces it with a random vehicle shortcut
  */
 export const vehiclePlaceholderReplacer = (vehInput: string, shortcutsData: ShortcutsDataType) => {
-    vehInput = vehInput.trim().toLowerCase();
-    if (vehInput in shortcutsData) {
-        const shortcut = shortcutsData[vehInput as keyof typeof shortcutsData];
+    let modelName = vehInput.trim().toLowerCase();
+    let isShortcut = false;
+    if (modelName in shortcutsData) {
+        isShortcut = true;
+        const shortcut = shortcutsData[modelName as keyof typeof shortcutsData];
         if (shortcut.easterEgg && Math.random() < 0.05) {
-            vehInput = shortcut.easterEgg;
+            modelName = shortcut.easterEgg;
         } else {
-            vehInput = arrayRandom(shortcut.default);
+            modelName = arrayRandom(shortcut.default);
         }
     }
 
-    return vehInput;
+    return { modelName, isShortcut };
 }
 
 /**

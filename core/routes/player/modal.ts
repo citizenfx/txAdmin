@@ -60,8 +60,10 @@ export default async function PlayerModal(ctx: AuthedCtx) {
         isRegistered: player.isRegistered,
         isConnected: player.isConnected,
         license: player.license,
-        ids: player.ids,
-        hwids: player.hwids,
+        idsOnline: player.idsOnline,
+        idsOffline: player.idsOffline,
+        hwidsOnline: player.hwidsOnline,
+        hwidsOffline: player.hwidsOffline,
         actionHistory: processHistoryLog(player.getHistory()),
     }
 
@@ -75,8 +77,6 @@ export default async function PlayerModal(ctx: AuthedCtx) {
         playerData.tsJoined = playerDbData.tsJoined;
         playerData.playTime = playerDbData.playTime;
         playerData.tsWhitelisted = playerDbData.tsWhitelisted ? playerDbData.tsWhitelisted : undefined;
-        playerData.oldIds = playerDbData.ids;
-        playerData.oldHwids = playerDbData.hwids;
         playerData.tsLastConnection = playerDbData.tsLastConnection;
 
         if (playerDbData.notes?.lastAdmin && playerDbData.notes?.tsLastEdit) {

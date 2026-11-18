@@ -1,15 +1,10 @@
-import {
-    Dialog,
-    DialogContent, DialogHeader,
-    DialogTitle
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { setPlayerModalUrlParam, usePlayerModalStateValue } from "@/hooks/playerModal";
 import { InfoIcon, ListIcon, HistoryIcon, GavelIcon } from "lucide-react";
 import PlayerInfoTab from "./PlayerInfoTab";
 import { useEffect, useState } from "react";
 import PlayerIdsTab from "./PlayerIdsTab";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import PlayerHistoryTab from "./PlayerHistoryTab";
 import PlayerBanTab from "./PlayerBanTab";
 import GenericSpinner from "@/components/GenericSpinner";
@@ -17,10 +12,10 @@ import { cn } from "@/lib/utils";
 import { useBackendApi } from "@/hooks/fetch";
 import { PlayerModalResp, PlayerModalSuccess } from "@shared/playerApiTypes";
 import PlayerModalFooter from "./PlayerModalFooter";
-import ModalCentralMessage from "@/components/ModalCentralMessage";
+import { ModalContent, ModalTabMessage, ModalTabsList, ModalTabWrapper, type ModalTabInfo } from "@/components/modal-tabs";
 
 
-const modalTabs = [
+const modalTabs: ModalTabInfo[] = [
     {
         title: 'Info',
         icon: <InfoIcon className="mr-2 h-5 w-5 hidden xs:block" />,
@@ -38,7 +33,7 @@ const modalTabs = [
         icon: <GavelIcon className="mr-2 h-5 w-5 hidden xs:block" />,
         className: 'hover:bg-destructive hover:text-destructive-foreground',
     }
-]
+];
 
 
 export default function PlayerModal() {
@@ -137,18 +132,15 @@ export default function PlayerModal() {
 
     return (
         <Dialog open={isModalOpen} onOpenChange={handleOpenClose}>
-            <DialogContent
-                className="max-w-2xl h-full sm:h-auto max-h-full p-0 gap-1 sm:gap-4 flex flex-col"
-            // onOpenAutoFocus={(e) => e.preventDefault()}
-            >
+            <DialogContent className="max-w-2xl h-full sm:h-auto max-h-full p-0 gap-1 sm:gap-4 flex flex-col">
                 <DialogHeader className="px-4 py-3 border-b">
                     <DialogTitle className="tracking-wide line-clamp-1 leading-7 break-all mr-6">
                         {pageTitle}
                     </DialogTitle>
                 </DialogHeader>
 
-                <div className="flex flex-col md:flex-row md:px-4 h-full">
-                    <div className="flex flex-row md:flex-col gap-1 bg-muted md:bg-transparent p-1 md:p-0 mx-2 md:mx-0 rounded-md">
+                <ModalContent>
+                    <ModalTabsList>
                         {modalTabs.map((tab) => (
                             <Button
                                 id={`player-modal-tab-${tab.title}`}
@@ -166,23 +158,22 @@ export default function PlayerModal() {
                                 {tab.icon} {tab.title}
                             </Button>
                         ))}
-                    </div>
-                    {/* NOTE: consistent height: sm:h-[16.5rem] */}
-                    {/* FIXME: the number below is based off mobile screen sizes, and should be h-full while the modal content controls the actual height  */}
-                    <ScrollArea className="w-full max-h-[calc(100vh-3.125rem-4rem-5rem)] min-h-[16.5rem] md:max-h-[50vh] px-4 py-2 md:py-0">
+                    </ModalTabsList>
+                    
+                    <ModalTabWrapper className="max-h-[calc(100vh-3.125rem-4rem-5rem)]">
                         {!modalData ? (
-                            <ModalCentralMessage>
+                            <ModalTabMessage>
                                 {modalError ? (
                                     <span className="text-destructive-inline">Error: {modalError}</span>
                                 ) : (
                                     <GenericSpinner msg="Loading..." />
                                 )}
-                            </ModalCentralMessage>
+                            </ModalTabMessage>
                         ) : (
                             <>
                                 {selectedTab === 'Info' && <PlayerInfoTab
-                                    playerRef={playerRef!}
                                     player={modalData.player}
+                                    playerRef={playerRef!}
                                     serverTime={modalData.serverTime}
                                     tsFetch={tsFetch}
                                     setSelectedTab={setSelectedTab}
@@ -195,6 +186,7 @@ export default function PlayerModal() {
                                 />}
                                 {selectedTab === 'IDs' && <PlayerIdsTab
                                     player={modalData.player}
+                                    playerRef={playerRef!}
                                     refreshModalData={refreshModalData}
                                 />}
                                 {selectedTab === 'Ban' && <PlayerBanTab
@@ -203,8 +195,8 @@ export default function PlayerModal() {
                                 />}
                             </>
                         )}
-                    </ScrollArea>
-                </div>
+                    </ModalTabWrapper>
+                </ModalContent>
                 <PlayerModalFooter
                     playerRef={playerRef!}
                     player={modalData?.player}

@@ -27,7 +27,7 @@ export default function cleanFullPath(input: string, isWindows): CleanFullPathRe
     }
 
     //Path must be fully resolved
-    if (/\/[\s\.](\/|$)/.test(slashified)) {
+    if (/\/\.{1,2}(\/|$)/.test(slashified)) {
         return { error: 'path contains unresolved parts (eg. `/../`)' };
     }
 

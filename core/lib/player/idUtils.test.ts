@@ -1,5 +1,6 @@
 import { test, expect, suite, it } from 'vitest';
 import * as idUtils from './idUtils';
+import { shortenId } from '@shared/utils';
 
 
 test('parsePlayerId', () => {
@@ -40,18 +41,33 @@ test('getIdFromOauthNameid', () => {
     expect(idUtils.getIdFromOauthNameid('xxxxx')).toBe(false);
 });
 
+//NOTE: testing here because the @shared workspace has no tests
 test('shortenId', () => {
-    // Invalid ids
-    expect(() => idUtils.shortenId(123 as any)).toThrow('id is not a string');
-    expect(idUtils.shortenId('invalidFormat')).toBe('invalidFormat');
-    expect(idUtils.shortenId(':1234567890123456')).toBe(':1234567890123456');
-    expect(idUtils.shortenId('discord:')).toBe('discord:');
-
-    // Valid ID with length greater than >= 10
-    expect(idUtils.shortenId('discord:383919883341266945')).toBe('discord:3839…6945');
-    expect(idUtils.shortenId('xbl:12345678901')).toBe('xbl:1234…8901');
+    // Invalid parameters
+    expect(() => shortenId(123 as any)).toThrow('id');
+    expect(() => shortenId('discord:123456789', 2)).toThrow('numChars');
+    expect(() => shortenId('discord:123456789', 'invalid' as any)).toThrow('numChars');
     
-    // Valid ID with length <= 10 (should not be shortened)
-    expect(idUtils.shortenId('fivem:1234567890')).toBe('fivem:1234567890');
-    expect(idUtils.shortenId('steam:1234')).toBe('steam:1234');
+    // Invalid id formats
+    expect(shortenId('invalidFormat')).toBe('invalidFormat');
+    expect(shortenId(':1234567890123456')).toBe(':1234567890123456');
+    expect(shortenId('discord:')).toBe('discord:');
+
+    // Default behavior (numChars = 4)
+    expect(shortenId('discord:383919883341266945')).toBe('discord:3839…6945');
+    expect(shortenId('xbl:12345678901')).toBe('xbl:1234…8901');
+    
+    // Valid ID with length <= threshold (should not be shortened)
+    expect(shortenId('fivem:1234567890')).toBe('fivem:1234567890');
+    expect(shortenId('steam:1234')).toBe('steam:1234');
+    
+    // Custom numChars parameter
+    expect(shortenId('discord:383919883341266945', 3)).toBe('discord:383…945');
+    expect(shortenId('discord:383919883341266945', 5)).toBe('discord:38391…66945');
+    expect(shortenId('discord:383919883341266945', 6)).toBe('discord:383919…266945');
+    expect(shortenId('2:bea2ac491d849477e66957b515f4a555a222e2e25911788d13fd46e9fda240a9', 20)).toBe('2:bea2ac491d849477e669…788d13fd46e9fda240a9');
+    
+    // Edge case: exactly at threshold
+    expect(shortenId('discord:12345678', 3)).toBe('discord:12345678'); // 8 chars = 3*2+2, should not shorten
+    expect(shortenId('discord:123456789', 3)).toBe('discord:123…789'); // 9 chars > 3*2+2, should shorten
 });

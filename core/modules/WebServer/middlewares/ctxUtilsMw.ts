@@ -2,7 +2,7 @@ const modulename = 'WebCtxUtils';
 import path from 'node:path';
 import fsp from 'node:fs/promises';
 import ejs from 'ejs';
-import xssInstancer from '@lib/xss.js';
+import { escapeHtmlAttribute, escapeHtmlContent, escapeHtmlRawText, sanitizeSimpleHtml } from '@lib/htmlRenderSafety';
 import { txDevEnv, txEnv, txHostConfig } from '@core/globalData';
 import consoleFactory from '@lib/console';
 import getReactIndex, { tmpCustomThemes } from '../getReactIndex';
@@ -18,6 +18,7 @@ export type CtxTxUtils = {
     send: <T = string | object>(data: T) => void;
     utils: {
         render: (view: string, data?: { headerTitle?: string, [key: string]: any }) => Promise<void>;
+        renderMessage: (message: string, options?: { headerTitle?: string; }) => Promise<void>;
         error: (httpStatus?: number, message?: string) => void;
         serveReactIndex: () => Promise<void>;
         legacyNavigateToPage: (href: string) => void;
@@ -25,7 +26,6 @@ export type CtxTxUtils = {
 }
 
 //Helper functions
-const xss = xssInstancer();
 const getRenderErrorText = (view: string, error: Error, data: any) => {
     console.error(`Error rendering ${view}.`);
     console.verbose.dir(error);
@@ -33,10 +33,10 @@ const getRenderErrorText = (view: string, error: Error, data: any) => {
     return [
         '<pre style="color: red">',
         `Error rendering '${view}'.`,
-        `Message: ${xss(error.message)}`,
+        `Message: ${escapeHtmlContent(error.message)}`,
         'The data provided was:',
         '================',
-        xss(JSON.stringify(data, null, 2)),
+        escapeHtmlContent(JSON.stringify(data, null, 2)),
         '</pre>',
     ].join('\n');
 };
@@ -46,7 +46,7 @@ const getWebViewPath = (view: string) => {
 };
 const getJavascriptConsts = (allConsts: NonNullable<object> = {}) => {
     return Object.entries(allConsts)
-        .map(([name, val]) => `const ${name} = ${JSON.stringify(val)};`)
+        .map(([name, val]) => `const ${name} = ${escapeHtmlRawText(JSON.stringify(val))};`)
         .join(' ');
 };
 function getEjsOptions(filePath: string) {
@@ -88,7 +88,7 @@ body {
         Redirecting to <a href="{{href}}" target="_parent">{{href}}</a>...
     </p>
 <script>
-    // Notify parent window that auth failed
+    // Notify parent window
     window.parent.postMessage({ type: 'navigateToPage', href: '{{href}}'});
     // If parent redirect didn't work, redirect here
     setTimeout(function() {
@@ -155,13 +155,13 @@ export default async function ctxUtilsMw(ctx: CtxWithVars, next: Next) {
     const isWebInterface = ctx.txVars.isWebInterface;
 
     //Functions
-    const renderUtil = async (view: string, data?: { headerTitle?: string, [key: string]: any }) => {
+    const renderUtil: CtxTxUtils['utils']['render'] = async (view, data) => {
         //Typescript is very annoying 
         const possiblyAuthedAdmin = ctx.admin as AuthedAdminType | undefined;
 
         //Setting up legacy theme
         let legacyTheme = '';
-        const themeCookie = ctx.cookies.get('txAdmin-theme');
+        const themeCookie = ctx.cookies.get(consts.cookies.theme);
         if (!themeCookie || themeCookie === 'dark' || !isWebInterface) {
             legacyTheme = 'theme--dark';
         } else {
@@ -187,6 +187,10 @@ export default async function ctxUtilsMw(ctx: CtxWithVars, next: Next) {
                 TX_BASE_PATH: (isWebInterface) ? '' : consts.nuiWebpipePath,
                 PAGE_TITLE: data?.headerTitle ?? 'txAdmin',
             }),
+
+            //Escaping utilities
+            escapeHtmlAttribute,
+            escapeHtmlRawText,
         };
 
         const renderData = Object.assign(baseViewData, data);
@@ -194,7 +198,14 @@ export default async function ctxUtilsMw(ctx: CtxWithVars, next: Next) {
         ctx.type = 'text/html';
     };
 
-    const errorUtil = (httpStatus = 500, message = 'unknown error') => {
+    const renderMessageUtil: CtxTxUtils['utils']['renderMessage'] = async (message, options) => {
+        return renderUtil('main/message', {
+            headerTitle: options?.headerTitle,
+            messageHtml: sanitizeSimpleHtml(message),
+        });
+    };
+
+    const errorUtil: CtxTxUtils['utils']['error'] = (httpStatus = 500, message = 'unknown error') => {
         ctx.status = httpStatus;
         ctx.body = {
             status: 'error',
@@ -205,12 +216,15 @@ export default async function ctxUtilsMw(ctx: CtxWithVars, next: Next) {
 
     //Legacy page util to navigate parent (react) to some page
     //NOTE: in use by deployer/stepper.js and setup/get.js
-    const legacyNavigateToPage = (href: string) => {
+    const legacyNavigateToPage: CtxTxUtils['utils']['legacyNavigateToPage'] = (href) => {
+        if (!/^\/[\w\-\/]*$/.test(href)) {
+            throw new Error(`legacyNavigateToPage: invalid href: ${href}`);
+        }
         ctx.body = legacyNavigateHtmlTemplate.replace(/{{href}}/g, href);
         ctx.type = 'text/html';
     }
 
-    const serveReactIndex = async () => {
+    const serveReactIndex: CtxTxUtils['utils']['serveReactIndex'] = async () => {
         ctx.body = await getReactIndex(ctx);
         ctx.type = 'text/html';
     };
@@ -218,6 +232,7 @@ export default async function ctxUtilsMw(ctx: CtxWithVars, next: Next) {
     //Injecting utils and forwarding
     ctx.utils = {
         render: renderUtil,
+        renderMessage: renderMessageUtil,
         error: errorUtil,
         serveReactIndex,
         legacyNavigateToPage,

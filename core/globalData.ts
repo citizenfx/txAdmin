@@ -14,8 +14,8 @@ import { getHostVars, hostEnvVarSchemas } from './boot/getHostVars';
 import { getZapVars } from './boot/getZapVars';
 import { z, ZodSchema } from 'zod';
 import { fromZodError } from 'zod-validation-error';
-import defaultAds from '../dynamicAds2.json';
 import consts from '@shared/consts';
+import chalk from 'chalk';
 const console = consoleFactory();
 
 
@@ -209,15 +209,18 @@ if (dataPathVar) {
 //NOTE: Non-ASCII in one of those paths (don't know which) will make NodeJS crash due to a bug in v8 (or something)
 //      when running localization methods like Date.toLocaleString().
 //      There was also an issue with the slash() lib and with the +exec on FXServer
-const nonASCIIRegex = /[^\x00-\x80]+/;
+const nonASCIIRegex = /[^\x00-\x80]+/g;
+const colorNonAscii = (x: string) => chalk.black.bgGreenBright(
+    x.replaceAll(nonASCIIRegex, (m) => chalk.bgRedBright(m))
+);
 if (nonASCIIRegex.test(fxsPath) || nonASCIIRegex.test(dataPath)) {
     fatalError.GlobalData(7, [
         'Due to environmental restrictions, your paths CANNOT contain non-ASCII characters.',
         'Example of non-ASCII characters: çâýå, ρέθ, ñäé, ēļæ, глж, เซิร์, 警告.',
         'Please make sure FXServer is not in a path contaning those characters.',
         `If on windows, we suggest you moving the artifact to "C:/fivemserver/${fxsVersion}/".`,
-        ['FXServer path', fxsPath],
-        ['txData path', dataPath],
+        'FXServer path: ' + colorNonAscii(fxsPath),
+        'txData path: ' + colorNonAscii(dataPath),
     ]);
 }
 
@@ -471,36 +474,33 @@ if (ignoreDeprecatedConfigs) {
 
 const isPterodactyl = !isWindows && process.env?.TXADMIN_ENABLE === '1';
 const isZapHosting = providerName === 'ZAP-Hosting';
+const setConsoleTitle = !(isPterodactyl || isZapHosting || providerName); //assume not a terminal
 
-//Quick config to disable ads
-const displayAds = process.env?.TXHOST_TMP_HIDE_ADS !== 'true' || isPterodactyl || isZapHosting;
-const adSchema = z.object({
-    img: z.string(),
-    url: z.string(),
-}).nullable();
-const adsDataSchema = z.object({
-    login: adSchema,
-    main: adSchema,
-});
-let adsData: z.infer<typeof adsDataSchema> = {
-    login: null,
-    main: null,
-};
-if (displayAds) {
-    try {
-        adsData = adsDataSchema.parse(defaultAds);
-    } catch (error) {
-        console.error('Failed to load ads data.', error);
-    }
-}
 
 //FXServer Display Version
 let fxsVersionTag = fxsVersion.toString();
 if (fxsVerParsed.branch && fxsVerParsed.branch !== 'master') {
     fxsVersionTag += '-ft';
 }
-if (isZapHosting) {
-    fxsVersionTag += '/ZAP';
+
+let providerTag = '';
+const partnerPrefixes = {
+    'gportal': 'GPor',
+    'nitrado': 'Nitr',
+    'nodecraft': 'NoCr',
+    'shockbyte': 'ShBy',
+    'xrealm': 'XRea',
+    'zaphosting': 'ZapH',
+} as { [key: string]: string };
+if (providerName) {
+    const cleanName = providerName.toLowerCase().replace(/[^a-z0-9]+/g, '');
+    if (cleanName in partnerPrefixes) {
+        providerTag = partnerPrefixes[cleanName];
+    }
+}
+
+if (providerTag) {
+    fxsVersionTag += `/${providerTag}`;
 } else if (isPterodactyl) {
     fxsVersionTag += '/Ptero';
 } else if (isWindows && fxsVerParsed.platform === 'windows') {
@@ -520,10 +520,11 @@ export const txDevEnv = Object.freeze(_txDevEnv);
 export const txEnv = Object.freeze({
     //Calculated
     isWindows,
-    isPterodactyl, //TODO: remove, used only in HB Data
-    isZapHosting, //TODO: remove, used only in HB Data and authLogic to disable src check
-    displayAds,
-    adsData,
+    setConsoleTitle,
+
+    //TODO: remove, used only in diagnostics (HB Data + page)
+    isPterodactyl,
+    isZapHosting, //NOTE: This one is also used in authLogic to disable src check
 
     //Natives
     fxsVersionTag,

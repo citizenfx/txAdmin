@@ -62,6 +62,7 @@ module.exports = {
       screens: {
         xs: "480px",
         "2xl": "1400px",
+        "3xl": "1600px",
       },
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],

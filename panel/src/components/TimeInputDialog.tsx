@@ -56,7 +56,7 @@ export function TimeInputDialog({ title, isOpen, onClose, onSubmit }: TimeInputD
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-sm" onBlur={() => console.log('blur', Math.random())}>
+            <DialogContent className="sm:max-w-sm">
                 <DialogHeader>
                     <DialogTitle>{title}</DialogTitle>
                 </DialogHeader>

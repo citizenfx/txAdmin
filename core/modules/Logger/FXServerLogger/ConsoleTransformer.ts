@@ -25,8 +25,8 @@ type StyleChannelConfig = {
 
 //Precalculating some styles
 const chalkToStr = (color: ChalkInstance) => color('\x00').split('\x00')[0];
-const precalcMarkerAdminCmd = chalkToStr(chalk.bgHex('#e6b863').black);
-const precalcMarkerSystemCmd = chalkToStr(chalk.bgHex('#36383D').hex('#CCCCCC'));
+const precalcMarkerAdminCmd = chalkToStr(chalk.bgAnsi256(180).black);
+const precalcMarkerSystemCmd = chalkToStr(chalk.bgAnsi256(237).ansi256(252));
 const precalcMarkerInfo = chalkToStr(chalk.bgBlueBright.black);
 const ANSI_RESET = '\x1B[0m';
 const ANSI_ERASE_LINE = '\x1b[K';

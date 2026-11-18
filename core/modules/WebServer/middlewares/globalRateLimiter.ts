@@ -19,7 +19,7 @@ const MAX_RPM_UNDER_ATTACK = 2500;
 const DDOS_COOLDOWN_MINUTES = 15;
 
 //Vars
-const bannedIps = new Set<string>();
+const bannedIps = new Set<string>(); //way faster than net.BlockList
 const reqsPerIp = new Map<string, number>();
 let httpRequestsCounter = 0;
 let bansPendingWarn: string[] = [];

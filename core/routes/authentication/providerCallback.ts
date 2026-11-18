@@ -74,7 +74,7 @@ export default async function AuthProviderCallback(ctx: InitializedCtx) {
         }
 
         const authedAdmin = new AuthedAdmin(vaultAdmin, sessData.csrfToken);
-        authedAdmin.logAction(`logged in from ${ctx.ip} via cfxre`);
+        authedAdmin.logAction(`logged in from ${ctx.ip} via cfxre auth`);
         txCore.metrics.txRuntime.loginOrigins.count(ctx.txVars.hostType);
         txCore.metrics.txRuntime.loginMethods.count('citizenfx');
         return ctx.send<ReactAuthDataType>(authedAdmin.getAuthData());

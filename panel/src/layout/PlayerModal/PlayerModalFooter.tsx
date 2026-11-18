@@ -51,7 +51,7 @@ export default function PlayerModalFooter({ playerRef, player }: PlayerModalFoot
         const params = new URLSearchParams();
         params.set("autofill", "true");
         params.set("name", player.pureName);
-        for (const id of player.ids) {
+        for (const id of player.idsOnline) {
             if (id.startsWith("discord:")) {
                 params.set("discord", id);
             } else if (id.startsWith("fivem:")) {
@@ -134,7 +134,7 @@ export default function PlayerModalFooter({ playerRef, player }: PlayerModalFoot
             <Button
                 variant='outline'
                 size='sm'
-                disabled={!hasPerm('manage.admins') || !player || !player.ids.length}
+                disabled={!hasPerm('manage.admins') || !player || !player.idsOnline.length}
                 onClick={handleGiveAdmin}
                 className="pl-2 sm:mr-auto"
             >

@@ -1,49 +1,65 @@
 import { PlayerModalPlayerData } from "@shared/playerApiTypes";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import MultiIdsList from "@/components/MultiIdsList";
-import { txToast } from "@/components/TxToaster";
-import { useState } from "react";
+import { useMemo } from "react";
+import type { PlayerModalRefType } from "@/hooks/playerModal";
+import { useAdminPerms } from "@/hooks/auth";
+import { useBackendApi } from "@/hooks/fetch";
+import type { GenericApiOkResp } from "@shared/genericApiTypes";
+import { ModalTabInner } from "@/components/modal-tabs";
 
 
 type PlayerIdsTabProps = {
+    playerRef: PlayerModalRefType;
     player: PlayerModalPlayerData;
     refreshModalData: () => void;
 }
 
-export default function PlayerIdsTab({ player, refreshModalData }: PlayerIdsTabProps) {
-    // const [ids, setIds] = useState(player?.oldIds ?? []);
-    // const [hwids, setHwids] = useState(player?.oldHwids ?? []);
-    // const onWipeIds = () => {
-    //     //TODO: Implement the wipe IDs logic
-    //     // refreshModalData();
-    //     console.log('Wiping IDs...');
-    //     txToast.success('IDs wiped successfully.');
-    //     setIds((player?.oldIds ?? []).filter((id) => id.startsWith('license:')));
-    // }
-    // const onWipeHwids = () => {
-    //     //TODO: Implement the wipe IDs logic
-    //     // refreshModalData();
-    //     console.log('Wiping IDs...');
-    //     txToast.success('HWIDs wiped successfully.');
-    //     setHwids([]);
-    // }
+export default function PlayerIdsTab({ playerRef, player, refreshModalData }: PlayerIdsTabProps) {
+    const { hasPerm } = useAdminPerms();
+    const hasRemovePerms = useMemo(() => hasPerm('players.remove_ids'), [hasPerm]);
+    const removePlayerIdsApi = useBackendApi<GenericApiOkResp>({
+        method: 'POST',
+        path: `/player/removeIds`,
+    });
 
-    return <TooltipProvider>
-        <div className="flex flex-col gap-4 p-1">
+    const removePlayerIds = (ids: string[], onError: () => void) => {
+        if (!ids.length) throw new Error(`No IDs selected to remove.`);
+        removePlayerIdsApi({
+            queryParams: playerRef,
+            data: { ids },
+            toastLoadingMessage: 'Deleting selected IDs/HWIDs...',
+            genericHandler: {
+                successMsg: 'Player IDs/HWIDs deleted!',
+            },
+            error: (error, toastId) => onError(),
+            success: (data, toastId) => {
+                if ('success' in data) {
+                    refreshModalData();
+                } else {
+                    onError();
+                }
+            },
+        });
+    }
+
+    return (
+        <ModalTabInner className="flex flex-col gap-4">
             <MultiIdsList
                 type='id'
                 src='player'
-                list={player?.oldIds ?? []}
-                highlighted={player.ids}
-            // onWipeIds={onWipeIds}
+                idsOnline={player.idsOnline}
+                idsOffline={player.idsOffline}
+                onRemoveIds={removePlayerIds}
+                canRemoveIds={hasRemovePerms}
             />
             <MultiIdsList
                 type='hwid'
                 src='player'
-                list={player?.oldHwids ?? []}
-                highlighted={player.hwids}
-            // onWipeIds={onWipeIds}
+                idsOnline={player.hwidsOnline}
+                idsOffline={player.hwidsOffline}
+                onRemoveIds={removePlayerIds}
+                canRemoveIds={hasRemovePerms}
             />
-        </div>
-    </TooltipProvider>;
+        </ModalTabInner>
+    );
 }

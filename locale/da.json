@@ -12,9 +12,9 @@
         "schedule_warn_discord": "**%{servername}** er planlagt til at genstarte om %{smart_count} minut. |||| **%{servername}** er planlagt til at genstarte om %{smart_count} minutter."
     },
     "kick_messages": {
-        "everyone": "All players kicked: %{reason}.",
-        "player": "You have been kicked: %{reason}.",
-        "unknown_reason": "for unknown reason"
+        "everyone": "Alle spillere blev smidt ud: %{reason}.",
+        "player": "Du er blevet smidt ud: %{reason}.",
+        "unknown_reason": "af ukendt årsag"
     },
     "ban_messages": {
         "kick_temporary": "(%{author}) Du er blevet bannet fra denne server på grund af \"%{reason}\". Dit ban udløber om: %{expiration}.",
@@ -81,9 +81,9 @@
             "unknown_error": "Der opstod en ukendt fejl.",
             "not_enabled": "txAdmin-menuen er ikke aktiveret! Det kan du fra txAdmin-panelet.",
             "announcement_title": "Servermeddelelse sendt af %{author}:",
-            "directmessage_title": "DM from admin %{author}:",
-            "dialog_empty_input": "der mangler input.",
-            "onesync_error": "This action requires OneSync to be enabled."
+            "directmessage_title": "DM fra admin %{author}:",
+            "dialog_empty_input": "Der mangler input.",
+            "onesync_error": "Denne handling kræver, at OneSync er aktiveret."
         },
         "frozen": {
             "froze_player": "Du har frosset spilleren fast!",
@@ -225,11 +225,11 @@
                 "zero_players": "Ingen spillere fundet"
             },
             "filter": {
-                "label": "Filter by",
-                "no_filter": "No Filter",
-                "is_admin": "Is Admin",
-                "is_injured": "Is Injured / Dead",
-                "in_vehicle": "In Vehicle"
+                "label": "Filtrer efter",
+                "no_filter": "Ingen filter",
+                "is_admin": "Er admin",
+                "is_injured": "Såret / Død",
+                "in_vehicle": "I køretøj"
             },
             "sort": {
                 "label": "Sortér efter",

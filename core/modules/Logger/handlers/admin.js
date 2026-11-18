@@ -28,7 +28,10 @@ export default class AdminLogger extends LoggerBase {
      * Returns a string with short usage stats
      */
     getUsageStats() {
-        return `Writes: ${this.writeCounter}, lrErrors: ${this.lrErrors}`;
+        return {
+            writes: this.writeCounter,
+            lrErrors: this.lrErrors,
+        };
     }
 
     /**
@@ -65,12 +68,13 @@ export default class AdminLogger extends LoggerBase {
      */
     write(author, action, type = 'default') {
         let saveMsg;
+        const prefix = `[${author}]`;
         if (type === 'command') {
-            saveMsg = `[${author}] executed "${action}"`;
-            console.log(`${author} executed ` + chalkInversePad(action));
+            saveMsg = `executed "${action}"`;
+            console.log(prefix, `executed ` + chalkInversePad(action));
         } else {
             saveMsg = action;
-            console.log(saveMsg);
+            console.log(prefix, saveMsg);
         }
         this.writeSystem(author, saveMsg);
     }

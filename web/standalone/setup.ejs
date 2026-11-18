@@ -147,8 +147,8 @@
                                 <div class="step-content">
                                     A <strong>short</strong> server name to be used in txAdmin interface and
                                     Chat/Discord messages.
-                                    <input type="text" class="form-control mt-2" id="frmName" maxlength="22"
-                                        minlength="3" placeholder="Happy Server" value="<%= serverName %>" required>
+                                    <input type="text" class="form-control mt-2" id="frmName" maxlength="18"
+                                        minlength="1" placeholder="Happy Server" value="<%= serverName %>" required>
                                     <span id="frmNameError" class="text-danger fade-in d-none"></span>
                                     <div class="step-actions">
                                         <button class="btn btn-pill btn-secondary previous-step"
@@ -380,7 +380,7 @@
     <script src="https://unpkg.com/materialize-stepper@3.1.0/dist/js/mstepper.js"></script>
     <script>
         //Constants
-        const recipesIndexURL = 'https://raw.githubusercontent.com/tabarra/txAdmin-recipes/main/indexv4.json';
+        const recipesIndexURL = 'https://raw.githubusercontent.com/citizenfx/txAdmin-recipes/refs/heads/main/indexv4.json';
         const txDataPath = '<%= dataPath %>';
         const forceGameName = '<%= forceGameName %>' || false;
         const deployerEngineVersion = parseInt('<%= deployerEngineVersion %>');
@@ -487,8 +487,8 @@
             frmNameError.classList.add('d-none');
             const name = frmName.value.trim();
 
-            if(name.length < 3 || name.length > 22){
-                frmNameError.innerHTML = `The name must have between 3 and 22 characters.`;
+            if(name.length < 1 || name.length > 18){
+                frmNameError.innerHTML = `The name must have between 1 and 18 characters.`;
                 frmNameError.classList.remove('d-none');
                 frmName.classList.add('is-invalid');
                 stepperInstace.wrongStep();
@@ -690,7 +690,8 @@
                         destroyFeedback(true);
                     }else{
                         stepperInstace.wrongStep();
-                        s4RemoteTemplateInputError.innerHTML = `<br>Error:</b> ${data.message} <br>Make sure this is a valid Recipe URL.`;
+                        s4RemoteTemplateInputError.innerHTML = '<br><b>Error:</b> <span data-errmsg>Unknown error</span> <br>Make sure this is a valid Recipe URL.';
+                        s4RemoteTemplateInputError.querySelector('[data-errmsg]').textContent = data.message ?? 'Unknown error';
                         s4RemoteTemplateInputError.classList.remove('d-none');
                         s4RemoteTemplateInput.classList.add('is-invalid');
                         destroyFeedback(false);
@@ -698,7 +699,8 @@
                 },
                 error: function (xmlhttprequest, textstatus, message) {
                     stepperInstace.wrongStep();
-                    s4RemoteTemplateInputError.innerHTML = `<br>Error:</b> ${message} <br>Make sure this is a valid Recipe URL.`;
+                    s4RemoteTemplateInputError.innerHTML = '<br><b>Error:</b> <span data-errmsg>Unknown error</span> <br>Make sure this is a valid Recipe URL.';
+                    s4RemoteTemplateInputError.querySelector('[data-errmsg]').textContent = message ?? 'Unknown error';
                     s4RemoteTemplateInputError.classList.remove('d-none');
                     s4RemoteTemplateInput.classList.add('is-invalid');
                     destroyFeedback(false);
@@ -735,7 +737,8 @@
                         destroyFeedback(true);
                     }else{
                         stepperInstace.wrongStep();
-                        s5DeployerTargetError.innerHTML = `<br>Error:</b> ${data.message}`;
+                        s5DeployerTargetError.innerHTML = '<br><b>Error:</b> <span data-errmsg>Unknown error</span>';
+                        s5DeployerTargetError.querySelector('[data-errmsg]').textContent = data.message ?? 'Unknown error';
                         s5DeployerTargetError.classList.remove('d-none');
                         s5DeployerTargetInput.classList.add('is-invalid');
                         destroyFeedback(false);
@@ -778,14 +781,17 @@
                         }
                         destroyFeedback(true)
                     }else{
-                        s4LocalDataPathInputError.innerHTML = data.message;
+                        if(data.suggestion){
+                            s4LocalDataPathInputError.innerHTML = 'The path provided is invalid. <br>But it looks like <code data-suggestion>unknown</code> is correct. <br>Do you want to use it instead?';
+                            s4LocalDataPathInputError.querySelector('[data-suggestion]').textContent = data.suggestion ?? 'unknown';
+                            suggestions['s4LocalDataPathInput'] = data.suggestion;
+                            s4LocalDataPathInputFixBtn.classList.remove('d-none');
+                        }else{
+                            s4LocalDataPathInputError.textContent = data.message;
+                        }
                         s4LocalDataPathInputError.classList.remove('d-none');
                         s4LocalDataPathInput.classList.add('is-invalid');
                         stepperInstace.wrongStep();
-                        if(data.suggestion){
-                            suggestions['s4LocalDataPathInput'] = data.suggestion;
-                            s4LocalDataPathInputFixBtn.classList.remove('d-none');
-                        }
                         destroyFeedback(false)
                     }
                 },

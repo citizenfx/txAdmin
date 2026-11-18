@@ -14,6 +14,7 @@ import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import consts from "@shared/consts";
 import { fetchWithTimeout } from "@/hooks/fetch";
 import { LogoutReasonHash } from "./Login";
+import { LocalStorageKey } from "@/lib/localStorage";
 
 
 function RegisterForm({ fivemId, fivemName, profilePicture }: ApiAddMasterCallbackFivemData) {
@@ -104,7 +105,7 @@ function RegisterForm({ fivemId, fivemName, profilePicture }: ApiAddMasterCallba
     //Prefill password if dev pass enabled
     useEffect(() => {
         try {
-            const rawLocalStorageStr = localStorage.getItem('authCredsAutofill');
+            const rawLocalStorageStr = localStorage.getItem(LocalStorageKey.AuthCredsAutofill);
             if (rawLocalStorageStr) {
                 const [user, pass] = JSON.parse(rawLocalStorageStr);
                 passwordRef.current!.value = pass ?? '';
@@ -176,7 +177,7 @@ function RegisterForm({ fivemId, fivemName, profilePicture }: ApiAddMasterCallba
                     htmlFor="terms"
                     className="text-sm font-medium leading-4 peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                    I have read and agree to the <a href="https://fivem.net/terms" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Creator PLA</a> as well as the <a href="https://github.com/tabarra/txAdmin/blob/master/LICENSE" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">txAdmin License</a>.
+                    I have read and agree to the <a href="https://fivem.net/terms" target="_blank" rel="noopener noreferrer" className="text-accent hover:underline">Creator PLA</a>.
                 </label>
             </div>
         </CardContent>

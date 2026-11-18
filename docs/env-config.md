@@ -128,17 +128,26 @@ The specific way to set up those variables vary from system to system, and there
 
 ## Examples
 
-Migrating a dev server using an old `start.bat`:
-```diff
- @echo off
-+set TXHOST_DATA_PATH=E:\FiveM\txData-dev
-+set TXHOST_TXA_PORT=40125
--FXServer.exe +set serverProfile "server2" +set txAdminPort "40125"
-+FXServer.exe
- pause
+### Migrate old `start.bat`
+Replace this:
+```batch
+@echo off
+"E:/FiveM/13079//FXServer.exe" +set serverProfile "server2" +set txAdminPort "40125"
+pause
 ```
+With this:
+```batch
+@echo off
+set TXHOST_DATA_PATH=E:\FiveM\txData-dev
+set TXHOST_TXA_PORT=40125
+"E:/FiveM/13079//FXServer.exe"
+pause
+```
+> [!NOTE]
+> Replace `"E:/FiveM/13079//FXServer.exe"` with the path you see in your existing `*.bat`.
 
-Setting up a dev server on Windows with a `env.bat` file:
+
+### Setting up a dev server on Windows with a `env.bat` file:
 ```batch
 @REM Deployer defaults
 set TXHOST_DEFAULT_CFXKEY=cfxk_11hIT156dX0F0ekFVsuda_fQ0ZYS
@@ -154,7 +163,7 @@ set TXHOST_FXS_PORT=30125
 set TXHOST_MAX_SLOTS=8
 ```
 
-Setting a GSP configuration on Docker with a `.env` file:
+### Setting a GSP configuration on Docker with a `.env` file:
 ```dotenv
 # So txAdmin suggests the right path during setup
 TXHOST_DATA_PATH=/home/container

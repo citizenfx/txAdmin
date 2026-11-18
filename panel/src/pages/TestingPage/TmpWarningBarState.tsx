@@ -16,11 +16,8 @@ export default function TmpWarningBarState() {
                 <CardTitle>Warning Bar States</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-                <div className="space-y-2 rounded border p-2">
-                    <pre className="bg-muted p-2">
-                        {JSON.stringify(offlineWarning, null, 2)}
-                    </pre>
-                    <div className="flex justify-start gap-3 border-t pt-2">
+                <div className="space-y-2 divide-y-2 rounded border p-2">
+                    <div className="flex justify-start gap-3">
                         <Button size="sm" onClick={() => setOfflineWarning(false)}>
                             Socket On
                         </Button>
@@ -28,21 +25,21 @@ export default function TmpWarningBarState() {
                             Socket Off
                         </Button>
                     </div>
+                    <pre className="bg-muted p-2">
+                        {JSON.stringify(offlineWarning, null, 2)}
+                    </pre>
                 </div>
 
-                <div className="space-y-2 rounded border p-2">
-                    <pre className="bg-muted p-2">
-                        {JSON.stringify(txUpdateData, null, 2)}
-                    </pre>
-                    <div className="flex justify-start gap-3 border-t pt-2">
+                <div className="space-y-2 divide-y-2 rounded border p-2">
+                    <div className="flex justify-start gap-3">
                         <Button size="sm" onClick={() => setTxUpdateData({
-                            version: 'v7.0.1',
+                            version: '7.0.1',
                             isImportant: false,
                         })}>
                             txa Minor Update
                         </Button>
                         <Button size="sm" onClick={() => setTxUpdateData({
-                            version: 'v8.0.0',
+                            version: '8.0.0',
                             isImportant: true,
                         })}>
                             txa Major Update
@@ -51,21 +48,21 @@ export default function TmpWarningBarState() {
                             txa No Update
                         </Button>
                     </div>
+                    <pre className="bg-muted p-2">
+                        {JSON.stringify(txUpdateData, null, 2)}
+                    </pre>
                 </div>
 
-                <div className="space-y-2 rounded border p-2">
-                    <pre className="bg-muted p-2">
-                        {JSON.stringify(fxUpdateData, null, 2)}
-                    </pre>
-                    <div className="flex justify-start gap-3 border-t pt-2">
+                <div className="space-y-2 divide-y-2 rounded border p-2">
+                    <div className="flex justify-start gap-3">
                         <Button size="sm" onClick={() => setFxUpdateData({
-                            version: 'v7.0.1',
+                            version: '7.0.1',
                             isImportant: false,
                         })}>
                             fxs Minor Update
                         </Button>
                         <Button size="sm" onClick={() => setFxUpdateData({
-                            version: 'v8.0.0',
+                            version: '8.0.0',
                             isImportant: true,
                         })}>
                             fxs Major Update
@@ -74,6 +71,9 @@ export default function TmpWarningBarState() {
                             fxs No Update
                         </Button>
                     </div>
+                    <pre className="bg-muted p-2">
+                        {JSON.stringify(fxUpdateData, null, 2)}
+                    </pre>
                 </div>
             </CardContent>
         </Card>

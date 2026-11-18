@@ -35,6 +35,9 @@ export default async function SendDiagnosticsReport(ctx: AuthedCtx) {
     };
     const sendTypedResp = (data: SuccessResp | GenericApiErrorResp) => ctx.send(data);
 
+    //FIXME: re-enable
+    return sendTypedResp({ error: 'The diagnostics report feature is temporarily disabled. Please check back later.' });
+
     //Rate limit (and cache) report submissions
     const cachedReportId = reportIdCache.get();
     if (cachedReportId) {
@@ -46,13 +49,12 @@ export default async function SendDiagnosticsReport(ctx: AuthedCtx) {
     //Diagnostics
     let diagnostics;
     try {
-        const [host, txadmin, fxserver, proccesses] = await Promise.all([
+        const [host, txadmin, proccesses] = await Promise.all([
             diagnosticsFuncs.getHostData(),
-            diagnosticsFuncs.getTxAdminData(),
-            diagnosticsFuncs.getFXServerData(),
+            diagnosticsFuncs.getRuntimeData(),
             diagnosticsFuncs.getProcessesData(),
         ]);
-        diagnostics = { host, txadmin, fxserver, proccesses };
+        diagnostics = { host, txadmin, proccesses };
     } catch (error) { }
 
     //Admins

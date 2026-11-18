@@ -54,6 +54,41 @@ const whitelistCommand: ApplicationCommandDataResolvable = {
         }
     ]
 }
+const allowlistCommand: ApplicationCommandDataResolvable = {
+    type: ApplicationCommandType.ChatInput,
+    name: 'allowlist',
+    description: 'Allowlist embed commands.',
+    options: [
+        {
+            type: ApplicationCommandOptionType.Subcommand,
+            name: 'member',
+            description: 'Adds a member to the allowlist approvals.',
+            options: [
+                {
+                    type: ApplicationCommandOptionType.User,
+                    name: 'member',
+                    description: 'The member that will be allowlisted.',
+                    required: true,
+                }
+            ]
+        },
+        {
+            type: ApplicationCommandOptionType.Subcommand,
+            name: 'request',
+            description: 'Approves a allowlist request ID (eg R1234).',
+            options: [
+                {
+                    type: ApplicationCommandOptionType.String,
+                    name: 'id',
+                    description: 'The ID of the request (eg R1234).',
+                    required: true,
+                    minLength: 5,
+                    maxLength: 5,
+                }
+            ]
+        }
+    ]
+}
 
 const infoCommand: ApplicationCommandDataResolvable = {
     type: ApplicationCommandType.ChatInput,
@@ -111,5 +146,6 @@ const infoCommand: ApplicationCommandDataResolvable = {
 export default [
     statusCommand,
     whitelistCommand,
+    allowlistCommand,
     infoCommand,
 ] as ApplicationCommandDataResolvable[];

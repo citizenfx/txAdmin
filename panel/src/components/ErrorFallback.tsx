@@ -8,6 +8,8 @@ import { FallbackProps } from "react-error-boundary";
 import { FiAlertOctagon } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useEffect } from "react";
+import { LocalStorageKey } from "@/lib/localStorage";
 
 //Used for global errors
 export function AppErrorFallback({ error }: FallbackProps) {
@@ -49,6 +51,23 @@ type GenericErrorBoundaryCardProps = {
 }
 
 export function GenericErrorBoundaryCard(props: GenericErrorBoundaryCardProps) {
+    //Auto refresh the page if the error is related to removeChild - dev mode only
+    if (window.txConsts.showAdvanced) {
+        useEffect(() => {
+            if (props.error.message?.includes("Failed to execute 'removeChild' on 'Node'")) {
+                console.warn('Detected removeChild error, scheduling reload');
+                // Use a flag in sessionStorage to prevent infinite reload loops
+                const lastReloadRaw = localStorage.getItem(LocalStorageKey.ErrorFallbackLastReload);
+                const now = Date.now();
+                const lastReload = lastReloadRaw ? parseInt(lastReloadRaw) : 0;
+                if (now - lastReload > 30_000) {
+                    localStorage.setItem(LocalStorageKey.ErrorFallbackLastReload, now.toString());
+                    setTimeout(() => window.location.reload(), 500);
+                }
+            }
+        }, [props.error]);
+    }
+
     return (
         <Card className="max-w-xl">
             <CardHeader>

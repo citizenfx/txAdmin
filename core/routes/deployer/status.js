@@ -5,7 +5,7 @@ const console = consoleFactory(modulename);
 
 /**
  * Returns the output page containing the live console
- * @param {object} ctx
+ * @param {import('@modules/WebServer/ctxTypes').AuthedCtx} ctx
  */
 export default async function DeployerStatus(ctx) {
     //Check permissions

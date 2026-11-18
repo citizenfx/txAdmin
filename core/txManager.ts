@@ -7,6 +7,7 @@ import type { GlobalStatusType } from "@shared/socketioTypes";
 import quitProcess from "@lib/quitProcess";
 import consoleFactory, { processStdioEnsureEol, setTTYTitle } from "@lib/console";
 import { isNumber, isString } from "@modules/CacheStore";
+import { txEnv } from "./globalData";
 const console = consoleFactory('Manager');
 
 //Types
@@ -62,9 +63,11 @@ export default class TxManager {
         }, 5000);
 
         //Updates the terminal title every 15 seconds
-        setInterval(() => {
-            setTTYTitle(`(${txCore.fxPlayerlist.onlineCount}) ${txConfig.general.serverName} - txAdmin`);
-        }, 15000);
+        if(txEnv.setConsoleTitle){
+            setInterval(() => {
+                setTTYTitle(`(${txCore.fxPlayerlist.onlineCount}) ${txConfig.general.serverName} - txAdmin`);
+            }, 15000);
+        }
 
         //Pre-calculate static data
         setTimeout(() => {

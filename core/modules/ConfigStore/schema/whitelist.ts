@@ -5,15 +5,15 @@ import consts from "@shared/consts";
 
 
 const mode = typeDefinedConfig({
-    name: 'Whitelist Mode',
+    name: 'Allowlist Mode',
     default: 'disabled',
-    validator: z.enum(['disabled', 'adminOnly', 'approvedLicense', 'discordMember', 'discordRoles']),
+    validator: z.enum(['disabled', 'adminOnly', 'approvedLicense', 'discordMember', 'discordRoles', 'external']),
     fixer: SYM_FIXER_DEFAULT,
 });
 
 const rejectionMessage = typeDefinedConfig({
-    name: 'Whitelist Rejection Message',
-    default: 'Please join http://discord.gg/example and request to be whitelisted.',
+    name: 'Allowlist Instructions',
+    default: 'Please join http://discord.gg/example and request to be allowlisted.',
     validator: z.string(),
     fixer: SYM_FIXER_DEFAULT,
 });
@@ -25,7 +25,7 @@ export const polishDiscordRolesArray = (input: string[]) => {
 }
 
 const discordRoles = typeDefinedConfig({
-    name: 'Whitelisted Discord Roles',
+    name: 'Allowlisted Discord Roles',
     default: [],
     validator: discordSnowflakeSchema.array().transform(polishDiscordRolesArray),
     fixer: (input: any) => {

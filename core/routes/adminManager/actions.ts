@@ -14,7 +14,7 @@ const nameRegexDesc = 'up to 20 characters containing only letters, numbers and 
 const cfxHttpReqOptions = {
     timeout: { request: 6000 },
 };
-type ProviderDataType = {id: string, identifier: string};
+type ProviderDataType = { id: string, identifier: string };
 
 /**
  * Returns the output page containing the admins.
@@ -76,18 +76,18 @@ async function handleAdd(ctx: AuthedCtx) {
 
     //Validate name
     if (!consts.regexValidFivemUsername.test(name)) {
-        return ctx.send({type: 'danger', markdown: true, message: `**Invalid username, it must follow the rule:**\n${nameRegexDesc}`});
+        return ctx.send({ type: 'danger', markdown: true, message: `**Invalid username, it must follow the rule:**\n${nameRegexDesc}` });
     }
 
     //Validate & translate FiveM ID
-    let citizenfxData: ProviderDataType | undefined;
+    let citizenfxData: ProviderDataType | false = false;
     if (citizenfxID.length) {
         try {
             if (consts.validIdentifiers.fivem.test(citizenfxID)) {
                 const id = citizenfxID.split(':')[1];
                 const res = await got(`https://policy-live.fivem.net/api/getUserInfo/${id}`, cfxHttpReqOptions).json<any>();
                 if (!res.username || !res.username.length) {
-                    return ctx.send({type: 'danger', message: 'Invalid CitizenFX ID1'});
+                    return ctx.send({ type: 'danger', message: 'Invalid CitizenFX ID1' });
                 }
                 citizenfxData = {
                     id: res.username,
@@ -96,14 +96,14 @@ async function handleAdd(ctx: AuthedCtx) {
             } else if (consts.regexValidFivemUsername.test(citizenfxID)) {
                 const res = await got(`https://forum.cfx.re/u/${citizenfxID}.json`, cfxHttpReqOptions).json<any>();
                 if (!res.user || typeof res.user.id !== 'number') {
-                    return ctx.send({type: 'danger', message: 'Invalid CitizenFX ID2'});
+                    return ctx.send({ type: 'danger', message: 'Invalid CitizenFX ID2' });
                 }
                 citizenfxData = {
                     id: citizenfxID,
                     identifier: `fivem:${res.user.id}`,
                 };
             } else {
-                return ctx.send({type: 'danger', message: 'Invalid CitizenFX ID3'});
+                return ctx.send({ type: 'danger', message: 'Invalid CitizenFX ID3' });
             }
         } catch (error) {
             console.error(`Failed to resolve CitizenFX ID to game identifier with error: ${(error as Error).message}`);
@@ -111,10 +111,10 @@ async function handleAdd(ctx: AuthedCtx) {
     }
 
     //Validate Discord ID
-    let discordData: ProviderDataType | undefined;
+    let discordData: ProviderDataType | false = false;
     if (discordID.length) {
         if (!consts.validIdentifierParts.discord.test(discordID)) {
-            return ctx.send({type: 'danger', message: 'Invalid Discord ID'});
+            return ctx.send({ type: 'danger', message: 'Invalid Discord ID' });
         }
         discordData = {
             id: discordID,
@@ -133,13 +133,20 @@ async function handleAdd(ctx: AuthedCtx) {
         }
     }
 
+    //List changes
+    const changes = {
+        cfxId: citizenfxData ? citizenfxData.identifier : undefined,
+        discordId: discordData ? discordData.identifier : undefined,
+        permissions: permissions,
+    };
+
     //Add admin and give output
     try {
         await txCore.adminStore.addAdmin(name, citizenfxData, discordData, password, permissions);
-        ctx.admin.logAction(`Adding user '${name}'.`);
-        return ctx.send({type: 'showPassword', password});
+        ctx.admin.logAction(`Adding user '${name}' with ${JSON.stringify(changes)}`);
+        return ctx.send({ type: 'showPassword', password });
     } catch (error) {
-        return ctx.send({type: 'danger', message: (error as Error).message});
+        return ctx.send({ type: 'danger', message: (error as Error).message });
     }
 }
 
@@ -165,27 +172,27 @@ async function handleEdit(ctx: AuthedCtx) {
 
     //Check if editing himself
     if (ctx.admin.name.toLowerCase() === name.toLowerCase()) {
-        return ctx.send({type: 'danger', message: '(ERR0) You cannot edit yourself.'});
+        return ctx.send({ type: 'danger', message: '(ERR0) You cannot edit yourself.' });
     }
 
     //Validate & translate permissions
-    let permissions;
+    let permissions: string[] = [];
     if (Array.isArray(ctx.request.body.permissions)) {
         permissions = ctx.request.body.permissions.filter((x: unknown) => typeof x === 'string');
-        if (permissions.includes('all_permissions')) permissions = ['all_permissions'];
-    } else {
-        permissions = [];
+        if (permissions.includes('all_permissions')) {
+            permissions = ['all_permissions'];
+        }
     }
 
     //Validate & translate FiveM ID
-    let citizenfxData: ProviderDataType | undefined;
+    let citizenfxData: ProviderDataType | false = false;
     if (citizenfxID.length) {
         try {
             if (consts.validIdentifiers.fivem.test(citizenfxID)) {
                 const id = citizenfxID.split(':')[1];
                 const res = await got(`https://policy-live.fivem.net/api/getUserInfo/${id}`, cfxHttpReqOptions).json<any>();
                 if (!res.username || !res.username.length) {
-                    return ctx.send({type: 'danger', message: '(ERR1) Invalid CitizenFX ID'});
+                    return ctx.send({ type: 'danger', message: '(ERR1) Invalid CitizenFX ID' });
                 }
                 citizenfxData = {
                     id: res.username,
@@ -194,14 +201,14 @@ async function handleEdit(ctx: AuthedCtx) {
             } else if (consts.regexValidFivemUsername.test(citizenfxID)) {
                 const res = await got(`https://forum.cfx.re/u/${citizenfxID}.json`, cfxHttpReqOptions).json<any>();
                 if (!res.user || typeof res.user.id !== 'number') {
-                    return ctx.send({type: 'danger', message: '(ERR2) Invalid CitizenFX ID'});
+                    return ctx.send({ type: 'danger', message: '(ERR2) Invalid CitizenFX ID' });
                 }
                 citizenfxData = {
                     id: citizenfxID,
                     identifier: `fivem:${res.user.id}`,
                 };
             } else {
-                return ctx.send({type: 'danger', message: '(ERR3) Invalid CitizenFX ID'});
+                return ctx.send({ type: 'danger', message: '(ERR3) Invalid CitizenFX ID' });
             }
         } catch (error) {
             console.error(`Failed to resolve CitizenFX ID to game identifier with error: ${(error as Error).message}`);
@@ -210,10 +217,10 @@ async function handleEdit(ctx: AuthedCtx) {
 
     //Validate Discord ID
     //FIXME: you cannot remove a discord id by erasing from the field
-    let discordData: ProviderDataType | undefined;
+    let discordData: ProviderDataType | false = false;
     if (discordID.length) {
         if (!consts.validIdentifierParts.discord.test(discordID)) {
-            return ctx.send({type: 'danger', message: 'Invalid Discord ID'});
+            return ctx.send({ type: 'danger', message: 'Invalid Discord ID' });
         }
         discordData = {
             id: discordID,
@@ -223,11 +230,11 @@ async function handleEdit(ctx: AuthedCtx) {
 
     //Check if admin exists
     const admin = txCore.adminStore.getAdminByName(name);
-    if (!admin) return ctx.send({type: 'danger', message: 'Admin not found.'});
+    if (!admin) return ctx.send({ type: 'danger', message: 'Admin not found.' });
 
     //Check if editing an master admin
     if (!ctx.admin.isMaster && admin.master) {
-        return ctx.send({type: 'danger', message: 'You cannot edit an admin master.'});
+        return ctx.send({ type: 'danger', message: 'You cannot edit an admin master.' });
     }
 
     //Check for privilege escalation
@@ -241,13 +248,50 @@ async function handleEdit(ctx: AuthedCtx) {
         }
     }
 
+    //List changes
+    const permsAdded = permissions.filter((x: string) => !admin.permissions.includes(x));
+    const permsRemoved = admin.permissions.filter((x: string) => !permissions.includes(x));
+    const changes: string[] = [];
+    if (permsAdded.includes('all_permissions')) {
+        changes.push('Added all permissions.');
+    } else {
+        if (permsAdded.length) {
+            changes.push(`Added permissions: ${JSON.stringify(permsAdded)}.`);
+        }
+        if (permsRemoved.length) {
+            changes.push(`Removed permissions: ${JSON.stringify(permsRemoved)}.`);
+        }
+    }
+    const prevCfxId = admin.providers?.citizenfx?.identifier;
+    if (!prevCfxId && citizenfxData) {
+        changes.push(`Added Cfx.re ID: ${citizenfxData.identifier}.`);
+    } else if (prevCfxId && !citizenfxData) {
+        changes.push(`Removed Cfx.re ID: ${prevCfxId}.`);
+    } else if (prevCfxId && citizenfxData && prevCfxId !== citizenfxData.identifier) {
+        changes.push(`Changed Cfx.re ID from ${prevCfxId} to ${citizenfxData.identifier}.`);
+    }
+    const prevDiscordId = admin.providers?.discord?.identifier;
+    if (!prevDiscordId && discordData) {
+        changes.push(`Added Discord ID: ${discordData.identifier}.`);
+    } else if (prevDiscordId && !discordData) {
+        changes.push(`Removed Discord ID: ${prevDiscordId}.`);
+    } else if (prevDiscordId && discordData && prevDiscordId !== discordData.identifier) {
+        changes.push(`Changed Discord ID from ${prevDiscordId} to ${discordData.identifier}.`);
+    }
+
     //Add admin and give output
     try {
+        let logMessage = `Editing user '${name}'`;
+        if (changes.length) {
+            logMessage += `: ${changes.join(' ')}`;
+        } else {
+            logMessage += '. No changes were made.';
+        }
         await txCore.adminStore.editAdmin(name, null, citizenfxData, discordData, permissions);
-        ctx.admin.logAction(`Editing user '${name}'.`);
-        return ctx.send({type: 'success', refresh: true});
+        ctx.admin.logAction(logMessage);
+        return ctx.send({ type: 'success', refresh: true });
     } catch (error) {
-        return ctx.send({type: 'danger', message: (error as Error).message});
+        return ctx.send({ type: 'danger', message: (error as Error).message });
     }
 }
 
@@ -264,24 +308,24 @@ async function handleDelete(ctx: AuthedCtx) {
 
     //Check if deleting himself
     if (ctx.admin.name.toLowerCase() === name.toLowerCase()) {
-        return ctx.send({type: 'danger', message: "You can't delete yourself."});
+        return ctx.send({ type: 'danger', message: "You can't delete yourself." });
     }
 
     //Check if admin exists
     const admin = txCore.adminStore.getAdminByName(name);
-    if (!admin) return ctx.send({type: 'danger', message: 'Admin not found.'});
+    if (!admin) return ctx.send({ type: 'danger', message: 'Admin not found.' });
 
     //Check if editing an master admin
     if (admin.master) {
-        return ctx.send({type: 'danger', message: 'You cannot delete an admin master.'});
+        return ctx.send({ type: 'danger', message: 'You cannot delete an admin master.' });
     }
 
     //Delete admin and give output
     try {
         await txCore.adminStore.deleteAdmin(name);
         ctx.admin.logAction(`Deleting user '${name}'.`);
-        return ctx.send({type: 'success', refresh: true});
+        return ctx.send({ type: 'success', refresh: true });
     } catch (error) {
-        return ctx.send({type: 'danger', message: (error as Error).message});
+        return ctx.send({ type: 'danger', message: (error as Error).message });
     }
 }

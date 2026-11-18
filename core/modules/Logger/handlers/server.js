@@ -94,17 +94,22 @@ export default class ServerLogger extends LoggerBase {
             ? `${bytes(bufferJsonSizeRes.bytesPerElement)}/e`
             : 'LowCount';
 
-        return `Buffer: ${this.recentBuffer.length},  lrErrors: ${this.lrErrors}, mem: ${bufferJsonSizeStr}, rate: ${eventsPerMinStr}`;
+        return {
+            buffer: this.recentBuffer.length,
+            lrErrors: this.lrErrors,
+            mem: bufferJsonSizeStr,
+            rate: eventsPerMinStr,
+        };
     }
 
 
     /***
      * Returns the recent fxserver buffer containing HTML markers, and not XSS escaped.
      * The size of this buffer is usually above 64kb, never above 128kb.
-     * @param {Number} lastN
+     * @param {number|undefined} lastN
      * @returns the recent buffer, optionally only the last N elements
      */
-    getRecentBuffer(lastN) {
+    getRecentBuffer(lastN = undefined) {
         return (lastN) ? this.recentBuffer.slice(-lastN) : this.recentBuffer;
     }
 

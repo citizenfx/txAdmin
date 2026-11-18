@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 import type { DatabaseActionType } from "../../../../core/modules/Database/databaseTypes";
 import { useOpenPlayerModal } from "@/hooks/playerModal";
 import DateTimeCorrected from "@/components/DateTimeCorrected";
-
+import { ModalTabInner } from "@/components/modal-tabs";
 
 
 const calcTextAreaLines = (text?: string) => {
@@ -98,55 +98,57 @@ export default function ActionInfoTab({ action, serverTime, tsFetch }: ActionInf
         openPlayerModal({ license: linkedPlayer });
     }
 
-    return <div className="px-1 mb-1 md:mb-4">
-        <dl className="pb-2">
-            <div className="py-0.5 grid grid-cols-3 gap-4 px-0">
-                <dt className="text-sm font-medium leading-6 text-muted-foreground">Date/Time</dt>
-                <dd className="text-sm leading-6 col-span-2 mt-0">
-                    <DateTimeCorrected
-                        className="opacity-75 cursor-help"
-                        serverTime={serverTime}
-                        tsObject={action.timestamp}
-                        tsFetch={tsFetch}
-                    />
-                </dd>
-            </div>
-            {action.type === 'ban' && (
+    return (
+        <ModalTabInner>
+            <dl className="pb-2">
                 <div className="py-0.5 grid grid-cols-3 gap-4 px-0">
-                    <dt className="text-sm font-medium leading-6 text-muted-foreground">Expiration</dt>
-                    <dd className="text-sm leading-6 col-span-2 mt-0">{banExpirationText}</dd>
+                    <dt className="text-sm font-medium leading-6 text-muted-foreground">Date/Time</dt>
+                    <dd className="text-sm leading-6 col-span-2 mt-0">
+                        <DateTimeCorrected
+                            className="opacity-75 cursor-help"
+                            serverTime={serverTime}
+                            tsObject={action.timestamp}
+                            tsFetch={tsFetch}
+                        />
+                    </dd>
                 </div>
-            )}
-            {action.type === 'warn' && (
+                {action.type === 'ban' && (
+                    <div className="py-0.5 grid grid-cols-3 gap-4 px-0">
+                        <dt className="text-sm font-medium leading-6 text-muted-foreground">Expiration</dt>
+                        <dd className="text-sm leading-6 col-span-2 mt-0">{banExpirationText}</dd>
+                    </div>
+                )}
+                {action.type === 'warn' && (
+                    <div className="py-0.5 grid grid-cols-3 gap-4 px-0">
+                        <dt className="text-sm font-medium leading-6 text-muted-foreground">Player Accepted</dt>
+                        <dd className="text-sm leading-6 col-span-2 mt-0">{warnAckedText}</dd>
+                    </div>
+                )}
                 <div className="py-0.5 grid grid-cols-3 gap-4 px-0">
-                    <dt className="text-sm font-medium leading-6 text-muted-foreground">Player Accepted</dt>
-                    <dd className="text-sm leading-6 col-span-2 mt-0">{warnAckedText}</dd>
+                    <dt className="text-sm font-medium leading-6 text-muted-foreground">Revoked</dt>
+                    <dd className="text-sm leading-6 col-span-2 mt-0">{revokedText}</dd>
                 </div>
-            )}
-            <div className="py-0.5 grid grid-cols-3 gap-4 px-0">
-                <dt className="text-sm font-medium leading-6 text-muted-foreground">Revoked</dt>
-                <dd className="text-sm leading-6 col-span-2 mt-0">{revokedText}</dd>
-            </div>
 
-            <div className="py-0.5 grid grid-cols-3 gap-4 px-0">
-                <dt className="text-sm font-medium leading-6 text-muted-foreground">Admin</dt>
-                <dd className="text-sm leading-6 col-span-2 mt-0">{action.author}</dd>
-            </div>
-            <div className="py-0.5 grid grid-cols-3 gap-4 px-0">
-                <dt className="text-sm font-medium leading-6 text-muted-foreground">Player</dt>
-                <dd className="text-sm leading-6 col-span-2x mt-0">{playerDisplayName}</dd>
-                <dd className="text-right">
-                    <Button
-                        variant="outline"
-                        size='inline'
-                        style={{ minWidth: '8.25ch' }}
-                        onClick={handleViewPlayerClick}
-                        disabled={!linkedPlayer}
-                    >View</Button>
-                </dd>
-            </div>
-        </dl>
+                <div className="py-0.5 grid grid-cols-3 gap-4 px-0">
+                    <dt className="text-sm font-medium leading-6 text-muted-foreground">Admin</dt>
+                    <dd className="text-sm leading-6 col-span-2 mt-0">{action.author}</dd>
+                </div>
+                <div className="py-0.5 grid grid-cols-3 gap-4 px-0">
+                    <dt className="text-sm font-medium leading-6 text-muted-foreground">Player</dt>
+                    <dd className="text-sm leading-6 col-span-2x mt-0">{playerDisplayName}</dd>
+                    <dd className="text-right">
+                        <Button
+                            variant="outline"
+                            size='inline'
+                            style={{ minWidth: '8.25ch' }}
+                            onClick={handleViewPlayerClick}
+                            disabled={!linkedPlayer}
+                        >View</Button>
+                    </dd>
+                </div>
+            </dl>
 
-        <ActionReasonBox actionReason={action.reason} />
-    </div>;
+            <ActionReasonBox actionReason={action.reason} />
+        </ModalTabInner>
+    );
 }

@@ -4,6 +4,7 @@ import ServerMenu from './ServerMenu';
 import ServerControls from './ServerControls';
 import ServerStatus from './ServerStatus';
 import ServerSchedule from './ServerSchedule';
+import DynamicAdvert from '@/components/DynamicAdvert';
 
 
 type ServerSidebarProps = {
@@ -36,23 +37,7 @@ export function ServerSidebar({ isSheet }: ServerSidebarProps) {
             </div>
             <hr className={isSheet ? 'block' : 'hidden'} />
 
-            {window.txConsts.adsData.main ? (
-                <a
-                    href={window.txConsts.adsData.main.url}
-                    onClick={handleExternalLinkClick}
-                    target='_blank'
-                    className='w-sidebar h-[80px] relative self-center group shadow-sm opacity-80 hover:opacity-100
-                    dark:brightness-90 dark:hover:brightness-100'
-                >
-                    <div className='absolute inset-0 -z-10 animate-pulse blur 
-                    scale-0 group-hover:scale-100 transition-transform bg-black
-                    dark:bg-gradient-to-r dark:from-[#18E889] dark:to-[#01FFFF]' />
-                    <img
-                        className='rounded-xl max-w-sidebar max-h-[80px] m-auto'
-                        src={window.txConsts.adsData.main.img}
-                    />
-                </a>
-            ) : null}
+            <DynamicAdvert placement='sidebar' />
 
             {window.txConsts.isWebInterface ? (
                 <div className='flex flex-col items-center justify-center gap-1 text-sm font-light opacity-85 hover:opacity-100'>
@@ -64,14 +49,6 @@ export function ServerSidebar({ isSheet }: ServerSidebarProps) {
                         &nbsp;|
                         fx: <strong>b{window.txConsts.fxsVersion}</strong>
                     </span>
-                    <a
-                        href="https://github.com/tabarra/txAdmin/blob/master/LICENSE"
-                        onClick={handleExternalLinkClick}
-                        target="_blank"
-                        className='text-muted-foreground hover:text-accent'
-                    >
-                        &copy; 2019-{(new Date).getUTCFullYear()} Tabarra
-                    </a>
                 </div>
             ) : null}
         </aside>

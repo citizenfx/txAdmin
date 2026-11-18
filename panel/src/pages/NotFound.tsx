@@ -1,6 +1,7 @@
 import InlineCode from "@/components/InlineCode";
 import { useSetPageTitle } from "@/hooks/pages";
-import { Link } from "wouter";
+import { useEffect } from "react";
+import { Link, useLocation } from "wouter";
 
 type Props = {
     params: {
@@ -9,7 +10,16 @@ type Props = {
 };
 export default function NotFound({ params }: Props) {
     const setPageTitle = useSetPageTitle();
+    const setLocation = useLocation()[1];
     setPageTitle('Not Found');
+
+    // FIXME:NEXT:UPDATE - remove
+    useEffect(() => {
+        if (params['*'] === 'whitelist') {
+            setLocation('/allowlist');
+        }
+    }, []);
+
     return (
         <div className="w-full flex items-center justify-center">
             <div className="text-center">

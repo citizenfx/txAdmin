@@ -5,6 +5,7 @@ import drawDropsTimeline, { TimelineDropsDatum } from "./drawDropsTimeline";
 import { playerDropCategories } from "@/lib/playerDropCategories";
 import { PlayerDropsMessage } from "./PlayerDropsGenericSubcards";
 import { DrilldownRangeSelectionType } from "./PlayerDropsPage";
+import './timeline.css';
 
 export type TimelineDropsChartData = {
     displayLod: string;
@@ -158,7 +159,6 @@ function TimelineDropsChart({ chartData, chartName, width, height, rangeSelected
                 position: 'absolute',
                 top: `${margins.top}px`,
                 left: `${margins.left}px`,
-                // imageRendering: 'pixelated',
             }}
         />
     </>);

@@ -21,8 +21,7 @@ function ConsoleFooterButton({ icon: Icon, title, disabled, onClick }: ConsoleFo
         <div
             tabIndex={0}
             className={cn(
-                `group bg-secondary xs:bg-transparent 2xl:hover:bg-secondary w-full rounded-lg px-1.5 py-2 cursor-pointer flex items-center justify-center
-                transition-all ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`,
+                'group bg-secondary xs:bg-transparent 2xl:hover:bg-secondary w-full rounded-lg px-1.5 py-2 cursor-pointer flex items-center justify-center transition-all ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
                 disabled && 'opacity-50 pointer-events-none'
             )}
             onClick={() => !disabled && onClick()}
@@ -95,6 +94,8 @@ export default function LiveConsoleFooter(props: LiveConsoleFooterProps) {
         if (currentInput) {
             appendHistory(currentInput);
             props.consoleWrite(currentInput);
+        } else {
+            props.consoleWrite('\n');
         }
     };
 

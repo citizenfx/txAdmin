@@ -12,23 +12,6 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Enforce base branch
-        uses: actions/github-script@v7
-        with:
-          script: |
-            // Get the pull request
-            const pull_request = await github.rest.pulls.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.payload.pull_request.number
-            });
-
-            // Check if the base branch is 'main' or 'master'
-            if (pull_request.data.base.ref === 'main' || pull_request.data.base.ref === 'master') {
-              console.error('Pull request is targeting the main branch. Please target the develop branch instead.');
-              process.exit(1);
-            }
-        
       - name: Use Node.js 22
         uses: actions/setup-node@v4
         with:

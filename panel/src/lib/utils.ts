@@ -173,3 +173,43 @@ export const banDurationToShortString = (duration: BanDurationType) => {
     }
     return `${duration.value}${suffix}`;
 }
+
+
+/**
+ * Save a file to the user's computer
+ * @returns true if download was initiated successfully, false otherwise
+ */
+export const downloadTextFile = (content: string, fileName: string, fileType: 'txt' | 'json' | 'md' = 'txt'): boolean => {
+    try {
+        // Check if we're in a browser environment
+        if (typeof document === 'undefined' || !document.body) {
+            console.warn('downloadTextFile: document or document.body not available');
+            return false;
+        }
+
+        const mimeType = fileType === 'txt'
+            ? 'text/plain'
+            : fileType === 'json'
+                ? 'application/json'
+                : 'text/markdown';
+
+        const blob = new Blob([content], { type: mimeType });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${fileName}.${fileType}`;
+        
+        // Make the link invisible
+        a.style.display = 'none';
+        
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        return true;
+    } catch (error) {
+        console.error('downloadTextFile failed:', error);
+        return false;
+    }
+}

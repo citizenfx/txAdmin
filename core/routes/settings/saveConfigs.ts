@@ -46,6 +46,7 @@ const cardNamesMap = {
     general: 'General',
     fxserver: 'FXServer',
     bans: 'Bans',
+    // FIXME:NEXT:UPDATE rename
     whitelist: 'Whitelist',
     discord: 'Discord',
     'game-menu': 'Game Menu',
@@ -97,6 +98,9 @@ export default async function SaveSettingsConfigs(ctx: AuthedCtx) {
     const { resetKeys, changes: inputConfig } = bodySchemaRes.data;
     const cardName = cardNamesMap[ctx.params.card as keyof typeof cardNamesMap] ?? 'UNKNOWN';
 
+    // FIXME:NEXT:UPDATE remove
+    const displayCardName = cardName === 'Whitelist' ? 'Allowlist' : cardName;
+
     //Delegate to the specific card handlers - if required
     let handlerResp: CardHandlerSuccessResp | void = { processedConfig: inputConfig };
     try {
@@ -111,7 +115,7 @@ export default async function SaveSettingsConfigs(ctx: AuthedCtx) {
         return sendTypedResp({
             type: 'error',
             md: true,
-            title: `Error processing the ${cardName} changes.`,
+            title: `Error processing the ${displayCardName} changes.`,
             msg: (error as any).message,
         });
     }
@@ -129,7 +133,7 @@ export default async function SaveSettingsConfigs(ctx: AuthedCtx) {
         return sendTypedResp({
             type: 'error',
             md: true,
-            title: `Error processing the ${cardName} changes.`,
+            title: `Error processing the ${displayCardName} changes.`,
             msg: (error as any).message,
         });
     }
@@ -142,7 +146,7 @@ export default async function SaveSettingsConfigs(ctx: AuthedCtx) {
         }
         return sendTypedResp({
             type: 'success',
-            msg: `${cardName} Settings saved!`,
+            msg: `${displayCardName} Settings saved!`,
             ...(handlerResp?.successToast ?? {}),
             stored: txCore.configStore.getStoredConfig(),
             changelog: txCore.configStore.getChangelog(),
@@ -152,7 +156,7 @@ export default async function SaveSettingsConfigs(ctx: AuthedCtx) {
         return sendTypedResp({
             type: 'error',
             md: true,
-            title: `Error saving the ${cardName} changes.`,
+            title: `Error saving the ${displayCardName} changes.`,
             msg: (error as any).message,
         });
     }
@@ -377,11 +381,8 @@ const handleDiscordCard: CardHandler = async (inputConfig, sendTypedResp) => {
             - **Bot is not in the server:** you need to [INVITE THE BOT](${inviteUrl}) to join the server.
             - **Wrong bot:** you may be using the token of another discord bot.`;
         } else if (errorCode === 'DangerousPermission') {
-            extraContext = `You need to remove the permissions listed above to be able to enable this bot.
-            This should be done in the Discord Server role configuration page and not in the Dev Portal.
-            Check every single role that the bot has in the server.
-
-            Please keep in mind that:
+            extraContext = `To enable the bot, you need to remove the permissions listed above, which can be done in the Discord Server role configuration page. Please check every single role that the bot has, including the \`@everyone\` role.
+            **Please keep in mind that:**
             - These permissions are dangerous because if the bot token leaks, an attacker can cause permanent damage to your server.
             - No bot should have more permissions than strictly needed, especially \`Administrator\`.
             - You should never have multiple bots using the same token, create a new one for each bot.`;
@@ -398,8 +399,8 @@ const handleDiscordCard: CardHandler = async (inputConfig, sendTypedResp) => {
         successToast: {
             type: 'success',
             md: true,
-            title: 'FXServer Settings Saved!',
-            msg: `${successMsg}\nIf _(and only if)_ the status embed is not being updated, check the \`System > Console Log\` page to look for embed errors.`,
+            title: 'Discord Bot Settings Saved!',
+            msg: `${successMsg}\nIf _(and only if)_ the status embed is not being updated, check the [System > Console Log](/system/console-log) page to look for embed errors.`,
         }
     };
 }

@@ -52,13 +52,13 @@ const DialogIdView: React.FC = () => {
   };
 
   const getCurrentIds = () => {
-    if (!Array.isArray(playerDetails.player.ids) || !playerDetails.player.ids.length) {
-      return <em>No identifiers saved.</em>
+    if (!Array.isArray(playerDetails.player.idsOnline) || !playerDetails.player.idsOnline.length) {
+      return <em>No identifiers online.</em>
     } else {
-      return playerDetails.player.ids.map((ident) => (
-        <Box className={classes.codeBlock} key={ident}>
-          <Typography className={classes.codeBlockText}>{ident}</Typography>
-          <IconButton onClick={() => handleCopyToClipboard(ident)} size="large">
+      return playerDetails.player.idsOnline.map((id) => (
+        <Box className={classes.codeBlock} key={id}>
+          <Typography className={classes.codeBlockText}>{id}</Typography>
+          <IconButton onClick={() => handleCopyToClipboard(id)} size="large">
             <FileCopy />
           </IconButton>
         </Box>
@@ -67,32 +67,28 @@ const DialogIdView: React.FC = () => {
   }
 
   const getOldIds = () => {
-    if (!Array.isArray(playerDetails.player.oldIds) || !playerDetails.player.oldIds.length) {
-      return <em>No identifiers saved.</em>
+    if (!Array.isArray(playerDetails.player.idsOffline) || !playerDetails.player.idsOffline.length) {
+      return <em>No previous identifiers saved.</em>
     } else {
-      const filtered = playerDetails.player.oldIds.filter(id => !playerDetails.player.ids.includes(id));
-      if (!filtered.length) {
-        return <em>No identifiers saved.</em>
-      } else {
-        return playerDetails.player.oldIds.map((ident) => (
-          <Box className={classes.codeBlock} key={ident}>
-            <Typography className={classes.codeBlockText}>{ident}</Typography>
-            <IconButton onClick={() => handleCopyToClipboard(ident)} size="large">
-              <FileCopy />
-            </IconButton>
-          </Box>
-        ));
-      }
+      return playerDetails.player.idsOffline.map((ids) => (
+        <Box className={classes.codeBlock} key={ids}>
+          <Typography className={classes.codeBlockText}>{ids}</Typography>
+          <IconButton onClick={() => handleCopyToClipboard(ids)} size="large">
+            <FileCopy />
+          </IconButton>
+        </Box>
+      ));
     }
   }
 
   const getAllHwids = () => {
-    if (!Array.isArray(playerDetails.player.oldHwids) || !playerDetails.player.oldHwids.length) {
+    const allHwids = [...playerDetails.player.hwidsOnline ?? [], ...playerDetails.player.hwidsOffline ?? []];
+    if (!allHwids.length) {
       return <em>No HWIDs saved.</em>
     } else {
       return <Box className={classes.codeBlock}>
         <span className={classes.codeBlockHwids}>
-          {playerDetails.player.oldHwids.join('\n')}
+          {allHwids.join('\n')}
         </span>
       </Box>
     }

@@ -16,96 +16,58 @@ import LiveConsoleSearchBar from "./LiveConsoleSearchBar";
 import LiveConsoleSaveSheet from "./LiveConsoleSaveSheet";
 
 import ScrollDownAddon from "./ScrollDownAddon";
-import terminalOptions from "./xtermOptions";
+import xtermOptions from "./xtermOptions";
 import './xtermOverrides.css';
 import '@xterm/xterm/css/xterm.css';
 import { getSocket } from '@/lib/utils';
 import { openExternalLink } from '@/lib/navigation';
 import { handleHotkeyEvent } from '@/lib/hotkeyEventListener';
 import { txToast } from '@/components/TxToaster';
-import { ANSI, copyTermLine, extractTermLineTimestamp, formatTermTimestamp, getNumFontVariantsLoaded } from './liveConsoleUtils';
+import { copyTermLine, extractTermLineTimestamp, formatTermTimestamp, getEmptyTermTimestamp, getNumFontVariantsLoaded } from './liveConsoleUtils';
 import { getTermLineEventData, getTermLineInitialData, getTermLineRtlData, registerTermLineMarker } from './liveConsoleMarkers';
-
-
-//Options
-export type LiveConsoleOptions = {
-    timestampDisabled: boolean;
-    timestampForceHour12: boolean | undefined;
-    copyTimestamp: boolean;
-    copyTag: boolean;
-}
-
-//Loading local storage configs
-//FIXME: this is hacky, maybe use atomWithStorage
-let timestampDisabled = false;
-let timestampForceHour12: boolean | undefined = undefined;
-try {
-    const localConfig = localStorage.getItem('liveConsoleTimestamp');
-    if (localConfig === '24h') {
-        timestampForceHour12 = false;
-    } else if (localConfig === '12h') {
-        timestampForceHour12 = true;
-    } else if (localConfig === 'off') {
-        timestampDisabled = true;
-    }
-} catch (error) { }
-let copyTimestamp = false;
-let copyTag = true;
-try {
-    const localConfig = localStorage.getItem('liveConsoleCopyOpts');
-    if (typeof localConfig === 'string') {
-        const parts = localConfig.split(',');
-        copyTimestamp = parts.includes('ts');
-        copyTag = parts.includes('tag');
-    }
-} catch (error) { }
+import { useIsDarkMode } from '@/hooks/theme';
+import { darkThemeColors, lightThemeColors, ANSI } from './liveConsoleColors';
+import { useTerminalOptions } from './liveConsoleHooks';
+import { DensityModes } from './xtermOptions';
 
 
 //Consts
 const keyDebounceTime = 150; //ms
-
-//FIXME: move to inside the component
-const defaultTermPrefix = formatTermTimestamp(
-    Date.now(),
-    {
-        timestampDisabled,
-        timestampForceHour12,
-        copyTimestamp,
-        copyTag,
-    }
-).replace(/\w/g, '-');
 
 //Main component
 export default function LiveConsolePage() {
     const [isSaveSheetOpen, setIsSaveSheetOpen] = useState(false);
     const [isConnected, setIsConnected] = useState(false);
     const [showSearchBar, setShowSearchBar] = useState(false);
+
+    // Terminal settings state
+    const { options: savedOptions, updateOptions: updateTerminalOptions } = useTerminalOptions();
+    const optionsRef = useRef({ ...savedOptions });
+
     const termInputRef = useRef<HTMLInputElement>(null);
     const termPrefixRef = useRef({
         ts: 0, //so we can clear the console
         lastEol: true,
-        //FIXME: defaultTermPrefix depends on options, deal with it when options change
-        prefix: defaultTermPrefix,
+        prefix: getEmptyTermTimestamp(optionsRef.current.timestamp),
     });
     const refreshPage = useContentRefresh();
+    const isDarkTheme = useIsDarkMode();
 
-    //FIXME: maybe use atomWithStorage
-    const consoleOptions: LiveConsoleOptions = useMemo(() => {
-        return {
-            timestampDisabled,
-            timestampForceHour12,
-            copyTimestamp,
-            copyTag,
-        };
-    }, []);
-
+    //This is required to update the timestamp, because writeToTerminal is "cached" by the socket useEffect
+    useEffect(() => {
+        optionsRef.current = { ...savedOptions };
+    }, [savedOptions]);
 
     /**
      * xterm stuff
      */
     const jumpBottomBtnRef = useRef<HTMLButtonElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const term = useMemo(() => new Terminal(terminalOptions), []);
+    const term = useMemo(() => new Terminal({
+        ...xtermOptions,
+        ...savedOptions,
+        theme: isDarkTheme ? darkThemeColors : lightThemeColors,
+    }), []);
     const fitAddon = useMemo(() => new FitAddon(), []);
     const searchAddon = useMemo(() => new SearchAddon(), []);
     const termLinkHandler = (event: MouseEvent, uri: string) => {
@@ -136,8 +98,23 @@ export default function LiveConsolePage() {
     useEventListener('resize', debounce(100, refitTerminal));
 
     useEffect(() => {
+        if (term.element) {
+            const densitySettings = DensityModes[savedOptions.density];
+            Object.assign(term.options, {
+                theme: isDarkTheme ? darkThemeColors : lightThemeColors,
+                scrollback: savedOptions.scrollback,
+                fontSize: densitySettings.fontSize,
+                lineHeight: densitySettings.lineHeight,
+                letterSpacing: densitySettings.letterSpacing,
+            });
+            refitTerminal();
+            term.refresh(0, term.rows - 1);
+        }
+    }, [term, isDarkTheme, savedOptions]);
+
+    useEffect(() => {
         if (containerRef.current && jumpBottomBtnRef.current && !term.element) {
-            console.log('live console xterm init');
+            console.log('Live Console xterm.js init');
             containerRef.current.innerHTML = ''; //due to HMR, the terminal element might still be there
             term.loadAddon(fitAddon);
             term.loadAddon(searchAddon);
@@ -177,7 +154,8 @@ export default function LiveConsolePage() {
                     copyTermLine(
                         selection,
                         term.element as any,
-                        consoleOptions,
+                        optionsRef.current.copyTimestamp,
+                        optionsRef.current.copyChannel,
                         termInputRef.current
                     ).then((res) => {
                         //undefined if no error
@@ -257,10 +235,10 @@ export default function LiveConsolePage() {
                     isNewTs = true;
                     line = content;
                     termPrefixRef.current.ts = ts;
-                    termPrefixRef.current.prefix = formatTermTimestamp(ts, consoleOptions);
+                    termPrefixRef.current.prefix = formatTermTimestamp(ts, optionsRef.current.timestamp);
                 }
             } catch (error) {
-                termPrefixRef.current.prefix = defaultTermPrefix;
+                termPrefixRef.current.prefix = getEmptyTermTimestamp(optionsRef.current.timestamp);
                 console.warn('Failed to parse timestamp from:', line, (error as any).message);
             }
 
@@ -281,21 +259,17 @@ export default function LiveConsolePage() {
             }
 
             //Check if it's last line, and if the EOL was stripped
-            const prefixColor = isNewTs ? ANSI.WHITE : ANSI.GRAY;
+            const prefixColor = isNewTs ? ANSI.TS_STRONG : ANSI.TS_WEAK;
             const prefix = termPrefixRef.current.lastEol
                 ? prefixColor + termPrefixRef.current.prefix
                 : '';
-            if (i < lines.length - 1) {
-                term.writeln(prefix + line, writeCallback);
+            const prefixedLine = prefix + line;
+            if (i < lines.length - 1 || wasEolStripped) {
+                term.writeln(prefixedLine, writeCallback);
                 termPrefixRef.current.lastEol = true;
             } else {
-                if (wasEolStripped) {
-                    term.writeln(prefix + line, writeCallback);
-                    termPrefixRef.current.lastEol = true;
-                } else {
-                    term.write(prefix + line, writeCallback);
-                    termPrefixRef.current.lastEol = false;
-                }
+                term.write(prefixedLine, writeCallback);
+                termPrefixRef.current.lastEol = false;
             }
         }
     }
@@ -380,6 +354,8 @@ export default function LiveConsolePage() {
         if (!isConnected || !pageSocket.current) return;
         if (cmd === 'cls' || cmd === 'clear') {
             clearConsole();
+        } if (cmd === '\n') {
+            term.write(`\n`);
         } else {
             pageSocket.current.emit('consoleCommand', cmd);
         }
@@ -388,7 +364,7 @@ export default function LiveConsolePage() {
         term.clear();
         searchAddon.clearDecorations();
         setShowSearchBar(false);
-        term.write(`${ANSI.YELLOW}[console cleared]${ANSI.RESET}\n`);
+        term.write(`${ANSI.ORANGE}[console cleared]${ANSI.RESET}\n`);
     }
     const toggleSearchBar = () => {
         setShowSearchBar(!showSearchBar);
@@ -406,8 +382,11 @@ export default function LiveConsolePage() {
 
 
     return (
-        <div className="dark text-primary flex flex-col h-contentvh w-full bg-card border md:rounded-xl overflow-clip">
-            <LiveConsoleHeader />
+        <div className="text-primary flex flex-col h-contentvh w-full bg-card border md:rounded-xl overflow-clip">
+            <LiveConsoleHeader
+                options={savedOptions}
+                setOptions={updateTerminalOptions}
+            />
 
             <div className="flex flex-col relative grow overflow-hidden">
                 {/* Connecting overlay */}

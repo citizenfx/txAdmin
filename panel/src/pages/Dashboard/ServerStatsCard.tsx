@@ -127,7 +127,7 @@ export default function ServerStatsCard() {
     }
 
     return (
-        <div className="col-span-3 sm:col-span-1 2xl:col-span-2 min-w-52 py-2 px-4 flex flex-col md:rounded-xl border shadow-sm bg-card">
+        <div className="col-span-3 sm:col-span-1 3xl:col-span-2 min-w-52 py-2 px-4 flex flex-col md:rounded-xl border shadow-sm bg-card">
             <div className="flex flex-row items-center justify-between space-y-0 pb-2 text-muted-foreground">
                 <h3 className="tracking-tight text-sm font-medium line-clamp-1">
                     Server stats {titleNode}

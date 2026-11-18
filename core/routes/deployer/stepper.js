@@ -3,17 +3,18 @@ import fse from 'fs-extra';
 import { txHostConfig } from '@core/globalData';
 import consoleFactory from '@lib/console';
 import { TxConfigState } from '@shared/enums';
+import { sanitizeSimpleHtml } from '@lib/htmlRenderSafety';
 const console = consoleFactory(modulename);
 
 
 /**
  * Returns the output page containing the deployer stepper page (all 3 stages)
- * @param {object} ctx
+ * @param {import('@modules/WebServer/ctxTypes').AuthedCtx} ctx
  */
 export default async function DeployerStepper(ctx) {
     //Check permissions
     if (!ctx.admin.hasPermission('master')) {
-        return ctx.utils.render('main/message', { message: 'You need to be the admin master to use the deployer.' });
+        return ctx.utils.renderMessage('You need to be the admin master to use the deployer.');
     }
 
     //Ensure the correct state for the deployer
@@ -64,7 +65,7 @@ export default async function DeployerStepper(ctx) {
             return {
                 name: name,
                 value: recipeVars[name],
-                description: knownVarDescriptions[name] || '',
+                description: sanitizeSimpleHtml(knownVarDescriptions[name] || ''),
             };
         });
     } else if (txManager.deployer.step === 'run') {
@@ -88,7 +89,7 @@ Make sure everything is correct in the recipe and try again.`;
             renderData.serverCFG = errorMessage;
         }
     } else {
-        return ctx.utils.render('main/message', { message: 'Unknown Deployer step, please report this bug and restart txAdmin.' });
+        return ctx.utils.renderMessage('Unknown Deployer step, please report this bug and restart txAdmin.');
     }
 
     return ctx.utils.render('standalone/deployer', renderData);

@@ -227,6 +227,15 @@ export const nuiAuthLogic = (
             return failResp('Invalid Request: source');
         }
 
+        // DEBUG
+        // throw new Error('make sure you know what you are doing');
+        // return successResp(new AuthedAdmin({
+        //     name: 'tempadmin',
+        //     master: true,
+        //     permissions: ['all_permissions'],
+        //     password_temporary: false,
+        // }), undefined);
+
         // Check missing headers
         if (typeof reqHeader['x-txadmin-token'] !== 'string') {
             return failResp('Invalid Request: token header');

@@ -1,9 +1,11 @@
+import { useEffect } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Route as WouterRoute, Switch } from "wouter";
 import { PageErrorFallback } from "@/components/ErrorFallback";
 import { useAtomValue, useSetAtom } from "jotai";
 import { contentRefreshKeyAtom, pageErrorStatusAtom, useSetPageTitle } from "@/hooks/pages";
 import { navigate as setLocation } from 'wouter/use-browser-location';
+import { useAdminPerms } from "@/hooks/auth";
 
 import Iframe from "@/pages/Iframe";
 import NotFound from "@/pages/NotFound";
@@ -17,8 +19,9 @@ import AddLegacyBanPage from "@/pages/AddLegacyBanPage";
 import DashboardPage from "@/pages/Dashboard/DashboardPage";
 import PlayerDropsPage from "@/pages/PlayerDropsPage/PlayerDropsPage";
 import SettingsPage from "@/pages/Settings/SettingsPage";
-import { useAdminPerms } from "@/hooks/auth";
 import UnauthorizedPage from "@/pages/UnauthorizedPage";
+import DiagnosticsPage from "@/pages/Diagnostics/DiagnosticsPage";
+import AdvancedPage from "@/pages/AdvancedPage";
 
 
 type RouteType = {
@@ -46,9 +49,9 @@ const allRoutes: RouteType[] = [
         Page: <PlayerDropsPage />
     },
     {
-        path: '/whitelist',
-        title: 'Whitelist',
-        Page: <Iframe legacyUrl="whitelist" />
+        path: '/allowlist',
+        title: 'Allowlist',
+        Page: <Iframe legacyUrl="allowlist" />
     },
     {
         path: '/admins',
@@ -70,7 +73,7 @@ const allRoutes: RouteType[] = [
     {
         path: '/system/diagnostics',
         title: 'Diagnostics',
-        Page: <Iframe legacyUrl="diagnostics" />
+        Page: <DiagnosticsPage />
     },
     {
         path: '/system/console-log',
@@ -130,7 +133,7 @@ const allRoutes: RouteType[] = [
         path: '/advanced',
         title: 'Advanced',
         permission: 'all_permissions',
-        Page: <Iframe legacyUrl="advanced" />
+        Page: <AdvancedPage />
     },
 
     //No nav routes

@@ -1,5 +1,6 @@
 import { txToast, validToastTypes } from "@/components/TxToaster";
 import { useCsrfToken, useExpireAuthData } from "@/hooks/auth";
+import { msToShortDuration } from "@/lib/dateTime";
 import { useEffect, useRef } from "react";
 
 const WEBPIPE_PATH = "https://monitor/WebPipe";
@@ -131,6 +132,9 @@ type ApiCallOpts<RespType, ReqType> = {
     finally?: () => void;
 }
 
+//Just syntax sugar
+const VOID = undefined as void;
+
 export const useBackendApi = <
     RespType = any,
     ReqType = NonNullable<Object>,
@@ -149,6 +153,9 @@ export const useBackendApi = <
         }
     }, []);
 
+    /**
+     * @returns VOID if the request was aborted or error was handled, otherwise the response data
+     */
     return async (opts: ApiCallOpts<RespType, ReqType>) => {
         //The abort controller is not aborted, just forgotten
         abortController.current = new AbortController();
@@ -205,12 +212,14 @@ export const useBackendApi = <
         }
 
         //Starting request timeout
+        const timeoutMs = opts.timeout ?? ApiTimeout.DEFAULT;
         const timeoutId = setTimeout(() => {
             if (abortController.current?.signal.aborted) return;
             console.log('[TIMEOUT]', apiCallDesc);
-            abortController.current?.abort('timeout');
+            const msg = `Request timed out after ${msToShortDuration(timeoutMs, {units: ['s', 'ms']})}.`;
+            abortController.current?.abort(msg);
             handleError('Request Timeout', 'If you closed txAdmin, please restart it and try again.');
-        }, opts.timeout ?? ApiTimeout.DEFAULT);
+        }, timeoutMs);
 
         try {
             //Make request
@@ -220,7 +229,9 @@ export const useBackendApi = <
                 body: opts.data,
             }, abortController.current);
             clearTimeout(timeoutId);
-            if (abortController.current?.signal.aborted) return;
+            // if (abortController.current?.signal.aborted) {
+            //     throw abortController.current.signal.reason;
+            // };
 
             //If generic error
             if (hookOpts.throwGenericErrors && 'error' in data) {
@@ -261,11 +272,22 @@ export const useBackendApi = <
             return data as RespType;
 
         } catch (e) {
-            if (abortController.current?.signal.aborted) return;
+            // console.warn('Error Handling:', {
+            //     aborted: abortController.current?.signal.aborted,
+            //     reason: abortController.current?.signal.reason,
+            //     typeof: typeof e,
+            //     e,
+            // });
             clearTimeout(timeoutId);
+            if (e === 'unmount') {
+                console.warn('[UNMOUNTED]', apiCallDesc);
+                return VOID;
+            }
+            const error = abortController.current?.signal.reason ?? e as any;
             let errorMessage = 'unknown error';
-            const error = e as any;
-            if (typeof error.message !== 'string') {
+            if(typeof error === 'string') {
+                errorMessage = error;
+            } else if (typeof error.message !== 'string') {
                 errorMessage = JSON.stringify(error);
             } else if (error.message.startsWith('NetworkError')) {
                 errorMessage = 'Network error.\nIf you closed txAdmin, please restart it and try again.';
@@ -274,13 +296,10 @@ export const useBackendApi = <
             } else {
                 errorMessage = error.message;
             }
-
-            if (errorMessage.includes('unmount')) {
-                console.warn('[UNMOUNTED]', apiCallDesc);
-            } else {
-                console.error('[ERROR]', apiCallDesc, errorMessage);
-                handleError('Request Error', errorMessage);
-            }
+            
+            console.error('[ERROR]', apiCallDesc, errorMessage);
+            handleError('Request Error', errorMessage);
+            return VOID;
         } finally {
             if (opts.finally) {
                 try {

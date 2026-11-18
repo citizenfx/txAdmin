@@ -17,7 +17,7 @@ export class LoggerBase {
     lrStream: rfs.RotatingFileStream;
     lrErrors = 0;
     public activeFilePath: string;
-    private lrLastError: string | undefined;
+    public lrLastError: string | undefined;
     private basePath: string;
     private logNameRegex: RegExp;
 

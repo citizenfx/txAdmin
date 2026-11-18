@@ -30,3 +30,4 @@ The permissions are saved in the `txData/admins.json` file and can be edited thr
 - `players.spectate`: Spectate a player.
 - `players.teleport`: Teleport self or a player.
 - `players.troll`: Use the Troll Menu.
+- `players.remove_ids`: Remove IDs/HWIDs of player from the database.

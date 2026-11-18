@@ -6,7 +6,6 @@ const console = consoleFactory(modulename);
 const allEmojis = new Set(orderedEmojis);
 
 
-
 /**
  * Generic embed generation functions
  */

@@ -38,12 +38,14 @@ const TimelineCard = memo(({
         const endDate = new Date(dataTs);
         if (displayLod === 'day') {
             // 14d window, 12h+15m padding start
-            startDate.setHours(-(14 * 24) - 12, -15, 0, 0);
+            const chartDurationHours = (14 - 1) * 24; //minus 1 day
+            startDate.setHours(-chartDurationHours - 12, 0, 0, 0);
             endDate.setHours(12, 0, 0, 0);
         } else {
             // 7d window, 30m+15m padding start
-            startDate.setHours(startDate.getHours() - 7 * 24, -45, 0, 0);
-            endDate.setMinutes(30, 0, 0);
+            const chartDurationHours = (7 * 24) + 1; //plus 1 hour
+            startDate.setHours(startDate.getHours() - chartDurationHours, 15, 0, 0);
+            endDate.setMinutes(endDate.getMinutes() + 30, 0, 0);
         }
         const processed = processDropsSummary(summaryData, displayLod, startDate);
         if (!processed) return;

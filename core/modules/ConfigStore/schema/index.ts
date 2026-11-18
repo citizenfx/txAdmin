@@ -13,8 +13,8 @@ import { SYM_RESET_CONFIG } from "@lib/symbols";
 
 
 //Type inference utils
-type InferConfigScopes<S extends ConfigScope> = IferConfigValues<S>;
-type IferConfigValues<S extends ConfigScope> = {
+type InferConfigScopes<S extends ConfigScope> = InferConfigValues<S>;
+type InferConfigValues<S extends ConfigScope> = {
     [K in keyof S]: S[K]['default'] | z.infer<S[K]['validator']>;
 }
 type WritableValues<T> = {

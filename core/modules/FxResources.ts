@@ -1,4 +1,5 @@
 const modulename = 'FxResources';
+import { cloneDeep } from 'lodash-es';
 import consoleFactory from '@lib/console';
 import { Stopwatch } from './FxMonitor/utils';
 const console = consoleFactory(modulename);
@@ -41,14 +42,19 @@ export default class FxResources {
     public resourceReport?: ResourceReportType;
     private resBooting: ResPendingStartState | null = null;
     private resBootLog: ResBootLogEntry[] = [];
+    private prevBootLog: ResBootLogEntry[] | null = null;
 
 
     /**
      * Reset boot state on server close
      */
     handleServerClose() {
-        this.resBooting = null;
+        //Save the previous boot log
+        if (this.resBootLog.length > 0) {
+            this.prevBootLog = this.resBootLog;
+        }
         this.resBootLog = [];
+        this.resBooting = null;
     }
 
 
@@ -67,11 +73,22 @@ export default class FxResources {
             }
         } else if (event === 'onResourceStart') {
             //Resource started
-            this.resBootLog.push({
-                resource,
-                duration: this.resBooting?.time.elapsed ?? 0,
-                tsBooted: Date.now(),
-            })
+            if (this.resBooting?.name === resource) {
+                this.resBootLog.push({
+                    resource,
+                    duration: this.resBooting.time.elapsedMs ?? -1,
+                    tsBooted: Date.now(),
+                });
+            } else {
+                if (resource !== 'monitor') {
+                    console.verbose.warn(`Resource ${resource} started while ${this.resBooting?.name ?? 'unknown'} was booting`);
+                }
+                this.resBootLog.push({
+                    resource,
+                    duration: -1,
+                    tsBooted: Date.now(),
+                });
+            }
         }
     }
 
@@ -89,6 +106,13 @@ export default class FxResources {
             current: this.resBooting,
             elapsedSinceLast,
         }
+    }
+
+    /**
+     * Getter for the latest boot log
+     */
+    public get latestBootLog() {
+        return cloneDeep(this.resBooting ? this.resBootLog : this.prevBootLog);
     }
 
 

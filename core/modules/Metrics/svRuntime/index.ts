@@ -373,7 +373,7 @@ export default class SvRuntimeMetrics {
             }
         }
 
-        //Checking if at least 12h of data
+        //Checking if at least 36 snapshots (3h of data) in the last 6h
         if (totalSnapshots < minSnapshots) {
             return null; //not enough data for meaningful analysis
         }

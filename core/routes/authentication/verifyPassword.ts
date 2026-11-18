@@ -68,13 +68,11 @@ export default async function AuthVerifyPassword(ctx: InitializedCtx) {
         } satisfies PassSessAuthType;
         ctx.sessTools.set({ auth: sessData });
 
-        txCore.logger.admin.write(vaultAdmin.name, `logged in from ${ctx.ip} via password`);
+        const authedAdmin = new AuthedAdmin(vaultAdmin, sessData.csrfToken);
+        authedAdmin.logAction(`logged in from ${ctx.ip} via password auth`);
         txCore.metrics.txRuntime.loginOrigins.count(ctx.txVars.hostType);
         txCore.metrics.txRuntime.loginMethods.count('password');
-
-        const authedAdmin = new AuthedAdmin(vaultAdmin, sessData.csrfToken)
         return ctx.send<ReactAuthDataType>(authedAdmin.getAuthData());
-
     } catch (error) {
         console.warn(`Failed to authenticate ${postBody.username} with error: ${(error as Error).message}`);
         console.verbose.dir(error);

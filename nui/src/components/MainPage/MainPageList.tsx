@@ -85,6 +85,7 @@ export const MainPageList: React.FC = () => {
   const menuVisible = useIsMenuVisibleValue();
   const isRedm = useIsRedmValue()
   const { closeMenu } = usePlayerModalContext();
+  const [lastVehicleSpawned, setLastVehicleSpawned] = useState<string | null>(null);
 
   //FIXME: this is so the menu resets multi selectors when we close it
   // but it is not working, and when I do this the first time we press
@@ -198,9 +199,10 @@ export const MainPageList: React.FC = () => {
       title: t("nui_menu.page_main.vehicle.spawn.dialog_title"),
       description: t("nui_menu.page_main.vehicle.spawn.dialog_desc"),
       placeholder: 'any vehicle model or ' + dialogData.shortcuts.join(', '),
-      suggestions: dialogData.shortcuts,
-      onSubmit: (modelName: string) => {
-        modelName = vehiclePlaceholderReplacer(modelName, dialogData.shortcutsData);
+      suggestions: lastVehicleSpawned ? [lastVehicleSpawned, ...dialogData.shortcuts] : dialogData.shortcuts,
+      onSubmit: (modelInput: string) => {
+        const { modelName } = vehiclePlaceholderReplacer(modelInput, dialogData.shortcutsData);
+        setLastVehicleSpawned(modelName);
         fetchNui("spawnVehicle", { model: modelName });
         if (autoClose) {
           closeMenu()
@@ -516,7 +518,7 @@ export const MainPageList: React.FC = () => {
       //   onSelect: handleSpawnWeapon,
       // },
     ],
-    [playerMode, teleportMode, vehicleMode, healMode, serverCtx, isRedm]
+    [playerMode, teleportMode, vehicleMode, healMode, serverCtx, isRedm, lastVehicleSpawned]
   );
 
   return (

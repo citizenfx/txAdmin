@@ -26,14 +26,15 @@ export const getLogSizes = async (basePath: string, filterRegex: RegExp) => {
     const fileStatsArray = fileStatsSizes.map((op, index) => {
         if (op.status === 'fulfilled') {
             totalBytes += op.value.size;
-            return [statNames[index], bytes(op.value.size)];
+            return [statNames[index], bytes(op.value.size)!];
         } else {
             return [statNames[index], false];
         }
-    });
+    }) as [filename: string, size: string | false][];
     return {
-        total: bytes(totalBytes),
-        files: Object.fromEntries(fileStatsArray),
+        totalBytes: bytes(totalBytes)!,
+        fileCount: statNames.length,
+        // files: Object.fromEntries(fileStatsArray), //FIXME: unused
     };
 };
 

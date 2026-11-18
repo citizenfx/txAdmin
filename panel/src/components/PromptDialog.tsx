@@ -61,6 +61,11 @@ export default function PromptDialog() {
                             required={dialogState.required}
                             minHeight={100}
                             maxHeight={240}
+
+                            //Remove line breaks from the input value
+                            onChange={(e) => {
+                                e.target.value = e.target.value.replace(/\n\s*/g, ' ').trimStart();
+                            }}
                         />
                     ) : (
                         <Input

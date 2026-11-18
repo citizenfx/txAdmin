@@ -3,7 +3,7 @@ import { tsToLocaleDateTimeString } from "@/lib/dateTime";
 import { PlayerHistoryItem } from "@shared/playerApiTypes";
 import InlineCode from "@/components/InlineCode";
 import { useOpenActionModal } from "@/hooks/actionModal";
-import ModalCentralMessage from "@/components/ModalCentralMessage";
+import { ModalTabInner, ModalTabMessage } from "@/components/modal-tabs";
 
 
 type HistoryItemProps = {
@@ -67,9 +67,9 @@ export default function PlayerHistoryTab({ actionHistory, serverTime, refreshMod
     const openActionModal = useOpenActionModal();
 
     if (!actionHistory.length) {
-        return <ModalCentralMessage>
+        return <ModalTabMessage>
             No bans/warns found.
-        </ModalCentralMessage>;
+        </ModalTabMessage>;
     }
 
     const doOpenActionModal = (actionId: string) => {
@@ -77,14 +77,16 @@ export default function PlayerHistoryTab({ actionHistory, serverTime, refreshMod
     }
 
     const reversedActionHistory = [...actionHistory].reverse();
-    return <div className="flex flex-col gap-1 p-1">
-        {reversedActionHistory.map((action) => (
-            <HistoryItem
-                key={action.id}
-                action={action}
-                serverTime={serverTime}
-                modalOpener={doOpenActionModal}
-            />
-        ))}
-    </div>;
+    return (
+        <ModalTabInner className="flex flex-col gap-1">
+            {reversedActionHistory.map((action) => (
+                <HistoryItem
+                    key={action.id}
+                    action={action}
+                    serverTime={serverTime}
+                    modalOpener={doOpenActionModal}
+                />
+            ))}
+        </ModalTabInner>
+    );
 }

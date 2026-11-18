@@ -11,6 +11,7 @@ import { useLocation } from "wouter";
 import { fetchWithTimeout } from '@/hooks/fetch';
 import { processFetchError } from './errors';
 import { ServerGlowIcon } from '@/components/serverIcon';
+import { LocalStorageKey } from '@/lib/localStorage';
 
 
 function HeaderNoServer() {
@@ -138,7 +139,7 @@ export default function Login() {
     //Prefill username/password if dev pass enabled
     useEffect(() => {
         try {
-            const rawLocalStorageStr = localStorage.getItem('authCredsAutofill');
+            const rawLocalStorageStr = localStorage.getItem(LocalStorageKey.AuthCredsAutofill);
             if (rawLocalStorageStr) {
                 const [user, pass] = JSON.parse(rawLocalStorageStr);
                 usernameRef.current!.value = user ?? '';

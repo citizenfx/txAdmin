@@ -143,14 +143,8 @@ function AuthedHeaderFragment() {
                 {/* TODO: remove this when remaking the ingame menu */}
                 {window.txConsts.isWebInterface && (
                     <DropdownMenuItem className="cursor-pointer" onClick={switchTheme}>
-                        <span className="hidden dark:flex items-center">
-                            <SunIcon className="mr-2 h-4 w-4" />
-                            Light Mode
-                        </span>
-                        <span className="flex dark:hidden items-center">
-                            <MoonIcon className="mr-2 h-4 w-4" />
-                            Dark Mode
-                        </span>
+                        {theme === 'light' ? <SunIcon className="mr-2 h-4 w-4" /> : <MoonIcon className="mr-2 h-4 w-4" />}
+                        {theme === 'light' ? 'Light Mode' : 'Dark Mode'}
                     </DropdownMenuItem>
                 )}
                 <DropdownMenuItem className="cursor-pointer" onClick={openAccountModal}>

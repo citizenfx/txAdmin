@@ -144,7 +144,7 @@ async function handleRequests(ctx: AuthedCtx, action: any): Promise<GenericApiRe
         //Find request
         const requests = txCore.database.whitelist.findManyRequests({ id: reqId });
         if (!requests.length) {
-            return { error: `Whitelist request ID ${reqId} not found.` };
+            return { error: `Allowlist request ID ${reqId} not found.` };
         }
         const req = requests[0]; //just getting the first
 

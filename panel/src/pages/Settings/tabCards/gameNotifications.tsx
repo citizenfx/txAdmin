@@ -93,7 +93,7 @@ export default function ConfigCardGameNotifications({ cardCtx, pageCtx }: Settin
                 />
                 <SettingItemDesc>
                     Suppresses the display of announcements, allowing you to implement your own announcement via the event <InlineCode>txAdmin:events:announcement</InlineCode>.
-                    <TxAnchor href="https://aka.cfx.re/txadmin-events#txadmineventsannouncement">Documentation</TxAnchor>
+                    &nbsp;<TxAnchor href="https://aka.cfx.re/txadmin-events#txadmineventsannouncement">Documentation</TxAnchor>
                 </SettingItemDesc>
             </SettingItem>
             <SettingItem label="Hide Direct Message Notification">
@@ -107,7 +107,7 @@ export default function ConfigCardGameNotifications({ cardCtx, pageCtx }: Settin
                 />
                 <SettingItemDesc>
                     Suppresses the display of direct messages, allowing you to implement your own direct message notification via the event <InlineCode>txAdmin:events:playerDirectMessage</InlineCode>.
-                    <TxAnchor href="https://aka.cfx.re/txadmin-events#txadmineventsplayerdirectmessage">Documentation</TxAnchor>
+                    &nbsp;<TxAnchor href="https://aka.cfx.re/txadmin-events#txadmineventsplayerdirectmessage">Documentation</TxAnchor>
                 </SettingItemDesc>
             </SettingItem>
             <SettingItem label="Hide Warning Notification">
@@ -121,7 +121,7 @@ export default function ConfigCardGameNotifications({ cardCtx, pageCtx }: Settin
                 />
                 <SettingItemDesc>
                     Suppresses the display of warnings, allowing you to implement your own warning via the event <InlineCode>txAdmin:events:playerWarned</InlineCode>.
-                    <TxAnchor href="https://aka.cfx.re/txadmin-events#txadmineventsplayerwarned">Documentation</TxAnchor>
+                    &nbsp;<TxAnchor href="https://aka.cfx.re/txadmin-events#txadmineventsplayerwarned">Documentation</TxAnchor>
                 </SettingItemDesc>
             </SettingItem>
             <SettingItem label="Hide Scheduled Restart Warnings">
@@ -135,7 +135,7 @@ export default function ConfigCardGameNotifications({ cardCtx, pageCtx }: Settin
                 />
                 <SettingItemDesc>
                     Suppresses the display of scheduled restart warnings, allowing you to implement your own warning via the event <InlineCode>txAdmin:events:scheduledRestart</InlineCode>.
-                    <TxAnchor href="https://aka.cfx.re/txadmin-events#txadmineventsscheduledrestart">Documentation</TxAnchor>
+                    &nbsp;<TxAnchor href="https://aka.cfx.re/txadmin-events#txadmineventsscheduledrestart">Documentation</TxAnchor>
                 </SettingItemDesc>
             </SettingItem>
         </SettingsCardShell>

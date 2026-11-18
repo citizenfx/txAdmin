@@ -57,7 +57,7 @@ fs.writeFileSync(path.join(fxsPaths.monitor, 'package.json'), '{"type":"commonjs
 //Create txAdmin process runner
 const txInstance = new TxAdminRunner(fxsPaths.root, fxsPaths.bin, txDevEnv);
 
-//Listens on stdin for the key 'r'
+//Listens on stdin for commands
 process.stdin.on('data', (data) => {
     const cmd = data.toString().toLowerCase().trim();
     if (cmd === 'r' || cmd === 'rr') {

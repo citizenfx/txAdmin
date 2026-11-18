@@ -442,7 +442,7 @@ const validateCommands = async (parsedCommands: (ExecRecursionError | Command)[]
             }
         }
 
-        //Comment out any onesync sets
+        //Comment-out any onesync sets
         if (cmd.isConvarSetterFor('onesync')) {
             toCommentOut.add(
                 cmd.file,
@@ -452,7 +452,15 @@ const validateCommands = async (parsedCommands: (ExecRecursionError | Command)[]
             continue;
         }
 
-        //FIXME: add isConvarSetterFor for all "Settings page only" convars
+        //Comment-out the allowlist convars
+        if (cmd.isConvarSetterFor('sv_allowlistInstructions') || cmd.isConvarSetterFor('sv_appearAllowlisted')) {
+            toCommentOut.add(
+                cmd.file,
+                cmd.line,
+                'The allowlist convars are overwritten by the txAdmin settings page.',
+            );
+            continue;
+        }
 
         //Extract & process endpoint validity
         if (cmd.command === 'endpoint_add_tcp' || cmd.command === 'endpoint_add_udp') {

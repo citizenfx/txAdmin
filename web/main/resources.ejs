@@ -98,20 +98,29 @@
                                 </td>
                                 <td class="tableActions">
                                     <% if (resource.status === 'started') { %>
-                                    <a class="btn btn-sm btn-outline-warning d-block d-md-inline-block mr-md-1 mb-1 mb-md-0 <%= disableActions %>"
+                                    <a class="btn-res-action btn btn-sm btn-outline-warning d-block d-md-inline-block mr-md-1 mb-1 mb-md-0 <%= disableActions %>"
                                         href="#"
-                                        onclick="btnCommand('ensure_res', '<%= resource.name %>'); event.preventDefault();" <%= disableActions %>>
+                                        data-resAction="ensure_res"
+                                        data-resName="<%= encodeURIComponent(resource.name) %>"
+                                        <%= disableActions %>
+                                    >
                                         Restart
                                     </a>
-                                    <a class="btn btn-sm btn-outline-danger d-block d-md-inline-block m-0 <%= disableActions %>"
+                                    <a class="btn-res-action btn btn-sm btn-outline-danger d-block d-md-inline-block m-0 <%= disableActions %>"
                                         href="#"
-                                        onclick="btnCommand('stop_res', '<%= resource.name %>'); event.preventDefault();" <%= disableActions %>>
+                                        data-resAction="stop_res"
+                                        data-resName="<%= encodeURIComponent(resource.name) %>"
+                                        <%= disableActions %>
+                                    >
                                         Stop
                                     </a>
                                     <% } else { %>
-                                    <a class="btn btn-sm btn-outline-success d-block d-md-inline-block <%= disableActions %>"
+                                    <a class="btn-res-action btn btn-sm btn-outline-success d-block d-md-inline-block <%= disableActions %>"
                                         href="#"
-                                        onclick="btnCommand('ensure_res', '<%= resource.name %>'); event.preventDefault();" <%= disableActions %>>
+                                        data-resAction="ensure_res"
+                                        data-resName="<%= encodeURIComponent(resource.name) %>"
+                                        <%= disableActions %>
+                                    >
                                         Start
                                     </a>
                                     <% } %>
@@ -328,6 +337,16 @@
 
     //============================================== Utils
     function refreshResourceList() {
+        const resButtons = document.getElementsByClassName('btn-res-action');
+        for (const btn of resButtons) {
+            btn.onclick = (e) => {
+                e.preventDefault();
+                const resAction = e.currentTarget.dataset.resaction;
+                const resName = decodeURIComponent(e.currentTarget.dataset.resname);
+                btnCommand(resAction, resName);
+            };
+        }
+
         if ($('#defResCheckbox').is(':checked')) {
             defaultResources.forEach(defRes => {
                 $(`#res-${defRes}`).show();

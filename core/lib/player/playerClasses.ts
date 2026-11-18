@@ -18,8 +18,8 @@ const console = consoleFactory(modulename);
 export class BasePlayer {
     displayName: string = 'unknown';
     pureName: string = 'unknown';
-    ids: string[] = [];
-    hwids: string[] = [];
+    idsOnline: string[] = [];
+    hwidsOnline: string[] = [];
     license: null | string = null; //extracted for convenience
     dbData: false | DatabasePlayerType = false;
     isConnected: boolean = false;
@@ -36,25 +36,36 @@ export class BasePlayer {
     }
 
     /**
-     * Returns all available identifiers (current+db)
+     * Getter for the IDs in the database that are not currently online.
      */
-    getAllIdentifiers() {
-        if (this.dbData && this.dbData.ids) {
-            return union(this.ids, this.dbData.ids);
-        } else {
-            return [...this.ids];
-        }
+    get idsOffline() {
+        if (!this.dbData || !this.dbData.ids.length) return [];
+        return this.dbData.ids.filter(x => !this.idsOnline.includes(x));
     }
 
     /**
-     * Returns all available hardware identifiers (current+db)
+     * Getter for the IDs in the database that are not currently online.
      */
-    getAllHardwareIdentifiers() {
-        if (this.dbData && this.dbData.hwids) {
-            return union(this.hwids, this.dbData.hwids);
-        } else {
-            return [...this.hwids];
-        }
+    get hwidsOffline() {
+        if (!this.dbData || !this.dbData.hwids.length) return [];
+        return this.dbData.hwids.filter(x => !this.hwidsOnline.includes(x));
+    }
+
+
+    /**
+     * Getter for all available identifiers (current+db)
+     */
+    get allIdentifiers() {
+        if (!this.dbData || !this.dbData.ids.length) return this.idsOnline;
+        return union(this.idsOnline, this.dbData.ids);
+    }
+
+    /**
+     * Getter for all available hardware identifiers (current+db)
+     */
+    get allHardwareIdentifiers() {
+        if (!this.dbData || !this.dbData.hwids.length) return this.hwidsOnline;
+        return union(this.hwidsOnline, this.dbData.hwids);
     }
 
     /**
@@ -63,11 +74,12 @@ export class BasePlayer {
      *  will contain the license but may be better to also explicitly add it to the array here?
      */
     getHistory() {
-        if (!this.ids.length) return [];
-        return txCore.database.actions.findMany(
-            this.getAllIdentifiers(),
-            this.getAllHardwareIdentifiers()
-        );
+        const allIdentifiers = this.allIdentifiers;
+        const allHardwareIdentifiers = this.allHardwareIdentifiers;
+        if (!allIdentifiers.length && !allHardwareIdentifiers.length) {
+            return [];
+        }
+        return txCore.database.actions.findMany(allIdentifiers, allHardwareIdentifiers);
     }
 
     /**
@@ -96,11 +108,26 @@ export class BasePlayer {
         });
 
         //Remove entries from whitelistApprovals & whitelistRequests
+        const allIds = this.allIdentifiers;
         const allIdsFilter = (x: DatabaseWhitelistApprovalsType) => {
-            return this.ids.includes(x.identifier);
+            return allIds.includes(x.identifier);
         }
         txCore.database.whitelist.removeManyApprovals(allIdsFilter);
         txCore.database.whitelist.removeManyRequests({ license: this.license });
+    }
+
+    /**
+     * Removes specific IDs/HWIDs from the player.
+     */
+    removeIds(idsToDelete: string[]) {
+        if (!this.dbData) throw new Error(`cannot remove ids for a player that has no dbData`);
+        if (!this.license) throw new Error(`cannot remove ids for a player that has no license`);
+        if (!Array.isArray(idsToDelete) || !idsToDelete.length) return;
+
+        //Remove from dbData
+        const newIds = this.dbData.ids.filter(x => !idsToDelete.includes(x));
+        const newHwids = this.dbData.hwids.filter(x => !idsToDelete.includes(x));
+        this.mutateDbData({ ids: newIds, hwids: newHwids });
     }
 }
 
@@ -118,7 +145,7 @@ export class ServerPlayer extends BasePlayer {
     readonly #fxPlayerlist: FxPlayerlist;
     // readonly psid: string; //TODO: calculate player session id (sv mutex, netid, rollover id) here
     readonly netid: number;
-    readonly tsConnected = now();
+    readonly tsConnected: number = now();
     readonly isRegistered: boolean;
     readonly #minuteCronInterval?: ReturnType<typeof setInterval>;
     // #offlineDbDataCacheTimeout?: ReturnType<typeof setTimeout>;
@@ -146,8 +173,8 @@ export class ServerPlayer extends BasePlayer {
         //NOTE: ignoring IP completely
         const { validIdsArray, validIdsObject } = parsePlayerIds(playerData.ids);
         this.license = validIdsObject.license;
-        this.ids = validIdsArray;
-        this.hwids = playerData.hwids.filter(x => {
+        this.idsOnline = validIdsArray;
+        this.hwidsOnline = playerData.hwids.filter(x => {
             return typeof x === 'string' && consts.regexValidHwidToken.test(x);
         });
 
@@ -190,15 +217,15 @@ export class ServerPlayer extends BasePlayer {
                     displayName: this.displayName,
                     pureName: this.pureName,
                     tsLastConnection: this.tsConnected,
-                    ids: union(dbPlayer.ids, this.ids),
-                    hwids: union(dbPlayer.hwids, this.hwids),
+                    ids: union(dbPlayer.ids, this.idsOnline),
+                    hwids: union(dbPlayer.hwids, this.hwidsOnline),
                 });
             } else {
                 //Register player to the database
                 const toRegister = {
                     license: this.license,
-                    ids: this.ids,
-                    hwids: this.hwids,
+                    ids: this.idsOnline,
+                    hwids: this.hwidsOnline,
                     displayName: this.displayName,
                     pureName: this.pureName,
                     playTime: 0,
@@ -308,11 +335,13 @@ export class ServerPlayer extends BasePlayer {
 
 
     /**
-     * Marks this player as disconnected, clears dbData (mem optimization) and clears minute cron
+     * Marks this player as disconnected, and clears minute cron
      */
     disconnect() {
         this.isConnected = false;
         // this.dbData = false;
+        this.idsOnline = [];
+        this.hwidsOnline = [];
         clearInterval(this.#minuteCronInterval);
     }
 }
@@ -344,8 +373,6 @@ export class DatabasePlayer extends BasePlayer {
 
         //fill in data
         this.license = license;
-        this.ids = this.dbData.ids;
-        this.hwids = this.dbData.hwids;
         this.displayName = this.dbData.displayName;
         this.pureName = this.dbData.pureName;
     }

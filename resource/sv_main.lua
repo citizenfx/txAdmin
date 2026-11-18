@@ -281,12 +281,14 @@ end
 
 -- Event so the client can ack the warning
 RegisterNetEvent('txsv:ackWarning', function(actionId)
-    if pendingWarnings[tostring(source)] == actionId then
+    if type(actionId) ~= 'string' then return end
+    local srcStr = tostring(source)
+    if pendingWarnings[srcStr] == actionId then
         PrintStructuredTrace(json.encode({
             type = 'txAdminAckWarning',
             actionId = actionId,
         }))
-        pendingWarnings[tostring(source)] = nil
+        pendingWarnings[srcStr] = nil
     end
 end)
 

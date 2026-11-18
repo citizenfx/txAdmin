@@ -1,5 +1,5 @@
-export { default as diagnostics_page } from './diagnostics/page';
 export { default as diagnostics_sendReport } from './diagnostics/sendReport';
+export { default as diagnostics_getDiagnostics } from './diagnostics/getDiagnostics';
 export { default as intercom } from './intercom.js';
 export { default as resources } from './resources.js';
 export { default as perfChart } from './perfChart';
@@ -63,8 +63,7 @@ export { default as whitelist_page } from './whitelist/page';
 export { default as whitelist_list } from './whitelist/list';
 export { default as whitelist_actions } from './whitelist/actions';
 
-export { default as advanced_page } from './advanced/get';
-export { default as advanced_actions } from './advanced/actions';
+export { default as advanced_runCommand } from './advanced/runCommand';
 
 //FIXME: reorganizar TODAS rotas de logs, incluindo listagem e download
 export { default as serverLog } from './serverLog.js';

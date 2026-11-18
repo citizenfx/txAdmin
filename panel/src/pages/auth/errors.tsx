@@ -122,6 +122,11 @@ export const processFetchError = (error: any) => {
             errorTitle: 'Network Error',
             errorMessage: 'If you closed txAdmin, please restart it and try again.',
         };
+    } else if(error.message?.startsWith('AbortSignal.timeout')) {
+        return {
+            errorTitle: 'Browser Outdated',
+            errorMessage: 'The version of this browser is too old to use txAdmin. Please download a new version of Edge, Chrome, Firefox, etc. and try again.',
+        };
     } else {
         return {
             errorTitle: 'Unknown Error',

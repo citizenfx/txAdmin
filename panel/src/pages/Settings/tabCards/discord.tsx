@@ -124,11 +124,10 @@ export default function ConfigCardDiscord({ cardCtx, pageCtx }: SettingsCardProp
                     required
                 />
                 <SettingItemDesc>
-                    To get a token and the bot to join your server, follow these two guides:
-                    <TxAnchor href="https://discordjs.guide/preparations/setting-up-a-bot-application.html">Setting up a bot application</TxAnchor> and <TxAnchor href="https://discordjs.guide/preparations/adding-your-bot-to-servers.html">Adding your bot to servers</TxAnchor> <br />
+                    To get a token and the bot to join your server, follow these two guides: <br />
+                    <TxAnchor href="https://discordjs.guide/legacy/preparations/app-setup">Setting up a bot application</TxAnchor> and <TxAnchor href="https://discordjs.guide/legacy/preparations/adding-your-app">Adding your bot to servers</TxAnchor> <br />
                     <strong>Note:</strong> Do not reuse the same token for another bot. <br />
-                    <strong>Note:</strong> The bot requires the <strong>Server Members</strong> intent, which can be set at the
-                    <TxAnchor href="https://discord.com/developers/applications">Discord Developer Portal</TxAnchor>.
+                    <strong>Note:</strong> The bot requires the <strong>Server Members</strong> intent, which can be set at the <TxAnchor href="https://discord.com/developers/applications">Discord Developer Portal</TxAnchor>.
                 </SettingItemDesc>
             </SettingItem>
             <SettingItem label="Guild/Server ID" htmlFor={cfg.discordGuild.eid} required={states.botEnabled}>
@@ -142,8 +141,7 @@ export default function ConfigCardDiscord({ cardCtx, pageCtx }: SettingsCardProp
                 />
                 <SettingItemDesc>
                     The ID of the Discord Server (also known as Discord Guild). <br />
-                    To get the Server ID, go to Discord's settings and
-                    <TxAnchor href="https://support.discordapp.com/hc/article_attachments/115002742731/mceclip0.png"> enable developer mode</TxAnchor>, then right-click on the guild icon select "Copy ID".
+                    To get the Server ID, go to Discord's settings and <TxAnchor href="https://support.discordapp.com/hc/article_attachments/115002742731/mceclip0.png">enable developer mode</TxAnchor>, then right-click on the guild icon select "Copy ID".
                 </SettingItemDesc>
             </SettingItem>
             <SettingItem label="Warnings Channel ID" htmlFor={cfg.warningsChannel.eid} showOptional>
@@ -158,8 +156,7 @@ export default function ConfigCardDiscord({ cardCtx, pageCtx }: SettingsCardProp
                 <SettingItemDesc>
                     The ID of the channel to send Announcements (eg server restarts). <br />
                     You can leave it blank to disable this feature. <br />
-                    To get the channel ID, go to Discord's settings and
-                    <TxAnchor href="https://support.discordapp.com/hc/article_attachments/115002742731/mceclip0.png"> enable developer mode</TxAnchor>, then right-click on the channel name and select "Copy ID".
+                    To get the channel ID, go to Discord's settings and <TxAnchor href="https://support.discordapp.com/hc/article_attachments/115002742731/mceclip0.png">enable developer mode</TxAnchor>, then right-click on the channel name and select "Copy ID".
                 </SettingItemDesc>
             </SettingItem>
             {/* <SettingItem label="Status Embed">

@@ -136,12 +136,20 @@ const txAdminAPI = ({type, url, data, dataType, timeout, success, error}) => {
 
     url = TX_BASE_PATH + url;
     timeout = timeout ?? REQ_TIMEOUT_MEDIUM;
-    dataType = dataType || 'json';
+    dataType = dataType ?? 'json'; //This is the expected return type, not request type
+    let contentType;
+    if (typeof data === 'object') {
+        if (data === null) throw new TypeError('txAdminAPI data cannot be null');
+        if (Object.prototype.toString.call(data) === '[object Object]') {
+            data = JSON.stringify(data);
+            contentType = 'application/json';
+        }
+    }
     success = success || (() => {});
     error = error || (() => {});
     const headers = {'X-TxAdmin-CsrfToken': (csrfToken) ? csrfToken : 'not_set'}
     // console.log(`txAdminAPI Req to: ${url}`);
-    return $.ajax({type, url, timeout, data, dataType, success, error, headers});
+    return $.ajax({type, url, timeout, data, dataType, contentType, success, error, headers});
 };
 
 const txAdminAlert = ({content, modalColor, title}) => {

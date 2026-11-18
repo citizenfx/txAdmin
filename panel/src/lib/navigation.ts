@@ -58,17 +58,29 @@ export const handleExternalLinkClick = (event: React.MouseEvent<HTMLElement, Mou
 /**
  * Sets the window URL search param with a given value, or deletes it if value is undefined
  */
-export const setUrlSearchParam = (paramName: string, ref: string | undefined) => {
+export const setUrlSearchParam = (paramName: string, value: string | undefined) => {
     if (typeof paramName !== 'string' || !paramName.length) {
         throw new Error(`setUrlSearchParam: paramName must be a non-empty string`);
     }
     const pageUrl = new URL(window.location.toString());
-    if (ref) {
-        pageUrl.searchParams.set(paramName, ref);
+    if (value) {
+        pageUrl.searchParams.set(paramName, value);
     } else {
         pageUrl.searchParams.delete(paramName);
     }
     window.history.replaceState({}, '', pageUrl);
+}
+
+
+/**
+ * Gets the window URL search param with a given name
+ */
+export const getUrlSearchParam = (paramName: string) => {
+    if (typeof paramName !== 'string' || !paramName.length) {
+        throw new Error(`getUrlSearchParam: paramName must be a non-empty string`);
+    }
+    const pageUrl = new URL(window.location.toString());
+    return pageUrl.searchParams.get(paramName);
 }
 
 

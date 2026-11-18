@@ -299,3 +299,34 @@ export const deepFreeze = <T extends Record<string, any>>(obj: T) => {
  * Returns a chalk.inverse of a string with a 1ch padding
  */
 export const chalkInversePad = (str: string) => chalk.inverse(` ${str} `);
+
+
+/**
+ * Parses a string to a safe and finite integer, or returns null if it's not a valid integer.
+ */
+export const parseFiniteIntString = (str: string) => {
+    const parsed = parseInt(str);
+    if (Number.isNaN(parsed) || !Number.isSafeInteger(parsed) || !Number.isFinite(parsed)) {
+        return null;
+    }
+    return parsed;
+}
+
+/**
+ * Returns a markdown code inline string
+ */
+export const mdCodeInline = (msg: string) => `\`${msg}\``;
+
+
+/**
+ * Returns a markdown code block string
+ */
+export const mdCodeBlock = (msg: string, lang: string | false = '', maxLen: number | false = false) => {
+    const blockLang = lang ? lang : '';
+    let blockMsg = msg;
+    if (maxLen && blockMsg.length > maxLen) {
+        blockMsg = blockMsg.substring(0, maxLen - 3) + '...';
+    }
+    const escapedMessage = blockMsg.replaceAll(/`/g, '\\\`');
+    return `\`\`\`${blockLang}\n${escapedMessage}\n\`\`\``;
+};

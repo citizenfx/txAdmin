@@ -369,7 +369,7 @@ export default class FxRunner {
      * Useful for when we change txAdmin settings and want it to reflect on the server.
      * This will also fire the `txAdmin:event:configChanged`
      */
-    private async updateMutableConvars() {
+    public async updateMutableConvars() {
         console.log('Updating FXServer ConVars.');
         try {
             await setupCustomLocaleFile();
@@ -377,11 +377,12 @@ export default class FxRunner {
             for (const [set, convar, value] of convarList) {
                 this.sendCommand(set, [convar, value], SYM_SYSTEM_AUTHOR);
             }
-            return this.sendEvent('configChanged');
+            this.sendEvent('configChanged');
+            return convarList;
         } catch (error) {
             console.verbose.error('Error updating FXServer ConVars');
             console.verbose.dir(error);
-            return false;
+            return null;
         }
     }
 

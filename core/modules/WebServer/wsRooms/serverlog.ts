@@ -4,7 +4,7 @@ import type { RoomType } from "../webSocket";
  * The console room is responsible for the server log page
  */
 export default {
-    permission: true, //everyone can see it
+    permission: 'server.log.view',
     eventName: 'logData',
     cumulativeBuffer: true,
     outBuffer: [],

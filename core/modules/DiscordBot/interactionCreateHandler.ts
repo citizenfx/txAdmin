@@ -2,7 +2,7 @@ const modulename = 'DiscordBot:interactionHandler';
 import { Interaction, InteractionType } from 'discord.js';
 import infoCommandHandler from './commands/info';
 import statusCommandHandler from './commands/status';
-import whitelistCommandHandler from './commands/whitelist';
+import whitelistCommandHandler from './commands/allowlist';
 import { embedder } from './discordHelpers';
 import { cloneDeep } from 'lodash-es'; //DEBUG
 import consoleFactory from '@lib/console';
@@ -12,7 +12,7 @@ const console = consoleFactory(modulename);
 //All commands
 const handlers = {
     status: statusCommandHandler,
-    whitelist: whitelistCommandHandler,
+    allowlist: whitelistCommandHandler,
     info: infoCommandHandler,
 }
 
@@ -57,6 +57,15 @@ export default async (interaction: Interaction) => {
 
     //Process Slash commands
     if (interaction.isChatInputCommand()) {
+        //FIXME:NEXT:UPDATE drop this
+        if (interaction.commandName === 'whitelist') {
+            await interaction.reply({
+                content: 'The `/whitelist` command has been renamed to `/allowlist`.\nPlease use that instead.',
+                ephemeral: true,
+            });
+            return;
+        }
+
         //Get interaction
         const handler = handlers[interaction.commandName as keyof typeof handlers];
         if (!handler) {

@@ -33,7 +33,7 @@ export type PlayerDropEvent = {
  * A list with 50k connected players will weight around 26mb, meaning no optimization is required there.
  */
 export default class FxPlayerlist {
-    #playerlist: (ServerPlayer | undefined)[] = [];
+    #playerlist: (ServerPlayer | undefined)[] = []; //FIXME: make continuous array instead of indexed by netid
     licenseCache: [mutexid: string, license: string][] = [];
     licenseCacheLimit = 50_000; //mutex+id+license * 50_000 = ~4mb
     joinLeaveLog: [ts: number, isJoin: boolean][] = [];
@@ -123,19 +123,20 @@ export default class FxPlayerlist {
                     netid: p!.netid,
                     displayName: p!.displayName,
                     pureName: p!.pureName,
-                    ids: p!.ids,
                     license: p!.license,
                 });
             });
     }
+
 
     /**
      * Returns a specifc ServerPlayer or undefined.
      * NOTE: this returns the actual object and not a deep clone!
      */
     getPlayerById(netid: number) {
-        return this.#playerlist[netid];
+        return this.#playerlist[netid]; //FIXME: do this.#playerlist.find() instead
     }
+
 
     /**
      * Returns a specifc ServerPlayer or undefined.
@@ -145,12 +146,40 @@ export default class FxPlayerlist {
         return this.#playerlist.filter(p => p && p.license === searchLicense && p.isConnected) as ServerPlayer[];
     }
 
+
     /**
      * Returns a set of all online players' licenses.
      */
     getOnlinePlayersLicenses() {
         return new Set(this.#playerlist.filter(p => p && p.isConnected).map(p => p!.license));
     }
+
+
+    /**
+     * Returns a list of online players' netids associated with each ID/HWID provided.
+     */
+    getAssociatedOnlineNetIds(targetIds: string[] | null = null, targetHwids: string[] | null = null) {
+        type IdAssociation = [id: string, netid: number];
+        if (!targetIds?.length && !targetHwids?.length) {
+            return {
+                idsFound: [] as IdAssociation[],
+                hwidsFound: [] as IdAssociation[],
+            }
+        }
+        const idsFound: IdAssociation[] = [];
+        const hwidsFound: IdAssociation[] = [];
+        for (const player of this.#playerlist.filter(p => p && p.isConnected) as ServerPlayer[]) {
+            targetIds?.filter(id => player.idsOnline.includes(id)).forEach(id => {
+                idsFound.push([id, player.netid]);
+            });
+            targetHwids?.filter(hwid => player.hwidsOnline.includes(hwid)).forEach(hwid => {
+                hwidsFound.push([hwid, player.netid]);
+            });
+        }
+
+        return { idsFound, hwidsFound };
+    }
+
 
     /**
      * Receives initial data callback from ServerPlayer and dispatches to the server as stdin.
@@ -188,7 +217,7 @@ export default class FxPlayerlist {
                     type: 'playerJoining',
                     src: payload.id,
                     ts: currTs,
-                    data: { ids: this.#playerlist[payload.id]!.ids }
+                    data: { ids: svPlayer.idsOnline }
                 }], mutex);
                 txCore.webServer.webSocket.buffer<PlayerJoiningEventType>('playerlist', {
                     mutex,
@@ -196,7 +225,6 @@ export default class FxPlayerlist {
                     netid: svPlayer.netid,
                     displayName: svPlayer.displayName,
                     pureName: svPlayer.pureName,
-                    ids: svPlayer.ids,
                     license: svPlayer.license,
                 });
             } catch (error) {

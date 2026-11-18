@@ -16,7 +16,7 @@ const isUndefined = (x) => (x === undefined);
 
 /**
  * Handle all the server control actions
- * @param {object} ctx
+ * @param {import('@modules/WebServer/ctxTypes').AuthedCtx} ctx
  */
 export default async function DeployerActions(ctx) {
     //Sanity check
@@ -56,7 +56,7 @@ export default async function DeployerActions(ctx) {
 //================================================================
 /**
  * Handle submition of user-edited recipe (record to deployer, starts the process)
- * @param {object} ctx
+ * @param {import('@modules/WebServer/ctxTypes').AuthedCtx} ctx
  */
 async function handleConfirmRecipe(ctx) {
     //Sanity check
@@ -79,7 +79,7 @@ async function handleConfirmRecipe(ctx) {
 //================================================================
 /**
  * Handle submition of the input variables/parameters
- * @param {object} ctx
+ * @param {import('@modules/WebServer/ctxTypes').AuthedCtx} ctx
  */
 async function handleSetVariables(ctx) {
     //Sanity check
@@ -196,7 +196,7 @@ async function handleSetVariables(ctx) {
 //================================================================
 /**
  * Handle the commit of a Recipe by receiving the user edited server.cfg
- * @param {object} ctx
+ * @param {import('@modules/WebServer/ctxTypes').AuthedCtx} ctx
  */
 async function handleSaveConfig(ctx) {
     //Sanity check
@@ -277,7 +277,7 @@ async function handleSaveConfig(ctx) {
 //================================================================
 /**
  * Handle the cancellation of the deployer proguess
- * @param {object} ctx
+ * @param {import('@modules/WebServer/ctxTypes').AuthedCtx} ctx
  */
 async function handleCancel(ctx) {
     txManager.deployer = null;

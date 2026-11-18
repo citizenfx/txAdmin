@@ -107,7 +107,7 @@ export default function DrilldownChangesSubcard({ changes }: DrilldownChangesSub
     };
 
     const sortedChanges = useMemo(() => {
-        return changes.sort((a, b) => a.ts - b.ts);
+        return changes.sort((a, b) => b.ts - a.ts);
     }, [changes]);
 
     if (!changes.length) {

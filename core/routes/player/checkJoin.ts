@@ -3,16 +3,15 @@ import cleanPlayerName from '@shared/cleanPlayerName';
 import { GenericApiErrorResp } from '@shared/genericApiTypes';
 import { DatabaseActionBanType, DatabaseActionType, DatabaseWhitelistApprovalsType } from '@modules/Database/databaseTypes';
 import { anyUndefined, now } from '@lib/misc';
-import { filterPlayerHwids, parsePlayerIds, shortenId, summarizeIdsArray } from '@lib/player/idUtils';
+import { filterPlayerHwids, parsePlayerIds, summarizeIdsArray } from '@lib/player/idUtils';
 import type { PlayerIdsObjectType } from "@shared/otherTypes";
-import xssInstancer from '@lib/xss';
+import { escapeHtmlContent, sanitizeSimpleHtml } from '@lib/htmlRenderSafety';
 import playerResolver from '@lib/player/playerResolver';
-import humanizeDuration, { Unit } from 'humanize-duration';
+import { Unit } from 'humanize-duration';
 import consoleFactory from '@lib/console';
 import { TimeCounter } from '@modules/Metrics/statsUtils';
 import { InitializedCtx } from '@modules/WebServer/ctxTypes';
 const console = consoleFactory(modulename);
-const xss = xssInstancer();
 
 //Helper
 const htmlCodeTag = '<code style="background-color: hsl(202deg 40% 66% / 35%); padding: 2px 2px; border-radius: 4px;">';
@@ -26,8 +25,8 @@ const rejectMessageTemplate = (title: string, content: string) => {
     <div style="
         background-color: rgba(30, 30, 30, 0.5);
         padding: 20px;
-        border: solid 2px var(--color-modal-border);
-        border-radius: var(--border-radius-normal);
+        border: solid 1.5px #80282B;
+        border-radius: 8px;
         margin-top: 25px;
         position: relative;
     ">
@@ -36,18 +35,19 @@ const rejectMessageTemplate = (title: string, content: string) => {
         <p style="font-size: 1.25rem; padding: 0px">
             ${content}
         </p>
-        <img src="https://forum-cfx-re.akamaized.net/original/5X/c/3/8/e/c38e8346a39c6483385c0727bee5c2abc705156a.png" style="
+        <img src="https://forum-cfx-re.akamaized.net/original/5X/2/d/a/6/2da664a84eecb2609d72cf9bb17466d30b53e717.svg" style="
+            width: 28px;    
             position: absolute;
-            right: 15px;
-            bottom: 15px;
-            opacity: 25%;
+            right: -0.5px;
+            bottom: -1.0px;
+            opacity: 45%;
         ">
     </div>`.replaceAll(/[\r\n]/g, '');
 }
 
 const prepCustomMessage = (msg: string) => {
     if (!msg) return '';
-    return '<br>' + msg.trim().replaceAll(/\n/g, '<br>');
+    return '<br>' + sanitizeSimpleHtml(msg.trim()).replaceAll(/\n/g, '<br>');
 }
 
 //Resp Type
@@ -70,7 +70,7 @@ export default async function PlayerCheckJoin(ctx: InitializedCtx) {
     //If checking not required at all
     if (
         !txConfig.banlist.enabled
-        && txConfig.whitelist.mode === 'disabled'
+        && (txConfig.whitelist.mode === 'disabled' || txConfig.whitelist.mode === 'external')
     ) {
         return sendTypedResp({ allow: true });
     }
@@ -200,7 +200,7 @@ function checkBan(
         //Ban author
         let authorLine = '';
         if (!txConfig.gameFeatures.hideAdminInPunishments) {
-            authorLine = `<strong>${textKeys.label_author}:</strong> ${xss(ban.author)} <br>`;
+            authorLine = `<strong>${textKeys.label_author}:</strong> ${escapeHtmlContent(ban.author)} <br>`;
         }
 
         //Informational notes
@@ -218,7 +218,7 @@ function checkBan(
             title,
             `${expLine}
             <strong>${textKeys.label_date}:</strong> ${banDate} <br>
-            <strong>${textKeys.label_reason}:</strong> ${xss(ban.reason)} <br>
+            <strong>${textKeys.label_reason}:</strong> ${escapeHtmlContent(ban.reason)} <br>
             <strong>${textKeys.label_id}:</strong> <codeid>${ban.id}</codeid> <br>
             ${authorLine}
             ${prepCustomMessage(txConfig.banlist.rejectionMessage)}
@@ -262,7 +262,7 @@ async function checkAdminOnlyMode(
     };
 
     //Check if fivem/discord ids are available
-    if (!validIdsObject.license && !validIdsObject.discord) {
+    if (!validIdsObject.fivem && !validIdsObject.discord) {
         return {
             allow: false,
             reason: rejectMessageTemplate(
@@ -279,8 +279,7 @@ async function checkAdminOnlyMode(
     //Prepare rejection message
     const reason = rejectMessageTemplate(
         textKeys.mode_title,
-        `${textKeys.deny_message} <br>
-        ${prepCustomMessage(txConfig.whitelist.rejectionMessage)}`
+        textKeys.deny_message
     );
     return { allow: false, reason };
 }
@@ -324,7 +323,7 @@ async function checkDiscordMember(
             errorMessage = textKeys.deny_message;
         }
     } catch (error) {
-        errorTitle = `Error validating Discord Server Member Whitelist:`;
+        errorTitle = `Error validating Discord Server Member Allowlist status:`;
         errorMessage = `<code>${(error as Error).message}</code>`;
     }
 
@@ -385,7 +384,7 @@ async function checkDiscordRoles(
             errorMessage = textKeys.deny_notmember_message;
         }
     } catch (error) {
-        errorTitle = `Error validating Discord Role Whitelist:`;
+        errorTitle = `Error validating Discord Role Allowlist status:`;
         errorMessage = `<code>${(error as Error).message}</code>`;
     }
 

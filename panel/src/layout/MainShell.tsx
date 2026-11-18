@@ -9,7 +9,7 @@ import WarningBar from './WarningBar';
 import ConfirmDialog from '@/components/ConfirmDialog';
 import PromptDialog from '@/components/PromptDialog';
 import TxToaster from '@/components/TxToaster';
-import AccountDialog from '@/components/AccountDialog';
+import AccountDialog from './AccountDialog';
 import { useOpenAccountModal } from '@/hooks/dialogs';
 import PlayerModal from './PlayerModal/PlayerModal';
 import { playerModalUrlParam, useOpenPlayerModal } from '@/hooks/playerModal';
@@ -18,7 +18,7 @@ import MainSocket from './MainSocket';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { useToggleTheme } from '@/hooks/theme';
 import { hotkeyEventListener } from '@/lib/hotkeyEventListener';
-import BreakpointDebugger from '@/components/BreakpointDebugger';
+import BreakpointDebugger from './BreakpointDebugger';
 import ActionModal from './ActionModal/ActionModal';
 import { useEffect } from 'react';
 import { actionModalUrlParam, useOpenActionModal } from '@/hooks/actionModal';
@@ -97,6 +97,11 @@ export default function MainShell() {
             <ActionModal />
             <MainSocket />
             {/* <BreakpointDebugger /> */}
+
+            {/* 1080p monitor screen height indicator */}
+            {/* <div className="fixed inset-0 select-none pointer-events-none z-50">
+                <div className="mx-auto h-[932px] w-[1920px] border-b-[1px] border-red-500/50" />
+            </div> */}
         </TooltipProvider>
     </>;
 }

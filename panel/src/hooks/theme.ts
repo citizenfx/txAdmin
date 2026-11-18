@@ -1,3 +1,4 @@
+import consts from '@shared/consts';
 import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
 
 
@@ -17,7 +18,7 @@ const initialAtomValue = availableCustomThemes.find((name) => root.classList.con
  * Helpers
  */
 const setThemeCookieValue = (value: string) => {
-    document.cookie = `txAdmin-theme=${value};path=/;SameSite=Lax;max-age=31536000;`;
+    document.cookie = `${consts.cookies.theme}=${value};path=/;SameSite=Lax;max-age=31536000;`;
 }
 
 const parseTheme = (themeName: string) => {

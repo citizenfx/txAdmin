@@ -1,7 +1,7 @@
 import { Input } from "@/components/ui/input"
 import TxAnchor from '@/components/TxAnchor'
 import InlineCode from '@/components/InlineCode'
-import { SettingItem, SettingItemDesc } from '../settingsItems'
+import { SettingItem, SettingItemDesc, SettingItemWarningLine } from '../settingsItems'
 import { RadioGroup } from "@/components/ui/radio-group"
 import BigRadioItem from "@/components/BigRadioItem"
 import { useEffect, useRef, useMemo, useReducer } from "react"
@@ -43,14 +43,21 @@ export default function ConfigCardWhitelist({ cardCtx, pageCtx }: SettingsCardPr
         toCfg: (str?: string) => str ? str.split(/[,;]\s*/).map(x => x.trim()).filter(x => x.length) : [],
     }
 
+    //External Read-only Configs
+    const isDiscordBotEnabled = pageCtx.apiData?.storedConfigs.discordBot?.enabled === true;
+
     //Processes the state of the page and sets the card as pending save if needed
     const updatePageState = () => {
         let currDiscordRoles;
         if (discordRolesRef.current) {
             currDiscordRoles = inputArrayUtil.toCfg(discordRolesRef.current.value);
         }
+        let currRejectionMessage;
+        if (rejectionMessageRef.current) {
+            currRejectionMessage = rejectionMessageRef.current.textArea.value.trim();
+        }
         const overwrites = {
-            rejectionMessage: rejectionMessageRef.current?.textArea.value,
+            rejectionMessage: currRejectionMessage,
             discordRoles: currDiscordRoles,
         };
 
@@ -64,12 +71,19 @@ export default function ConfigCardWhitelist({ cardCtx, pageCtx }: SettingsCardPr
         const { hasChanges, localConfigs } = updatePageState();
         if (!hasChanges) return;
 
+        const isAllowlistInstructionsRequired = (
+            localConfigs.whitelist?.mode !== 'disabled'
+            && localConfigs.whitelist?.mode !== 'adminOnly'
+        );
+        if (isAllowlistInstructionsRequired && !localConfigs.whitelist?.rejectionMessage) {
+            return txToast.error('Please fill in the Allowlist Instructions field to be able to enable this allowlist mode.');
+        }
         if (
             localConfigs.whitelist?.rejectionMessage
             && localConfigs.whitelist.rejectionMessage.length > 512
         ) {
             return txToast.error({
-                title: 'The Whitelist Rejection Message is too big.',
+                title: 'The Allowlist Instructions is too big.',
                 md: true,
                 msg: 'The message must be 512 characters or less.',
             });
@@ -78,10 +92,10 @@ export default function ConfigCardWhitelist({ cardCtx, pageCtx }: SettingsCardPr
             localConfigs.whitelist?.mode === 'discordMember'
             || localConfigs.whitelist?.mode === 'discordRoles'
         ) {
-            if (pageCtx.apiData?.storedConfigs.discordBot?.enabled !== true) {
+            if (!isDiscordBotEnabled) {
                 return txToast.warning({
                     title: 'Discord Bot is required.',
-                    msg: 'You need to enable the Discord Bot in the Discord tab to use Discord-based whitelist modes.',
+                    msg: 'You need to enable the Discord Bot in the Discord tab to use Discord-based allowlist modes.',
                 });
             }
             if (
@@ -93,7 +107,7 @@ export default function ConfigCardWhitelist({ cardCtx, pageCtx }: SettingsCardPr
             ) {
                 return txToast.warning({
                     title: 'Discord Roles are required.',
-                    msg: 'You need to specify at least one Discord Role ID to use the "Discord Server Roles" whitelist mode.',
+                    msg: 'You need to specify at least one Discord Role ID to use the "Discord Server Roles" allowlist mode.',
                 });
             }
         }
@@ -112,13 +126,18 @@ export default function ConfigCardWhitelist({ cardCtx, pageCtx }: SettingsCardPr
         pageCtx.saveChanges(cardCtx, localConfigs);
     }
 
+    const isPlayerAllowlistEnabled = (
+        states.whitelistMode !== 'disabled'
+        && states.whitelistMode !== 'adminOnly'
+    );
+
     return (
         <SettingsCardShell
             cardCtx={cardCtx}
             pageCtx={pageCtx}
             onClickSave={handleOnSave}
         >
-            <SettingItem label="Whitelist Mode">
+            <SettingItem label="Allowlist Mode">
                 <RadioGroup
                     value={states.whitelistMode}
                     onValueChange={cfg.whitelistMode.state.set as any}
@@ -128,19 +147,26 @@ export default function ConfigCardWhitelist({ cardCtx, pageCtx }: SettingsCardPr
                         groupValue={states.whitelistMode}
                         value="disabled"
                         title="Disabled"
-                        desc="No whitelist status will be checked by txAdmin."
+                        desc={(<>
+                            Select this option if your server is public and open for all players to join. When a player connects, txAdmin will only check if they are banned <i>(if that is enabled)</i> and nothing else.
+                        </>)}
                     />
                     <BigRadioItem
                         groupValue={states.whitelistMode}
                         value="adminOnly"
                         title="Admin-only (maintenance mode)"
                         desc={(<>
-                            Will only allow server join if your <InlineCode>fivem:</InlineCode> or <InlineCode>discord:</InlineCode> identifiers are attached to a txAdmin administrator. Also known as maintenance mode.
+                            Will only allow server join if the player's <InlineCode>fivem:</InlineCode> or <InlineCode>discord:</InlineCode> identifiers are attached to a txAdmin administrator. Also known as maintenance mode.
                         </>)}
                     />
                     <BigRadioItem
                         groupValue={states.whitelistMode}
                         value="discordMember"
+                        disableReason={
+                            !isDiscordBotEnabled
+                                ? "The Discord bot must be enabled in the Discord tab to use this option."
+                                : null
+                        }
                         title="Discord Server Member"
                         desc={(<>
                             Checks if the player joining has a <InlineCode>discord:</InlineCode> identifier and is present in the Discord server configured in the Discord Tab.
@@ -149,6 +175,11 @@ export default function ConfigCardWhitelist({ cardCtx, pageCtx }: SettingsCardPr
                     <BigRadioItem
                         groupValue={states.whitelistMode}
                         value="discordRoles"
+                        disableReason={
+                            !isDiscordBotEnabled
+                                ? "The Discord bot must be enabled in the Discord tab to use this option."
+                                : null
+                        }
                         title="Discord Server Roles"
                         desc={(<>
                             Checks if the player joining has a <InlineCode>discord:</InlineCode> identifier and is present in the Discord server configured in the Discord Tab and has at least one of the roles specified below.
@@ -159,41 +190,68 @@ export default function ConfigCardWhitelist({ cardCtx, pageCtx }: SettingsCardPr
                         value="approvedLicense"
                         title="Approved License"
                         desc={(<>
-                            The player <InlineCode>license:</InlineCode> identifier must be whitelisted by a txAdmin administrator. This can be done through the <TxAnchor href="/whitelist">Whitelist page</TxAnchor>, or the <InlineCode>/whitelist</InlineCode> Discord bot slash command.
+                            The player <InlineCode>license:</InlineCode> identifier must be allowlisted by a txAdmin administrator. This can be done through the <TxAnchor href="/allowlist">Allowlist page</TxAnchor>, or the <InlineCode>/allowlist</InlineCode> Discord bot command.
+                        </>)}
+                    />
+                    <BigRadioItem
+                        groupValue={states.whitelistMode}
+                        value="external"
+                        title="External Allowlist Resource"
+                        // FIXME:NEXT:UPDATE remove
+                        newOptionBadgeFeatName="settingsExternalWhitelist"
+                        desc={(<>
+                            Select this option if you are using an external allowlist system to manage which players can join the server.
                         </>)}
                     />
                 </RadioGroup>
+                <SettingItemDesc>
+                    <strong>Note:</strong> When enabled, the server list will show a lock icon next to the server name, and on the server page the players will be able to see the Allowlist Instructions.
+                </SettingItemDesc>
             </SettingItem>
-            <SettingItem label="Whitelist Rejection Message" htmlFor={cfg.rejectionMessage.eid} showOptional>
+            <SettingItem
+                label="Allowlist Instructions"
+                htmlFor={cfg.rejectionMessage.eid}
+                required={isPlayerAllowlistEnabled}
+            >
                 <AutosizeTextarea
                     id={cfg.rejectionMessage.eid}
                     ref={rejectionMessageRef}
-                    placeholder='Please join http://discord.gg/example and request to be whitelisted.'
+                    placeholder='Please join http://discord.gg/example and request to be allowlisted.'
                     defaultValue={cfg.rejectionMessage.initialValue}
                     onInput={updatePageState}
                     autoComplete="off"
                     minHeight={60}
                     maxHeight={180}
-                    disabled={pageCtx.isReadOnly}
+                    softMaxLength={512}
+                    disabled={pageCtx.isReadOnly || !isPlayerAllowlistEnabled}
                 />
                 <SettingItemDesc>
-                    Optional message to display to a player on the rejection message that shows when they try to connect while not being whitelisted. <br />
-                    If you have a Discord whitelisting process, include here a invite link.
+                    Explain here how players can apply to be allowlisted to join the server, including any requirements or steps they need to follow, like joining a Discord server or filling out an online form. <br />
+                    This message will show on the in-game server page and will also be sent to the player when they try to connect while not being allowlisted.
+                    <SettingItemWarningLine visible={!pageCtx.isReadOnly && !isPlayerAllowlistEnabled}>
+                        This field requires the Allowlist Mode to be enabled and not in Admin-only mode.
+                    </SettingItemWarningLine>
                 </SettingItemDesc>
             </SettingItem>
-            <SettingItem label="Whitelisted Discord Roles" htmlFor={cfg.discordRoles.eid}>
+            <SettingItem
+                label="Allowlisted Discord Roles"
+                htmlFor={cfg.discordRoles.eid}
+                required={states.whitelistMode === 'discordRoles'}
+            >
                 <Input
                     id={cfg.discordRoles.eid}
                     ref={discordRolesRef}
                     defaultValue={inputArrayUtil.toUi(cfg.discordRoles.initialValue)}
                     placeholder="000000000000000000, 000000000000000000"
                     onInput={updatePageState}
-                    disabled={pageCtx.isReadOnly}
+                    disabled={pageCtx.isReadOnly || states.whitelistMode !== 'discordRoles'}
                 />
                 <SettingItemDesc>
-                    The ID of the Discord roles that are whitelisted to join the server. <br />
-                    This field supports multiple roles, separated by comma. <br />
-                    <strong>Note:</strong> Requires the whitelist mode to be set to "Discord Server Roles".
+                    The ID of the Discord roles that are allowed to join the server. <br />
+                    This field supports multiple roles, separated by comma.
+                    <SettingItemWarningLine visible={!pageCtx.isReadOnly && states.whitelistMode !== 'discordRoles'}>
+                        This field requires the Allowlist Mode to be set to "Discord Server Roles".
+                    </SettingItemWarningLine>
                 </SettingItemDesc>
             </SettingItem>
         </SettingsCardShell>

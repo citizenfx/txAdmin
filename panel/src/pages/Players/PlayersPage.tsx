@@ -10,6 +10,7 @@ import {
 import PlayersTable from './PlayersTable';
 import { PlayersStatsResp, PlayersTableFiltersType, PlayersTableSearchType } from '@shared/playerApiTypes';
 import { useBackendApi } from '@/hooks/fetch';
+import { LocalStorageKey } from '@/lib/localStorage';
 
 
 //Memoized components
@@ -18,18 +19,17 @@ const PlayersTableMemo = memo(PlayersTable);
 const PageCalloutRowMemo = memo(PageCalloutRow);
 
 //Get/Set localStorage search type
-const LOCALSTORAGE_KEY = 'playerSearchRememberType';
 const getStoredSearchType = () => {
-    const stored = localStorage.getItem(LOCALSTORAGE_KEY);
+    const stored = localStorage.getItem(LocalStorageKey.PlayersPageSearchType);
     if (!stored) return false;
     if (!availableSearchTypes.some(f => f.value === stored)) return false;
     return stored;
 }
 const setStoredSearchType = (searchType: string | false) => {
     if (searchType) {
-        localStorage.setItem(LOCALSTORAGE_KEY, searchType);
+        localStorage.setItem(LocalStorageKey.PlayersPageSearchType, searchType);
     } else {
-        localStorage.removeItem(LOCALSTORAGE_KEY);
+        localStorage.removeItem(LocalStorageKey.PlayersPageSearchType);
     }
 }
 

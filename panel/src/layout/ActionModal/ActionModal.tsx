@@ -1,24 +1,20 @@
-import {
-    Dialog,
-    DialogContent, DialogHeader,
-    DialogTitle
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useActionModalStateValue } from "@/hooks/actionModal";
-import { InfoIcon, ListIcon, Undo2Icon } from "lucide-react";
+import { EraserIcon, InfoIcon, ListIcon, Trash2Icon, Undo2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import GenericSpinner from "@/components/GenericSpinner";
 import { cn } from "@/lib/utils";
 import { useBackendApi } from "@/hooks/fetch";
-import ModalCentralMessage from "@/components/ModalCentralMessage";
 import { HistoryActionModalResp, HistoryActionModalSuccess } from "@shared/historyApiTypes";
 import ActionIdsTab from "./ActionIdsTab";
 import ActionInfoTab from "./ActionInfoTab";
 import ActionModifyTab from "./ActionModifyTab";
+import ActionDeleteTab from "./ActionDeleteTab";
+import { ModalContent, ModalTabMessage, ModalTabsList, ModalTabWrapper, type ModalTabInfo } from "@/components/modal-tabs";
 
 
-const modalTabs = [
+const modalTabs: ModalTabInfo[] = [
     {
         title: 'Info',
         icon: <InfoIcon className="mr-2 h-5 w-5 hidden xs:block" />,
@@ -135,18 +131,15 @@ export default function ActionModal() {
 
     return (
         <Dialog open={isModalOpen} onOpenChange={handleOpenClose}>
-            <DialogContent
-                className="max-w-2xl h-full sm:h-auto max-h-full p-0 gap-1 sm:gap-4 flex flex-col"
-            // onOpenAutoFocus={(e) => e.preventDefault()}
-            >
+            <DialogContent className="max-w-2xl h-full sm:h-auto max-h-full p-0 gap-1 sm:gap-4 flex flex-col pb-4">
                 <DialogHeader className="px-4 py-3 border-b">
                     <DialogTitle className="tracking-wide line-clamp-1 leading-7 break-all mr-6">
                         {pageTitle}
                     </DialogTitle>
                 </DialogHeader>
 
-                <div className="flex flex-col md:flex-row md:px-4 h-full">
-                    <div className="flex flex-row md:flex-col gap-1 bg-muted md:bg-transparent p-1 md:p-0 mx-2 md:mx-0 rounded-md">
+                <ModalContent>
+                    <ModalTabsList>
                         {modalTabs.map((tab) => (
                             <Button
                                 id={`action-modal-tab-${tab.title}`}
@@ -156,7 +149,6 @@ export default function ActionModal() {
                                     'w-full tracking-wider justify-center md:justify-start',
                                     'h-7 rounded-sm px-2 text-sm',
                                     'md:h-10 md:text-base',
-                                    // @ts-ignore annoying, remove this when adding some class to any of the tabs
                                     tab.className,
                                 )}
                                 onClick={() => setSelectedTab(tab.title)}
@@ -165,18 +157,17 @@ export default function ActionModal() {
                                 {tab.icon} {tab.title}
                             </Button>
                         ))}
-                    </div>
-                    {/* NOTE: consistent height: sm:h-[16.5rem] */}
-                    {/* FIXME: the number below is based off mobile screen sizes, and should be h-full while the modal content controls the actual height  */}
-                    <ScrollArea className="w-full max-h-[calc(100vh-3.125rem-4rem)] min-h-[16.5rem] md:max-h-[50vh] px-4 py-2 md:py-0">
+                    </ModalTabsList>
+
+                    <ModalTabWrapper className="max-h-[calc(100vh-3.125rem-4rem)]">
                         {!modalData ? (
-                            <ModalCentralMessage>
+                            <ModalTabMessage>
                                 {modalError ? (
                                     <span className="text-destructive-inline">Error: {modalError}</span>
                                 ) : (
                                     <GenericSpinner msg="Loading..." />
                                 )}
-                            </ModalCentralMessage>
+                            </ModalTabMessage>
                         ) : (
                             <>
                                 {selectedTab === 'Info' && <ActionInfoTab
@@ -193,8 +184,8 @@ export default function ActionModal() {
                                 />}
                             </>
                         )}
-                    </ScrollArea>
-                </div>
+                    </ModalTabWrapper>
+                </ModalContent>
             </DialogContent>
         </Dialog>
     );

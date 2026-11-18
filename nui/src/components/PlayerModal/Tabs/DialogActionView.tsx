@@ -188,7 +188,7 @@ const DialogActionView: React.FC = () => {
       params.set("autofill", "true");
       params.set("name", playerDetails.player.pureName);
 
-      for (const id of playerDetails.player.ids) {
+      for (const id of playerDetails.player.idsOnline) {
         if (id.startsWith("discord:")) {
           params.set("discord", id);
         } else if (id.startsWith("fivem:")) {

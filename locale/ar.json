@@ -22,7 +22,7 @@
         "reject": {
             "title_permanent": ".لقد تم حظرك بشكل دائم من هذا الخادم",
             "title_temporary": ".لقد تم حظرك مؤقتا من هذا الخادم",
-            "label_expiration": "ستنتهي صلاحية حظرك في",
+            "label_expiration": "ينتهي حظرك في",
             "label_date": "تاريخ الحظر",
             "label_author": "محظور من قبل",
             "label_reason": "سبب الحظر",
@@ -39,7 +39,7 @@
         },
         "guild_member": {
             "mode_title": "<strong>عضو في القائمة</strong> هذا الخادم في الوضع",
-            "insufficient_ids": ".(لن يعمل الديسكورد الموقع) والمحاولة مرة أخرى Discord Desktop يرجى فتح تطبيق .Discord server المعرف ، وهو مطلوب للتحقق مما إذا كنت قد انضممت إلى <code>discord</code> ليس لديك",
+            "insufficient_ids": ".(لن يعمل فتح ديسكورد من المتصفح) والمحاولة مرة أخرى Discord Desktop يرجى فتح تطبيق .Discord server المعرف ، وهو مطلوب للتحقق مما إذا كنت قد انضممت إلى <code>discord</code> ليس لديك",
             "deny_title": "للدخول إلى السيرفر، أنت مطالب بالانضمام لسيرفر الديسكورد",
             "deny_message": ".ثم أعد المحاولة %{guildname} يرجى الانضمام إلى سيرفر"
         },
@@ -177,15 +177,15 @@
                     "success": "!عززت المركبة",
                     "already_boosted": ".تم تعزيز هذه المركبة بالفعل",
                     "unsupported_class": ".فئة المركبة هذه غير مدعومة",
-                    "redm_not_mounted": ".يمكنك التعزيز فقط عند ركوبه على حصان"
+                    "redm_not_mounted": ".يمكنك التعزيز فقط عند الركوب على حصان"
                 }
             },
             "heal": {
-                "title": "شفاء",
+                "title": "إنعاش",
                 "myself": {
                     "title": "نفسي",
                     "label": "يعيد صحتك",
-                    "success_0": "!شفاء كل",
+                    "success_0": "!شفاء الكل",
                     "success_1": "سوف تشعر بشعور جيد الآن",
                     "success_2": "أنت الآن بصحة ممتازة",
                     "success_3": "تم اصلاح الخدشات"
@@ -225,11 +225,11 @@
                 "zero_players": "لم يتم العثور على لاعبين"
             },
             "filter": {
-                "label": "Filter by",
-                "no_filter": "No Filter",
-                "is_admin": "Is Admin",
-                "is_injured": "Is Injured / Dead",
-                "in_vehicle": "In Vehicle"
+                "label": "تصفية حسب",
+                "no_filter": "بدون تصفية",
+                "is_admin": "مسؤول",
+                "is_injured": "مصاب / ميت",
+                "in_vehicle": "في مركبة"
             },
             "sort": {
                 "label": "ترتيب حسب",
@@ -265,7 +265,7 @@
                         "dm": "خاص",
                         "warn": "حذر",
                         "kick": "طرد",
-                        "set_admin": "أعط الادارية"
+                        "set_admin": "تعيين كمسؤول"
                     },
                     "dm_dialog": {
                         "title": "رسالة مباشرة",

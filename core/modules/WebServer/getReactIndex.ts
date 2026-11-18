@@ -8,6 +8,13 @@ import consts from "@shared/consts";
 import consoleFactory from '@lib/console';
 import { AuthedAdminType, checkRequestAuth } from "./authLogic";
 import { isString } from "@modules/CacheStore";
+import {
+    escapeHtmlAttribute,
+    escapeHtmlRawText,
+    sanitizeClassToken,
+    sanitizeCssVarName,
+    sanitizeCssVarValue,
+} from "@lib/htmlRenderSafety";
 const console = consoleFactory(modulename);
 
 // NOTE: it's not possible to remove the hardcoded import of the entry point in the index.html file
@@ -121,7 +128,6 @@ export default async function getReactIndex(ctx: CtxWithVars | AuthedCtx) {
         hasMasterAccount: txCore.adminStore.hasAdmins(true),
         defaultTheme: tmpDefaultTheme,
         customThemes: tmpCustomThemes.map(({ name, isDark }) => ({ name, isDark })),
-        adsData: txEnv.adsData,
         providerLogo: txHostConfig.providerLogo,
         providerName: txHostConfig.providerName,
         hostConfigSource: txHostConfig.sourceName,
@@ -139,44 +145,48 @@ export default async function getReactIndex(ctx: CtxWithVars | AuthedCtx) {
 
     //Prepare placeholders
     const replacers: { [key: string]: string } = {};
-    replacers.basePath = `<base href="${basePath}">`;
-    replacers.ogTitle = `txAdmin - ${txConfig.general.serverName}`;
-    replacers.ogDescripttion = `Manage & Monitor your FiveM/RedM Server with txAdmin v${txEnv.txaVersion} atop FXServer ${txEnv.fxsVersion}`;
-    replacers.txConstsInjection = `<script>window.txConsts = ${JSON.stringify(injectedConsts)};</script>`;
+    replacers.basePath = `<base href="${escapeHtmlAttribute(basePath)}">`;
+    replacers.ogTitle = escapeHtmlAttribute(`txAdmin - ${txConfig.general.serverName}`);
+    replacers.ogDescripttion = escapeHtmlAttribute(`Manage & Monitor your FiveM/RedM Server with txAdmin v${txEnv.txaVersion} atop FXServer ${txEnv.fxsVersion}`);
+    replacers.txConstsInjection = `<script>window.txConsts = ${escapeHtmlRawText(JSON.stringify(injectedConsts))};</script>`;
     replacers.devModules = txDevEnv.ENABLED ? devModulesScript : '';
 
     //Prepare custom themes style tag
+    replacers.customThemesStyle = '';
     if (tmpCustomThemes.length) {
         const cssThemes = [];
         for (const theme of tmpCustomThemes) {
             const cssVars = [];
+            const safeThemeName = sanitizeClassToken(theme.name);
+            if (!safeThemeName) continue;
             for (const [name, value] of Object.entries(theme.style)) {
-                cssVars.push(`--${name}: ${value};`);
+                const safeName = sanitizeCssVarName(name);
+                const safeValue = sanitizeCssVarValue(value);
+                if (!safeName || !safeValue) continue;
+                cssVars.push(`--${safeName}: ${safeValue};`);
             }
-            cssThemes.push(`.theme-${theme.name} { ${cssVars.join(' ')} }`);
+            cssThemes.push(`.theme-${safeThemeName} { ${cssVars.join(' ')} }`);
         }
-        replacers.customThemesStyle = `<style>${cssThemes.join('\n')}</style>`;
-    } else {
-        replacers.customThemesStyle = '';
+        replacers.customThemesStyle = `<style>${escapeHtmlRawText(cssThemes.join('\n'))}</style>`;
     }
 
     //Setting the theme class from the cookie
-    const themeCookie = ctx.cookies.get('txAdmin-theme');
+    let htmlClasses = tmpDefaultTheme;
+    const themeCookie = ctx.cookies.get(consts.cookies.theme);
     if (themeCookie) {
         if (tmpDefaultThemes.includes(themeCookie)) {
-            replacers.htmlClasses = themeCookie;
+            htmlClasses = themeCookie;
         } else {
             const selectedCustomTheme = tmpCustomThemes.find((theme) => theme.name === themeCookie);
             if (!selectedCustomTheme) {
-                replacers.htmlClasses = tmpDefaultTheme;
+                htmlClasses = tmpDefaultTheme;
             } else {
                 const lightDarkSelector = selectedCustomTheme.isDark ? 'dark' : 'light';
-                replacers.htmlClasses = `${lightDarkSelector} theme-${selectedCustomTheme.name}`;
+                htmlClasses = `${lightDarkSelector} theme-${selectedCustomTheme.name}`;
             }
         }
-    } else {
-        replacers.htmlClasses = tmpDefaultTheme;
     }
+    replacers.htmlClasses = escapeHtmlAttribute(htmlClasses);
 
     //Replace
     let htmlOut = htmlFile;
@@ -189,8 +199,7 @@ export default async function getReactIndex(ctx: CtxWithVars | AuthedCtx) {
     //This is required because of how badly the WebPipe handles "large" files
     if (!txDevEnv.ENABLED) {
         const base = ctx.txVars.isWebInterface ? `./` : `nui://monitor/panel/`;
-        htmlOut = htmlOut.replace(/src="\.\/index-(\w+(?:\.v\d+)?)\.js"/, `src="${base}index-$1.js"`);
-        htmlOut = htmlOut.replace(/href="\.\/index-(\w+(?:\.v\d+)?)\.css"/, `href="${base}index-$1.css"`);
+        htmlOut = htmlOut.replaceAll(/(src|href)="\.\/(\w+)-(\w+(?:\.v\d+)?)\.(js|css)"/g, `$1="${base}$2-$3.$4"`);
     }
 
     return htmlOut;

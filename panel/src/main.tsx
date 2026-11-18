@@ -60,6 +60,11 @@ if (window.location.pathname.substring(0, 8) === '/WebPipe') {
     window.history.replaceState(null, '', newUrl);
 }
 
+// FIXME:NEXT:UPDATE - legacy /whitelist URL
+if (window.location.pathname === '/whitelist') {
+    window.history.replaceState(null, '', '/allowlist');
+}
+
 //Rendering auth or main pages depending on if the user is authenticated
 const authRoutePrefixes = ['/login', '/addMaster'];
 const isAuthRoute = (pathname: string) => {

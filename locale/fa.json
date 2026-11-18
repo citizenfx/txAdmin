@@ -4,363 +4,363 @@
         "humanizer_language": "fa"
     },
     "restarter": {
-        "server_unhealthy_kick_reason": "سرور باید دوباره راه‌اندازی شود, لطفاً دوباره متصل شوید",
-        "partial_hang_warn": "Due to a partial hang, this server will restart in 1 minute. Please disconnect now.",
-        "partial_hang_warn_discord": "Due to a partial hang, **%{servername}** will restart in 1 minute.",
-        "schedule_reason": "Restart Dar Saat: %{time}",
-        "schedule_warn": "Server ta %{smart_count} daghighe digar restart mishavad. Lotfan Disconnect Konid. |||| Server ta %{smart_count} daghighe digar restart mishavad.",
-        "schedule_warn_discord": "**%{servername}** ta %{smart_count} daghighe digar restart mishavad. |||| **%{servername}** ta %{smart_count} daghighe digar restart mishavad."
+        "server_unhealthy_kick_reason": "دلیل اخراج به دلیل مشکل در سرور: سرور باید دوباره راه‌اندازی شود, لطفاً دوباره متصل شوید",
+        "partial_hang_warn": "به دلیل یک هنگ جزئی، این سرور در 1 دقیقه دیگر راه‌اندازی مجدد می‌شود. لطفاً اکنون قطع شوید.",
+        "partial_hang_warn_discord": "به دلیل یک هنگ جزئی، **%{servername}** در 1 دقیقه دیگر راه‌اندازی مجدد می‌شود.",
+        "schedule_reason": "راه‌اندازی مجدد در ساعت: %{time}",
+        "schedule_warn": "سرور تا %{smart_count} دقیقه دیگر راه‌اندازی مجدد می‌شود. لطفاً قطع شوید. |||| سرور تا %{smart_count} دقیقه دیگر راه‌اندازی مجدد می‌شود.",
+        "schedule_warn_discord": "**%{servername}** تا %{smart_count} دقیقه دیگر راه‌اندازی مجدد می‌شود. |||| **%{servername}** تا %{smart_count} دقیقه دیگر راه‌اندازی مجدد می‌شود."
     },
     "kick_messages": {
-        "everyone": "All players kicked: %{reason}.",
-        "player": "You have been kicked: %{reason}.",
-        "unknown_reason": "for unknown reason"
+        "everyone": "همه بازیکنان اخراج شدند: %{reason}.",
+        "player": "شما اخراج شدید: %{reason}.",
+        "unknown_reason": "به دلیل نامشخص"
     },
     "ban_messages": {
-        "kick_temporary": "(%{author}) Shoma Az in Server Ban Shodid, Be Dalil: \"%{reason}\". Etmam Ban Shoma: %{expiration}.",
-        "kick_permanent": "(%{author}) Shoma Baraye Hamishe Az in Server Ban Shodid, Be Dalil: \"%{reason}\".",
+        "kick_temporary": "(%{author}) شما از این سرور بن شدید، به دلیل: \"%{reason}\". اتمام بن شما: %{expiration}.",
+        "kick_permanent": "(%{author}) شما برای همیشه از این سرور بن شدید، به دلیل: \"%{reason}\".",
         "reject": {
-            "title_permanent": "You have been permanently banned from this server.",
-            "title_temporary": "You have been temporarily banned from this server.",
-            "label_expiration": "Your ban will expire in",
-            "label_date": "Ban Date",
-            "label_author": "Banned by",
-            "label_reason": "Ban Reason",
-            "label_id": "Ban ID",
-            "note_multiple_bans": "Note: you have more than one active ban on your identifiers.",
-            "note_diff_license": "Note: the ban above was applied for another <code>license</code>, which means some of your IDs/HWIDs match the ones associated with that ban."
+            "title_permanent": "شما برای همیشه از این سرور بن شده‌اید.",
+            "title_temporary": "شما به طور موقت از این سرور بن شده‌اید.",
+            "label_expiration": "بن شما در این تاریخ منقضی می‌شود",
+            "label_date": "تاریخ بن",
+            "label_author": "بن شده توسط",
+            "label_reason": "دلیل بن",
+            "label_id": "شناسه بن",
+            "note_multiple_bans": "توجه: شما بیش از یک بن فعال در شناسه‌های خود دارید.",
+            "note_diff_license": "توجه: بن فوق برای <code>license</code> دیگری اعمال شده است، به این معنی که برخی از شناسه‌ها/HWIDهای شما با موارد مرتبط با آن بن مطابقت دارند."
         }
     },
     "whitelist_messages": {
         "admin_only": {
-            "mode_title": "This server is in <strong>Admin-only</strong> mode.",
-            "insufficient_ids": "You do not have <code>discord</code> or <code>fivem</code> identifiers, and at least one of them is required to validate if you are a txAdmin administrator.",
-            "deny_message": "Your identifiers are not assigned to any txAdmin administrator."
+            "mode_title": "این سرور در حالت <strong>فقط مدیر</strong> است.",
+            "insufficient_ids": "شما شناسه‌های <code>discord</code> یا <code>fivem</code> ندارید، و حداقل یکی از آنها برای تأیید اینکه آیا شما مدیر txAdmin هستید، لازم است.",
+            "deny_message": "شناسه‌های شما به هیچ مدیر txAdmin اختصاص داده نشده است."
         },
         "guild_member": {
-            "mode_title": "This server is in <strong>Discord server Member Whitelist</strong> mode.",
-            "insufficient_ids": "You do not have the <code>discord</code> identifier, which is required to validate if you have joined our Discord server. Please open the Discord Desktop app and try again (the Web app won't work).",
-            "deny_title": "You are required to join our Discord server to connect.",
-            "deny_message": "Please join the guild %{guildname} then try again."
+            "mode_title": "این سرور در حالت <strong>لیست سفید اعضای سرور Discord</strong> است.",
+            "insufficient_ids": "شما شناسه <code>discord</code> ندارید، که برای تأیید اینکه آیا به سرور Discord ما پیوسته‌اید، لازم است. لطفاً برنامه Discord Desktop را باز کنید و دوباره امتحان کنید (برنامه وب کار نخواهد کرد).",
+            "deny_title": "برای اتصال باید به سرور Discord ما بپیوندید.",
+            "deny_message": "لطفاً به guild %{guildname} بپیوندید و سپس دوباره امتحان کنید."
         },
         "guild_roles": {
-            "mode_title": "This server is in <strong>Discord Role Whitelist</strong> mode.",
-            "insufficient_ids": "You do not have the <code>discord</code> identifier, which is required to validate if you have joined our Discord server. Please open the Discord Desktop app and try again (the Web app won't work).",
-            "deny_notmember_title": "You are required to join our Discord server to connect.",
-            "deny_notmember_message": "Please join %{guildname}, get one of the required roles, then try again.",
-            "deny_noroles_title": "You do not have a whitelisted role required to join.",
-            "deny_noroles_message": "To join this server you are required to have at least one of the whitelisted roles on the guild %{guildname}."
+            "mode_title": "این سرور در حالت <strong>لیست سفید نقش Discord</strong> است.",
+            "insufficient_ids": "شما شناسه <code>discord</code> ندارید، که برای تأیید اینکه آیا به سرور Discord ما پیوسته‌اید، لازم است. لطفاً برنامه Discord Desktop را باز کنید و دوباره امتحان کنید (برنامه وب کار نخواهد کرد).",
+            "deny_notmember_title": "برای اتصال باید به سرور Discord ما بپیوندید.",
+            "deny_notmember_message": "لطفاً به %{guildname} بپیوندید، یکی از نقش‌های مورد نیاز را دریافت کنید و سپس دوباره امتحان کنید.",
+            "deny_noroles_title": "شما نقش لیست سفید مورد نیاز برای پیوستن را ندارید.",
+            "deny_noroles_message": "برای پیوستن به این سرور، باید حداقل یکی از نقش‌های لیست سفید را در guild %{guildname} داشته باشید."
         },
         "approved_license": {
-            "mode_title": "This server is in <strong>License Whitelist</strong> mode.",
-            "insufficient_ids": "You do not have the <code>license</code> identifier, which means the server has <code>sv_lan</code> enabled. If you are the server owner, you can disable it in the <code>server.cfg</code> file.",
-            "deny_title": "You are not whitelisted to join this server.",
-            "request_id_label": "Request ID"
+            "mode_title": "این سرور در حالت <strong>لیست سفید مجوز</strong> است.",
+            "insufficient_ids": "شما شناسه <code>license</code> ندارید، که به این معنی است که سرور <code>sv_lan</code> را فعال کرده است. اگر شما صاحب سرور هستید، می‌توانید آن را در فایل <code>server.cfg</code> غیرفعال کنید.",
+            "deny_title": "شما در لیست سفید برای پیوستن به این سرور نیستید.",
+            "request_id_label": "درخواست شناسه"
         }
     },
     "server_actions": {
-        "restarting": "سرور درحال راه اندازی مجدد، دلیل: (%{reason}).",
-        "restarting_discord": "**%{servername}** درحال راه اندازی مجدد شدن، دلیل: (%{reason}).",
-        "stopping": "سرور درحال خاموش شدن، دلیل: : (%{reason}).",
-        "stopping_discord": "**%{servername}** درحال خاموش شدن، دلیل: (%{reason}).",
-        "spawning_discord": "**%{servername}** درحال راه اندازی."
+        "restarting": "سرور در حال راه‌اندازی مجدد است، دلیل: (%{reason}).",
+        "restarting_discord": "**%{servername}** در حال راه‌اندازی مجدد شدن است، دلیل: (%{reason}).",
+        "stopping": "سرور در حال خاموش شدن است، دلیل: (%{reason}).",
+        "stopping_discord": "**%{servername}** در حال خاموش شدن است، دلیل: (%{reason}).",
+        "spawning_discord": "**%{servername}** در حال راه‌اندازی."
     },
     "nui_warning": {
-        "title": "WARNING",
-        "warned_by": "Warned by:",
+        "title": "هشدار",
+        "warned_by": "هشدار داده شده توسط:",
         "stale_message": "این هشدار قبل از اتصال شما به سرور صادر شده است.",
         "dismiss_key": "SPACE",
-        "instruction": "Dokme %{key} ro baraye %{smart_count} sanie negah darid ta payam rad shavad. |||| Dokme %{key} ro baraye %{smart_count} sanieha negah darid ta payam rad shavad."
+        "instruction": "دکمه %{key} را برای %{smart_count} ثانیه نگه دارید تا پیام رد شود. |||| دکمه %{key} را برای %{smart_count} ثانیه‌ها نگه دارید تا پیام رد شود."
     },
     "nui_menu": {
         "misc": {
-            "help_message": "txAdmin Menu enabled, type /tx to open it.\nYou can also configure a keybind at [Game Settings > Key Bindings > FiveM > Menu: Open Main Page].",
-            "menu_not_admin": "Your identifiers do not match any admin registered on txAdmin.\nIf you are registered on txAdmin, go to Admin Manager and make sure your identifiers are saved.",
-            "menu_auth_failed": "txAdmin Menu authentication failed with reason: %{reason}",
-            "no_perms": "You do not have this permission.",
-            "unknown_error": "An unknown error occurred.",
-            "not_enabled": "The txAdmin Menu is not enabled! You can enable it in the txAdmin settings page.",
-            "announcement_title": "Server Announcement by %{author}:",
-            "dialog_empty_input": "You cannot have an empty input.",
-            "directmessage_title": "DM from admin %{author}:",
-            "onesync_error": "This action requires OneSync to be enabled."
+            "help_message": "منوی txAdmin فعال شد، برای باز کردن آن /tx را تایپ کنید.\nهمچنین می‌توانید یک کلید میانبر را در [تنظیمات بازی > کلیدهای اتصال > FiveM > منو: باز کردن صفحه اصلی] پیکربندی کنید.",
+            "menu_not_admin": "شناسه‌های شما با هیچ مدیر ثبت شده در txAdmin مطابقت ندارند.\nاگر در txAdmin ثبت نام کرده‌اید، به مدیر مدیر بروید و مطمئن شوید که شناسه‌های شما ذخیره شده‌اند.",
+            "menu_auth_failed": "احراز هویت منوی txAdmin با دلیل زیر انجام نشد: %{reason}",
+            "no_perms": "شما این مجوز را ندارید.",
+            "unknown_error": "یک خطای ناشناخته رخ داد.",
+            "not_enabled": "منوی txAdmin فعال نیست! می‌توانید آن را در صفحه تنظیمات txAdmin فعال کنید.",
+            "announcement_title": "اعلامیه سرور توسط %{author}:",
+            "dialog_empty_input": "شما نمی‌توانید ورودی خالی داشته باشید.",
+            "directmessage_title": "پیام مستقیم از مدیر %{author}:",
+            "onesync_error": "این عمل نیاز دارد که OneSync فعال باشد."
         },
         "frozen": {
-            "froze_player": "You have frozen the player!",
-            "unfroze_player": "You have unfrozen the player!",
-            "was_frozen": "You have been frozen by a server admin!"
+            "froze_player": "شما بازیکن را مسدود کردید!",
+            "unfroze_player": "شما بازیکن را از مسدودیت خارج کردید!",
+            "was_frozen": "شما توسط یک مدیر سرور مسدود شده‌اید!"
         },
         "common": {
-            "cancel": "Cancel",
-            "submit": "Submit",
-            "error": "An error occurred",
-            "copied": "Copied to clipboard."
+            "cancel": "انصراف",
+            "submit": "ثبت",
+            "error": "یک خطا رخ داد",
+            "copied": "در کلیپ‌بورد کپی شد."
         },
         "page_main": {
             "tooltips": {
-                "tooltip_1": "Use %{key} to switch pages & the arrow keys to navigate menu items",
-                "tooltip_2": "Certain menu items have sub options which can be selected using the left & right arrow keys"
+                "tooltip_1": "از %{key} برای جابجایی بین صفحات و کلیدهای جهت‌دار برای پیمایش موارد منو استفاده کنید",
+                "tooltip_2": "برخی از موارد منو دارای گزینه‌های فرعی هستند که می‌توانند با استفاده از کلیدهای جهت‌دار چپ و راست انتخاب شوند"
             },
             "player_mode": {
-                "title": "Player Mode",
+                "title": "حالت بازیکن",
                 "noclip": {
-                    "title": "NoClip",
-                    "label": "Fly around",
-                    "success": "NoClip enabled"
+                    "title": "بدون برخورد",
+                    "label": "پرواز",
+                    "success": "بدون برخورد فعال شد"
                 },
                 "godmode": {
-                    "title": "God",
-                    "label": "Invincible",
-                    "success": "God Mode enabled"
+                    "title": "خدا",
+                    "label": "آسیب‌ناپذیر",
+                    "success": "حالت خدا فعال شد"
                 },
                 "superjump": {
-                    "title": "Super Jump",
-                    "label": "Toggle super jump mode, the player will also run faster",
-                    "success": "Super Jump enabled"
+                    "title": "پرش فوق‌العاده",
+                    "label": "تغییر حالت پرش فوق‌العاده، بازیکن سریعتر نیز می‌دود",
+                    "success": "پرش فوق‌العاده فعال شد"
                 },
                 "normal": {
-                    "title": "Normal",
-                    "label": "Default mode",
-                    "success": "Returned to default player mode."
+                    "title": "عادی",
+                    "label": "حالت پیش‌فرض",
+                    "success": "به حالت پیش‌فرض بازیکن بازگشت."
                 }
             },
             "teleport": {
-                "title": "Teleport",
-                "generic_success": "Sent you into the wormhole!",
+                "title": "انتقال از راه دور",
+                "generic_success": "شما را به داخل کرم‌چاله فرستادم!",
                 "waypoint": {
-                    "title": "Waypoint",
-                    "label": "Go to waypoint set",
-                    "error": "You have no waypoint set."
+                    "title": "نقطه مسیر",
+                    "label": "رفتن به نقطه مسیر تنظیم شده",
+                    "error": "شما نقطه مسیری تنظیم نکرده‌اید."
                 },
                 "coords": {
-                    "title": "Coords",
-                    "label": "Go to specified coords",
-                    "dialog_title": "Teleport",
-                    "dialog_desc": "Provide coordinates in an x, y, z format to go through the wormhole.",
-                    "dialog_error": "Invalid coordinates. Must be in the format of: 111, 222, 33"
+                    "title": "مختصات",
+                    "label": "رفتن به مختصات مشخص شده",
+                    "dialog_title": "انتقال از راه دور",
+                    "dialog_desc": "برای رفتن از طریق کرم‌چاله، مختصات را در قالب x، y، z ارائه دهید.",
+                    "dialog_error": "مختصات نامعتبر. باید در قالب: 111، 222، 33 باشد"
                 },
                 "back": {
-                    "title": "Back",
-                    "label": "Go back to last location",
-                    "error": "You don't have a last location to go back to!"
+                    "title": "بازگشت",
+                    "label": "بازگشت به آخرین مکان",
+                    "error": "شما آخرین مکانی برای بازگشت ندارید!"
                 },
                 "copy": {
-                    "title": "Copy Coords",
-                    "label": "Copy coords to clipboard."
+                    "title": "کپی مختصات",
+                    "label": "کپی مختصات در کلیپ‌بورد."
                 }
             },
             "vehicle": {
-                "title": "Vehicle",
-                "not_in_veh_error": "You are not currently in a vehicle!",
+                "title": "وسیله نقلیه",
+                "not_in_veh_error": "شما در حال حاضر در یک وسیله نقلیه نیستید!",
                 "spawn": {
-                    "title": "Spawn",
-                    "label": "Spawn vehicle by model name",
-                    "dialog_title": "Spawn vehicle",
-                    "dialog_desc": "Enter in the model name of the vehicle you want to spawn.",
-                    "dialog_success": "Vehicle spawned!",
-                    "dialog_error": "The vehicle model name '%{modelName}' does not exist!",
-                    "dialog_info": "Trying to spawn %{modelName}."
+                    "title": "تولید",
+                    "label": "تولید وسیله نقلیه با نام مدل",
+                    "dialog_title": "تولید وسیله نقلیه",
+                    "dialog_desc": "نام مدل وسیله نقلیه‌ای که می‌خواهید تولید کنید را وارد کنید.",
+                    "dialog_success": "وسیله نقلیه تولید شد!",
+                    "dialog_error": "نام مدل وسیله نقلیه '%{modelName}' وجود ندارد!",
+                    "dialog_info": "تلاش برای تولید %{modelName}."
                 },
                 "fix": {
-                    "title": "Fix",
-                    "label": "Fix the current vehicle",
-                    "success": "Vehicle fixed!"
+                    "title": "تعمیر",
+                    "label": "تعمیر وسیله نقلیه فعلی",
+                    "success": "وسیله نقلیه تعمیر شد!"
                 },
                 "delete": {
-                    "title": "Delete",
-                    "label": "Delete the current vehicle",
-                    "success": "Vehicle deleted!"
+                    "title": "حذف",
+                    "label": "حذف وسیله نقلیه فعلی",
+                    "success": "وسیله نقلیه حذف شد!"
                 },
                 "boost": {
-                    "title": "Boost",
-                    "label": "Boost the car to achieve max fun (and maybe speed)",
-                    "success": "Vehicle boosted!",
-                    "already_boosted": "This vehicle was already boosted.",
-                    "unsupported_class": "This vehicle class is not supported.",
-                    "redm_not_mounted": "You can only boost when mounted on a horse."
+                    "title": "تقویت",
+                    "label": "تقویت خودرو برای دستیابی به حداکثر لذت (و شاید سرعت)",
+                    "success": "وسیله نقلیه تقویت شد!",
+                    "already_boosted": "این وسیله نقلیه قبلاً تقویت شده است.",
+                    "unsupported_class": "این کلاس وسیله نقلیه پشتیبانی نمی‌شود.",
+                    "redm_not_mounted": "شما فقط می‌توانید هنگام سوار شدن بر اسب تقویت کنید."
                 }
             },
             "heal": {
-                "title": "Heal",
+                "title": "درمان",
                 "myself": {
-                    "title": "Myself",
-                    "label": "Restores your health",
-                    "success_0": "All healed up!",
-                    "success_1": "You should be feeling good now!",
-                    "success_2": "Restored to full!",
-                    "success_3": "Ouchies fixed!"
+                    "title": "خودم",
+                    "label": "سلامتی شما را بازیابی می‌کند",
+                    "success_0": "کاملاً درمان شد!",
+                    "success_1": "اکنون باید احساس خوبی داشته باشید!",
+                    "success_2": "به طور کامل بازیابی شد!",
+                    "success_3": "دردها برطرف شد!"
                 },
                 "everyone": {
-                    "title": "Everyone",
-                    "label": "Will heal & revive all players",
-                    "success": "Healed and revived all players."
+                    "title": "همه",
+                    "label": "همه بازیکنان را درمان و احیا می‌کند",
+                    "success": "همه بازیکنان درمان و احیا شدند."
                 }
             },
             "announcement": {
-                "title": "Send Announcement",
-                "label": "Send an announcement to all online players.",
-                "dialog_desc": "Send an announcement to all online players.",
-                "dialog_placeholder": "Your announcement...",
-                "dialog_success": "Sending the announcement."
+                "title": "ارسال اعلامیه",
+                "label": "ارسال اعلامیه به همه بازیکنان آنلاین.",
+                "dialog_desc": "ارسال اعلامیه به همه بازیکنان آنلاین.",
+                "dialog_placeholder": "اعلامیه شما...",
+                "dialog_success": "ارسال اعلامیه."
             },
             "clear_area": {
-                "title": "Reset World Area",
-                "label": "Reset a specified world area to its default state",
-                "dialog_desc": "Please enter the radius where you wish to reset entities in (0-300). This will not clear entities spawned server side.",
-                "dialog_success": "Clearing area with radius of %{radius}m",
-                "dialog_error": "Invalid radius input. Try again."
+                "title": "بازنشانی منطقه جهان",
+                "label": "بازنشانی یک منطقه مشخص از جهان به حالت پیش‌فرض خود",
+                "dialog_desc": "لطفاً شعاعی را که می‌خواهید موجودیت‌ها را در آن بازنشانی کنید وارد کنید (0-300). این موجودیت‌های تولید شده در سمت سرور را پاک نمی‌کند.",
+                "dialog_success": "پاک کردن منطقه با شعاع %{radius} متر",
+                "dialog_error": "ورودی شعاع نامعتبر است. دوباره امتحان کنید."
             },
             "player_ids": {
-                "title": "Toggle Player IDs",
-                "label": "Toggle showing player IDs (and other info) above the head of all nearby players",
-                "alert_show": "Showing nearby player NetIDs.",
-                "alert_hide": "Hiding nearby player NetIDs."
+                "title": "تغییر شناسه‌های بازیکن",
+                "label": "نمایش شناسه‌های بازیکن (و سایر اطلاعات) را در بالای سر همه بازیکنان نزدیک تغییر می‌دهد",
+                "alert_show": "نمایش NetIDهای بازیکنان نزدیک.",
+                "alert_hide": "پنهان کردن NetIDهای بازیکنان نزدیک."
             }
         },
         "page_players": {
             "misc": {
-                "online_players": "Online Players",
-                "players": "Players",
-                "search": "Search",
-                "zero_players": "No players found."
+                "online_players": "بازیکنان آنلاین",
+                "players": "بازیکنان",
+                "search": "جستجو",
+                "zero_players": "هیچ بازیکنی یافت نشد."
             },
             "filter": {
-                "label": "Filter by",
-                "no_filter": "No Filter",
-                "is_admin": "Is Admin",
-                "is_injured": "Is Injured / Dead",
-                "in_vehicle": "In Vehicle"
+                "label": "فیلتر بر اساس",
+                "no_filter": "بدون فیلتر",
+                "is_admin": "مدیر است",
+                "is_injured": "مجروح / مرده است",
+                "in_vehicle": "در وسیله نقلیه است"
             },
             "sort": {
-                "label": "Sort by",
-                "distance": "Distance",
-                "id": "ID",
-                "joined_first": "Joined First",
-                "joined_last": "Joined Last",
-                "closest": "Closest",
-                "farthest": "Farthest"
+                "label": "مرتب‌سازی بر اساس",
+                "distance": "فاصله",
+                "id": "شناسه",
+                "joined_first": "اولین پیوست",
+                "joined_last": "آخرین پیوست",
+                "closest": "نزدیک‌ترین",
+                "farthest": "دورترین"
             },
             "card": {
-                "health": "%{percentHealth}% health"
+                "health": "%{percentHealth}% سلامتی"
             }
         },
         "player_modal": {
             "misc": {
-                "error": "An error occurred fetching this users details. The error is shown below:",
-                "target_not_found": "Was unable to find an online player with ID or a username of %{target}"
+                "error": "هنگام واکشی جزئیات این کاربر، یک خطا رخ داد. خطا در زیر نشان داده شده است:",
+                "target_not_found": "قادر به یافتن بازیکن آنلاینی با شناسه یا نام کاربری %{target} نبود."
             },
             "tabs": {
-                "actions": "Actions",
-                "info": "Info",
-                "ids": "IDs",
-                "history": "History",
-                "ban": "Ban"
+                "actions": "اقدامات",
+                "info": "اطلاعات",
+                "ids": "شناسه‌ها",
+                "history": "تاریخچه",
+                "ban": "بن"
             },
             "actions": {
-                "title": "Player Actions",
-                "command_sent": "Command sent!",
+                "title": "اقدامات بازیکن",
+                "command_sent": "دستور ارسال شد!",
                 "moderation": {
-                    "title": "Moderation",
+                    "title": "میانه‌روی",
                     "options": {
-                        "dm": "DM",
-                        "warn": "Warn",
-                        "kick": "Kick",
-                        "set_admin": "Give Admin"
+                        "dm": "پیام مستقیم",
+                        "warn": "هشدار",
+                        "kick": "اخراج",
+                        "set_admin": "دادن مدیر"
                     },
                     "dm_dialog": {
-                        "title": "Direct Message",
-                        "description": "What is the reason for direct messaging this player?",
-                        "placeholder": "Reason...",
-                        "success": "Your DM has been sent!"
+                        "title": "پیام مستقیم",
+                        "description": "دلیل ارسال پیام مستقیم به این بازیکن چیست؟",
+                        "placeholder": "دلیل...",
+                        "success": "پیام مستقیم شما ارسال شد!"
                     },
                     "warn_dialog": {
-                        "title": "Warn",
-                        "description": "What is the reason for direct warning this player?",
-                        "placeholder": "Reason...",
-                        "success": "Player warned!"
+                        "title": "هشدار",
+                        "description": "دلیل هشدار مستقیم به این بازیکن چیست؟",
+                        "placeholder": "دلیل...",
+                        "success": "بازیکن هشدار داده شد!"
                     },
                     "kick_dialog": {
-                        "title": "Kick",
-                        "description": "What is the reason for kicking this player?",
-                        "placeholder": "Reason...",
-                        "success": "Player kicked!"
+                        "title": "اخراج",
+                        "description": "دلیل اخراج این بازیکن چیست؟",
+                        "placeholder": "دلیل...",
+                        "success": "بازیکن اخراج شد!"
                     }
                 },
                 "interaction": {
-                    "title": "Interaction",
+                    "title": "تعامل",
                     "options": {
-                        "heal": "Heal",
-                        "go_to": "Go to",
-                        "bring": "Bring",
-                        "spectate": "Spectate",
-                        "toggle_freeze": "Toggle Freeze"
+                        "heal": "درمان",
+                        "go_to": "رفتن به",
+                        "bring": "آوردن",
+                        "spectate": "تماشا",
+                        "toggle_freeze": "تغییر مسدودیت"
                     },
                     "notifications": {
-                        "heal_player": "Healing player",
-                        "tp_player": "Teleporting to player",
-                        "bring_player": "Summoning player",
-                        "spectate_failed": "Failed to resolve the target! Exiting spectate.",
-                        "spectate_yourself": "You cannot spectate yourself.",
-                        "freeze_yourself": "You cannot freeze yourself.",
-                        "spectate_cycle_failed": "There are no players to cycle to."
+                        "heal_player": "در حال درمان بازیکن",
+                        "tp_player": "در حال انتقال از راه دور به بازیکن",
+                        "bring_player": "در حال احضار بازیکن",
+                        "spectate_failed": "نتوانستم هدف را حل کنم! خروج از تماشا.",
+                        "spectate_yourself": "شما نمی‌توانید خودتان را تماشا کنید.",
+                        "freeze_yourself": "شما نمی‌توانید خودتان را مسدود کنید.",
+                        "spectate_cycle_failed": "هیچ بازیکنی برای چرخیدن وجود ندارد."
                     }
                 },
                 "troll": {
-                    "title": "Troll",
+                    "title": "ترول",
                     "options": {
-                        "drunk": "Make Drunk",
-                        "fire": "Set Fire",
-                        "wild_attack": "Wild attack"
+                        "drunk": "مست کردن",
+                        "fire": "آتش زدن",
+                        "wild_attack": "حمله وحشیانه"
                     }
                 }
             },
             "info": {
-                "title": "Player info",
-                "session_time": "Session Time",
-                "play_time": "Play time",
-                "joined": "Joined",
-                "whitelisted_label": "Whitelisted",
-                "whitelisted_notyet": "not yet",
-                "btn_wl_add": "ADD WL",
-                "btn_wl_remove": "REMOVE WL",
-                "btn_wl_success": "Whitelist status changed.",
-                "log_label": "Log",
-                "log_empty": "No bans/warns found.",
-                "log_ban_count": "%{smart_count} ban |||| %{smart_count} bans",
-                "log_warn_count": "%{smart_count} warn |||| %{smart_count} warns",
-                "log_btn": "DETAILS",
-                "notes_changed": "Player note changed.",
-                "notes_placeholder": "Notes about this player..."
+                "title": "اطلاعات بازیکن",
+                "session_time": "زمان جلسه",
+                "play_time": "زمان بازی",
+                "joined": "پیوست",
+                "whitelisted_label": "لیست سفید",
+                "whitelisted_notyet": "هنوز نه",
+                "btn_wl_add": "افزودن به لیست سفید",
+                "btn_wl_remove": "حذف از لیست سفید",
+                "btn_wl_success": "وضعیت لیست سفید تغییر کرد.",
+                "log_label": "ورود",
+                "log_empty": "هیچ بن/هشداری یافت نشد.",
+                "log_ban_count": "%{smart_count} بن |||| %{smart_count} بن",
+                "log_warn_count": "%{smart_count} هشدار |||| %{smart_count} هشدار",
+                "log_btn": "جزئیات",
+                "notes_changed": "یادداشت بازیکن تغییر کرد.",
+                "notes_placeholder": "یادداشت‌ها درباره این بازیکن..."
             },
             "history": {
-                "title": "Related history",
-                "btn_revoke": "REVOKE",
-                "revoked_success": "Action revoked!",
-                "banned_by": "BANNED by %{author}",
-                "warned_by": "WARNED by %{author}",
-                "revoked_by": "Revoked by %{author}.",
-                "expired_at": "Expired at %{date}.",
-                "expires_at": "Expires at %{date}."
+                "title": "تاریخچه مرتبط",
+                "btn_revoke": "لغو",
+                "revoked_success": "عمل لغو شد!",
+                "banned_by": "بن شده توسط %{author}",
+                "warned_by": "هشدار داده شده توسط %{author}",
+                "revoked_by": "لغو شده توسط %{author}.",
+                "expired_at": "منقضی شده در %{date}.",
+                "expires_at": "منقضی می‌شود در %{date}."
             },
             "ban": {
-                "title": "Ban player",
-                "reason_placeholder": "Reason",
-                "duration_placeholder": "Duration",
-                "hours": "hours",
-                "days": "days",
-                "weeks": "weeks",
-                "months": "months",
-                "permanent": "Permanent",
-                "custom": "Custom",
-                "helper_text": "Please select a duration",
-                "submit": "Apply ban",
-                "reason_required": "The Reason field is required.",
-                "success": "Player banned!"
+                "title": "بن کردن بازیکن",
+                "reason_placeholder": "دلیل",
+                "duration_placeholder": "مدت",
+                "hours": "ساعت‌ها",
+                "days": "روزها",
+                "weeks": "هفته‌ها",
+                "months": "ماه‌ها",
+                "permanent": "دائمی",
+                "custom": "سفارشی",
+                "helper_text": "لطفاً یک مدت انتخاب کنید",
+                "submit": "اعمال بن",
+                "reason_required": "فیلد دلیل الزامی است.",
+                "success": "بازیکن بن شد!"
             },
             "ids": {
-                "current_ids": "Current Identifiers",
-                "previous_ids": "Previously Used Identifiers",
-                "all_hwids": "All Hardware IDs"
+                "current_ids": "شناسه‌های فعلی",
+                "previous_ids": "شناسه‌های استفاده شده قبلی",
+                "all_hwids": "همه شناسه‌های سخت‌افزاری"
             }
         }
     }

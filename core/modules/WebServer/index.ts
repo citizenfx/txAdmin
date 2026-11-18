@@ -27,6 +27,7 @@ import fatalError from '@lib/fatalError';
 import { isProxy } from 'node:util/types';
 import serveStaticMw from './middlewares/serveStaticMw';
 import serveRuntimeMw from './middlewares/serveRuntimeMw';
+import consts from '@shared/consts';
 const console = consoleFactory(modulename);
 const nanoid = customAlphabet(dict49, 32);
 
@@ -54,8 +55,9 @@ export default class WebServer {
         //Generate cookie key & luaComToken
         const pathHash = crypto.createHash('shake256', { outputLength: 6 })
             .update(txEnv.profilePath)
-            .digest('hex');
-        this.sessionCookieName = `tx:${pathHash}`;
+            .digest('hex')
+            .padStart(12, '0');
+        this.sessionCookieName = `${consts.cookies.session}:${pathHash}`;
         this.luaComToken = nanoid();
 
 
@@ -63,7 +65,6 @@ export default class WebServer {
         // Setting up Koa
         // ===================
         this.app = new Koa();
-        this.app.keys = ['txAdmin' + nanoid()];
 
         // Some people might want to enable it, but we are not guaranteeing XFF security
         // due to the many possible ways you can connect to koa.
@@ -176,6 +177,23 @@ export default class WebServer {
             // console.debug(`HTTP ${req.method} ${req.url}`);
             if (!checkHttpLoad()) return;
             if (!checkRateLimit(req?.socket?.remoteAddress)) return;
+
+            // FIXME:NEXT:UPDATE: CVE-2026-111497 Mitigation
+            // Reject inbound encoded bodies before Koa/Socket.IO decodes them.
+            const contentEncoding = req.headers['content-encoding'];
+            if (contentEncoding !== undefined) {
+                if (typeof contentEncoding !== 'string' || contentEncoding.trim().toLowerCase() !== 'identity') {
+                    res.writeHead(415, {
+                        'Content-Type': 'text/plain; charset=utf-8',
+                        'Accept-Encoding': 'identity',
+                    });
+                    res.end('Unsupported Content-Encoding');
+                    return;
+                }
+                // Downstream parsers must also recognize case/whitespace variants.
+                req.headers['content-encoding'] = 'identity';
+            }
+
             if (req.url.startsWith('/socket.io')) {
                 (this.io.engine as any).handleRequest(req, res);
             } else {

@@ -9,7 +9,12 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
+        //Default behaviors
         default: "bg-primary text-primary-foreground hover:bg-primary/75",
+        muted: "bg-muted text-muted-foreground hover:bg-secondary hover:text-seconbg-secondary-foreground",
+        link: "text-accent underline-offset-4 hover:underline",
+
+        //Semantic variants
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/75",
         warning:
@@ -18,13 +23,40 @@ const buttonVariants = cva(
           "bg-success text-success-foreground hover:bg-success/75",
         info:
           "bg-info text-info-foreground hover:bg-info/75",
-        outline:
-          "border border-foreground hover:bg-primary hover:text-primary-foreground",
         secondary:
           "bg-secondary text-secondary-foreground hover:bg-secondary/75",
-        ghost: "hover:bg-primary hover:text-primary-foreground",
-        muted: "bg-muted text-muted-foreground hover:bg-secondary hover:text-seconbg-secondary-foreground",
-        link: "text-accent underline-offset-4 hover:underline",
+
+        // Ghost buttons are transparent and only change color on hover
+        ghost:
+          "hover:bg-primary hover:text-primary-foreground",
+        "ghost-destructive":
+          "text-destructive hover:bg-destructive hover:text-destructive-foreground",
+        "ghost-warning":
+          "text-warning hover:bg-warning hover:text-warning-foreground",
+        "ghost-success":
+          "text-success hover:bg-success hover:text-success-foreground",
+        "ghost-info":
+          "text-info hover:bg-info hover:text-info-foreground",
+        "ghost-secondary":
+          "text-secondary hover:bg-secondary hover:text-secondary-foreground",
+        "ghost-muted":
+          "text-muted-foreground hover:bg-muted hover:text-muted-foreground",
+
+        // Outline buttons have a border and change background and text color on hover
+        outline:
+          "border border-foreground hover:bg-primary hover:text-primary-foreground",
+        "outline-destructive":
+          "border border-destructive text-destructive hover:bg-destructive hover:text-destructive-foreground",
+        "outline-warning":
+          "border border-warning text-warning hover:bg-warning hover:text-warning-foreground",
+        "outline-success":
+          "border border-success text-success hover:bg-success hover:text-success-foreground",
+        "outline-info":
+          "border border-info text-info hover:bg-info hover:text-info-foreground",
+        "outline-secondary":
+          "border border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground",
+        "outline-muted":
+          "border border-muted text-muted-foreground hover:bg-muted hover:text-muted-foreground",
       },
       size: {
         default: "h-10 px-4 py-2",
@@ -44,7 +76,7 @@ const buttonVariants = cva(
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
+  VariantProps<typeof buttonVariants> {
   asChild?: boolean
 }
 

@@ -5,7 +5,7 @@
     Althought still not perfect, I believe this code is the best way to clean up player names.
     In general:
     - It removes spammy characters, like character repetitions and zalgo text
-    - Does that without breaking scripts like hebreu and thai (or just a tiny bit)
+    - Does that without breaking scripts like hebrew and thai (or just a tiny bit)
     - It respects up to a single invisible character in the string, no matter which one
     - It does not break emoji variants that end up with 0xFE0E/0xFE0F
     - It does not break up any emoji, actually. THe only broken ones you will see are the ones that

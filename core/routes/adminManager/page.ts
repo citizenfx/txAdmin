@@ -10,7 +10,7 @@ const console = consoleFactory(modulename);
 export default async function AdminManagerPage(ctx: AuthedCtx) {
     //Check permission
     if (!ctx.admin.hasPermission('manage.admins')) {
-        return ctx.utils.render('main/message', {message: 'You don\'t have permission to view this page.'});
+        return ctx.utils.renderMessage('You don\'t have permission to view this page.');
     }
 
     //Prepare admin array
@@ -27,10 +27,18 @@ export default async function AdminManagerPage(ctx: AuthedCtx) {
         }
         const isSelf = ctx.admin.name.toLowerCase() === admin.name.toLowerCase();
 
+        let identifiers: string[] = [];
+        if ('citizenfx' in admin.providers && typeof admin.providers.citizenfx?.identifier === 'string') {
+            identifiers.push(admin.providers.citizenfx.identifier);
+        }
+
+        if ('discord' in admin.providers && typeof admin.providers.discord?.identifier === 'string') {
+            identifiers.push(admin.providers.discord.identifier);
+        }
+
         return {
-            hasCitizenFX: (admin.providers.includes('citizenfx')),
-            hasDiscord: (admin.providers.includes('discord')),
             name: admin.name,
+            identifiers,
             perms: perms,
             isSelf,
             disableEdit: !ctx.admin.isMaster && admin.master,

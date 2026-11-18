@@ -4,7 +4,7 @@
         "humanizer_language": "de"
     },
     "restarter": {
-        "server_unhealthy_kick_reason": "der server muss neu gestartet werden, bitte verbinde dich erneut",
+        "server_unhealthy_kick_reason": "der Server muss neu gestartet werden, bitte verbinde dich erneut",
         "partial_hang_warn": "Aufgrund von zeitweiligen Lags startet dieser Server in einer Minute neu. Bitte trenne die Verbindung jetzt.",
         "partial_hang_warn_discord": "Aufgrund von zeitweiligen Lags startet **%{servername}** in einer Minute neu.",
         "schedule_reason": "Automatisierter Neustart um %{time}",

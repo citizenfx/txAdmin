@@ -12,6 +12,7 @@ import { redirectToLogin } from '@/lib/navigation';
 import { LogoutReasonHash } from '@/pages/auth/Login';
 import { mutate } from 'swr';
 import { fetchWithTimeout } from './fetch';
+import consts from '@shared/consts';
 
 
 /**
@@ -103,9 +104,15 @@ export const useAuth = () => {
             redirectToLogin(LogoutReasonHash.LOGOUT);
         } else {
             console.error('Failed to logout:', data);
+            // Still wipe auth even if the request fails
+            setAuthData(false);
+            redirectToLogin(LogoutReasonHash.LOGOUT);
         }
     }).catch(error => {
         console.log('Error sending logout request:', error);
+        // Still wipe auth even if the request fails
+        setAuthData(false);
+        redirectToLogin(LogoutReasonHash.LOGOUT);
     });
 
     return {
@@ -116,7 +123,7 @@ export const useAuth = () => {
 };
 
 //Effect to on logout, automagically close all dialogs/modals and reset globalState
-export const logoutWatcher = atomEffect((get, set) => {
+export const logoutWatcher: ReturnType<typeof atomEffect> = atomEffect((get, set) => {
     const isAuthenticated = get(isAuthenticatedAtom);
     if (isAuthenticated) return;
 

@@ -40,9 +40,9 @@
     <div class="row justify-content-md-center">
         <div class="col-md-6">
             <div class="alert alert-warning text-center" role="alert">
-                <strong>Warning: The server is not in the "Approved License" whitelist mode.</strong> <br>
-                This means that any changes made in this page will not reflect in the ability of players to connect to the server while the whitelist is in another mode or disabled. <br>
-                This can be changed in the page <a href="#" onclick="navigateParentTo('/settings')">Settings > Player Manager</a>.
+                <strong>Warning: The server is not in the "Approved License" allowlist mode.</strong> <br>
+                This means that any changes made in this page will not reflect in the ability of players to connect to the server while the allowlist is in another mode or disabled. <br>
+                This can be changed in the page <a href="#" onclick="navigateParentTo('/settings#allowlist')">Settings > Allowlist</a>.
             </div>
         </div>
     </div>
@@ -54,8 +54,8 @@
         <div class="card card-accent-success">
             <div class="card-header" style="display: flex; justify-content: space-between;">
                 <div>
-                    <span style="font-size: large">Whitelist Requests: <span id="reqs-counter"></span></span> <br>
-                    <small>Players that tried to join the server but were not whitelisted.</small>
+                    <span style="font-size: large">Allowlist Requests: <span id="reqs-counter"></span></span> <br>
+                    <small>Players that tried to join the server but were not allowlisted.</small>
                 </div>
                 <div class="header-elements">
                     <div class="form-group mb-0">
@@ -118,7 +118,7 @@
         <div class="card card-accent-success">
             <div class="card-header" style="display: flex; justify-content: space-between;">
                 <div>
-                    <span style="font-size: large">Approved Whitelists Pending Join: <span id="approved-counter"></span></span> <br>
+                    <span style="font-size: large">Approved Allowlists Pending Join: <span id="approved-counter"></span></span> <br>
                     <small>Players that are already approved, but haven't joined the server yet.</small>
                 </div>
                 <div class="header-elements">
@@ -430,7 +430,7 @@
 
     async function denyAllRequests(reqId, action){
         const confirmOptions = {
-            title: 'Deny all whitelist requests?',
+            title: 'Deny all allowlist requests?',
             content: `Players will still be able to try to join again, and will receive a new request ID.`,
         };
         if (!await txAdminConfirm(confirmOptions)) return;
@@ -550,8 +550,8 @@
         let identifier = await txAdminPrompt({
             modalColor: 'green',
             confirmBtnClass: 'btn-green',
-            title: 'Whitelist player',
-            description: `Type in the Player Identifier you want to whitelist. <br>
+            title: 'Allowlist player',
+            description: `Type in the Player Identifier you want to allowlist. <br>
                 This can be any of the following: <code>${acceptedIdTypes.join(', ')}</code>`, 
             placeholder: 'discord:272800190639898628'
         });

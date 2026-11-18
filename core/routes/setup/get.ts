@@ -14,7 +14,7 @@ const console = consoleFactory(modulename);
 export default async function SetupGet(ctx: AuthedCtx) {
     //Check permissions
     if (!ctx.admin.hasPermission('master')) {
-        return ctx.utils.render('main/message', {message: 'You need to be the admin master to use the setup page.'});
+        return ctx.utils.renderMessage('You need to be the admin master to use the setup page.');
     }
 
     // Ensure correct state for the setup page

@@ -8,7 +8,6 @@ const console = consoleFactory(modulename);
 
 /**
  * Intercommunications endpoint
- * @param {object} ctx
  */
 export default async function Intercom(ctx: InitializedCtx) {
     //Sanity check

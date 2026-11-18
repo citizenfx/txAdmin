@@ -339,13 +339,19 @@ export default class DiscordBot {
                     .map((x) => x[0])
                 if (prohibitedPermsInUse.length) {
                     const name = this.#client.user.username;
-                    const perms = prohibitedPermsInUse.includes('Administrator')
-                        ? 'Administrator'
-                        : prohibitedPermsInUse.join(', ');
-                    return sendError(
-                        `This bot (${name}) has dangerous permissions (${perms}) and for your safety the bot has been disabled.`,
-                        { code: 'DangerousPermission' }
-                    );
+                    if(prohibitedPermsInUse.includes('Administrator')) {
+                        return sendError(
+                            `This bot (\`${name}\`) has \`Administrator\` permission and for your safety the bot has been disabled.`,
+                            { code: 'DangerousPermission' }
+                        );
+                    } else {
+                        const permsList = prohibitedPermsInUse.map((x) => `\`${x}\``).join(', ');
+                        const plural = prohibitedPermsInUse.length > 1 ? 'has dangerous permissions' : 'has a dangerous permission';
+                        return sendError(
+                            `This bot (\`${name}\`) ${plural} (${permsList}) and for your safety the bot has been disabled.`,
+                            { code: 'DangerousPermission' }
+                        );
+                    }
                 }
 
                 //Fetching announcements channel

@@ -1,16 +1,16 @@
 import { Button } from "@/components/ui/button";
 import useWarningBar from "@/hooks/useWarningBar";
+import { LocalStorageKey } from "@/lib/localStorage";
 import { cn } from "@/lib/utils";
 import { BellOffIcon, CloudOffIcon, DownloadCloudIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { FaDiscord } from "react-icons/fa";
 
-const LOCALSTORAGE_KEY = 'tsUpdateDismissed';
 const MAJOR_DISMISSAL_TIME = 12 * 60 * 60 * 1000;
 const MINOR_DISMISSAL_TIME = 48 * 60 * 60 * 1000;
 
 const getTsUpdateDismissed = () => {
-    const stored = localStorage.getItem(LOCALSTORAGE_KEY);
+    const stored = localStorage.getItem(LocalStorageKey.UpdateWarningPostponedTs);
     if (!stored) return false;
     const parsed = parseInt(stored);
     if (isNaN(parsed)) return false;
@@ -43,7 +43,7 @@ export function InnerWarningBar({ titleIcon, title, description, isImportant, ca
     }
 
     const postponeUpdate = () => {
-        localStorage.setItem(LOCALSTORAGE_KEY, Date.now().toString());
+        localStorage.setItem(LocalStorageKey.UpdateWarningPostponedTs, Date.now().toString());
         forceRerender()
     }
 
@@ -58,12 +58,12 @@ export function InnerWarningBar({ titleIcon, title, description, isImportant, ca
     return (
         <div className='fixed top-navbarvh w-full flex justify-center z-40'>
             <div className={cn(
-                "w-full sm:w-[28rem] h-9 hover:h-32 overflow-hidden sm:rounded-b-md",
-                "flex flex-col justify-center items-center p-2",
+                "w-full sm:w-[28rem] min-h-9 hover:min-h-32 overflow-hidden sm:rounded-b-md",
+                "flex flex-col justify-center items-center p-1",
                 "group cursor-default transition-[height] shadow-xl",
                 isImportant ? 'bg-destructive text-destructive-foreground' : 'bg-info text-info-foreground'
             )}>
-                <h2 className="text-md group-hover:font-medium">
+                <h2 className="text-md text-center group-hover:font-medium">
                     {titleIcon}
                     {title}
                 </h2>

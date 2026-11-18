@@ -98,9 +98,9 @@ export default function ServerStatus() {
     let serverHealthColor: StatusBadgeTypesVars = 'default';
     let serverUptimeText = '--';
     let serverUptimeDesc = '--';
-    let whitelistText = '--';
-    let whitelistDesc = '--';
-    let whitelistColor: StatusBadgeTypesVars = 'default';
+    let allowlistText = '--';
+    let allowlistDesc = '--';
+    let allowlistColor: StatusBadgeTypesVars = 'default';
     let discordStatusText = '--';
     let discordStatusDesc = '--';
     let discordStatusColor: StatusBadgeTypesVars = 'default';
@@ -135,23 +135,26 @@ export default function ServerStatus() {
             serverHealthDescTitle = 'Unknown server status.';
         }
 
-        //Whitelist
+        //Allowlist - FIXME:NEXT:UPDATE: rename backend var
         if (globalStatus.server.whitelist === 'disabled') {
-            whitelistText = 'DISABLED';
-            whitelistDesc = 'Anyone can join.';
+            allowlistText = 'DISABLED';
+            allowlistDesc = 'Anyone can join.';
         } else if (globalStatus.server.whitelist === 'adminOnly') {
-            whitelistText = 'ADMIN';
-            whitelistColor = 'warning';
-            whitelistDesc = 'Only admins can join.';
+            allowlistText = 'ADMIN';
+            allowlistColor = 'warning';
+            allowlistDesc = 'Only admins can join.';
         } else if (globalStatus.server.whitelist === 'discordMember') {
-            whitelistText = 'MEMBER';
-            whitelistDesc = 'Only Discord server members can join.';
+            allowlistText = 'MEMBER';
+            allowlistDesc = 'Only Discord server members can join.';
         } else if (globalStatus.server.whitelist === 'discordRoles') {
-            whitelistText = 'ROLES';
-            whitelistDesc = 'Only Discord server members with the specified roles can join.';
+            allowlistText = 'ROLES';
+            allowlistDesc = 'Only Discord server members with the specified roles can join.';
         } else if (globalStatus.server.whitelist === 'approvedLicense') {
-            whitelistText = 'LICENSE';
-            whitelistDesc = 'Only players with an approved license can join.';
+            allowlistText = 'LICENSE';
+            allowlistDesc = 'Only players with an approved license can join.';
+        } else if (globalStatus.server.whitelist === 'external') {
+            allowlistText = 'EXTERNAL';
+            allowlistDesc = 'Player joins are handled by an external resource.';
         }
 
         //Bot status - too long to show all the text, so just show the code
@@ -185,11 +188,11 @@ export default function ServerStatus() {
                 >{serverUptimeText}</StatusBadge>
             </div>
             <div className="flex justify-between items-center text-muted-foreground text-sm gap-1.5">
-                Whitelist:
+                Allowlist:
                 <StatusBadge
-                    tooltip={whitelistDesc}
-                    type={whitelistColor}
-                >{whitelistText}</StatusBadge>
+                    tooltip={allowlistDesc}
+                    type={allowlistColor}
+                >{allowlistText}</StatusBadge>
             </div>
             <div className="flex justify-between items-center text-muted-foreground text-sm gap-1.5">
                 Discord Bot:

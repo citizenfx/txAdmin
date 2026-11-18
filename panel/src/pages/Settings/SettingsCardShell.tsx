@@ -27,6 +27,10 @@ export default function SettingsCardShell({
     const [animationParent] = useAutoAnimate();
     const isCardPendingSave = pageCtx.cardPendingSave?.cardId === cardCtx.cardId;
 
+    // FIXME:NEXT:UPDATE remove
+    const visibleTabName = cardCtx.tabName === 'Whitelist' ? 'Allowlist' : cardCtx.tabName;
+    const visibleCardName = cardCtx.cardName === 'Whitelist' ? 'Allowlist' : cardCtx.cardName;
+
     return (
         <div id={`tab-${cardCtx.cardId}`} data-show-advanced={advancedVisible} className='group/card'>
             <Card className="xs:x bg-transparent max-xs:rounded-none max-xs:shadow-none">
@@ -38,7 +42,7 @@ export default function SettingsCardShell({
                             <li>{cardCtx.cardName} Settings</li>
                         </>
                     ) : (
-                        <li>{cardCtx.tabName} Settings</li>
+                        <li>{visibleTabName} Settings</li>
                     )}
                     {isCardPendingSave && (
                         // <div className="grow text-right xflex xitems-center xgap-1.5 xbg-lime-300">
@@ -63,7 +67,7 @@ export default function SettingsCardShell({
                                 disabled={!isCardPendingSave || pageCtx.isReadOnly}
                                 onClick={onClickSave}
                             >
-                                Save {cardCtx.cardName} Settings
+                                Save {visibleCardName} Settings
                                 {pageCtx.isSaving && (
                                     <Loader2Icon className="h-3.5 mt-0.5 inline animate-spin" />
                                 )}

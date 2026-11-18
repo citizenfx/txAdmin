@@ -71,6 +71,17 @@ export class Stopwatch {
             return Math.floor(elapsedMs / 1000);
         }
     }
+
+    /**
+     * Returns the elapsed time in milliseconds or Infinity if not started.
+     */
+    get elapsedMs() {
+        if (this.tsStart === null) {
+            return Infinity;
+        } else {
+            return Date.now() - this.tsStart;
+        }
+    }
 }
 
 

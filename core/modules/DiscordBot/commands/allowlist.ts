@@ -37,10 +37,10 @@ const handleMemberSubcommand = async (interaction: ChatInputCommandInteraction, 
             adminName,
         });
     } catch (error) {
-        return await interaction.reply(embedder.danger(`Failed to save whitelist approval: ${(error as Error).message}`));
+        return await interaction.reply(embedder.danger(`Failed to save allowlist approval: ${(error as Error).message}`));
     }
 
-    const msg = `Added whitelist approval for ${playerName}.`;
+    const msg = `Added allowlist approval for ${playerName}.`;
     logDiscordAdminAction(adminName, msg);
     return await interaction.reply(embedder.success(msg));
 }
@@ -60,7 +60,7 @@ const handleRequestSubcommand = async (interaction: ChatInputCommandInteraction,
     //Find request
     const requests = txCore.database.whitelist.findManyRequests({ id: reqId });
     if (!requests.length) {
-        return await interaction.reply(embedder.warning(`Whitelist request ID \`${reqId}\` not found.`));
+        return await interaction.reply(embedder.warning(`Allowlist request ID \`${reqId}\` not found.`));
     }
     const req = requests[0]; //just getting the first
 
@@ -84,7 +84,7 @@ const handleRequestSubcommand = async (interaction: ChatInputCommandInteraction,
         });
     } catch (error) {
         if (!(error instanceof DuplicateKeyError)) {
-            return await interaction.reply(embedder.danger(`Failed to save wl approval: ${(error as Error).message}`));
+            return await interaction.reply(embedder.danger(`Failed to save allowlist approval: ${(error as Error).message}`));
         }
     }
 
@@ -92,10 +92,10 @@ const handleRequestSubcommand = async (interaction: ChatInputCommandInteraction,
     try {
         txCore.database.whitelist.removeManyRequests({ id: reqId });
     } catch (error) {
-        return await interaction.reply(embedder.danger(`Failed to remove wl request: ${(error as Error).message}`));
+        return await interaction.reply(embedder.danger(`Failed to remove allowlist request: ${(error as Error).message}`));
     }
 
-    const msg = `Approved whitelist request \`${reqId}\` from ${playerName}.`;
+    const msg = `Approved allowlist request \`${reqId}\` from ${playerName}.`;
     logDiscordAdminAction(adminName, msg);
     return await interaction.reply(embedder.success(msg));
 }

@@ -44,13 +44,13 @@ const getResourceSubPath = (resPath) => {
 
 /**
  * Returns the resources list
- * @param {object} ctx
+ * @param {import('@modules/WebServer/ctxTypes').AuthedCtx} ctx
  */
 export default async function Resources(ctx) {
     if (!txCore.fxRunner.child?.isAlive) {
-        return ctx.utils.render('main/message', {
-            message: '<strong>The resources list is only available when the server is running.</strong>',
-        });
+        return ctx.utils.renderMessage(
+            'The resources list is only available when the server is running.',
+        );
     }
 
     const timeoutMessage = `<strong>Couldn't load the resources list.</strong> <br>
@@ -62,7 +62,7 @@ export default async function Resources(ctx) {
     //Send command request
     const cmdSuccess = txCore.fxRunner.sendCommand('txaReportResources', [], SYM_SYSTEM_AUTHOR);
     if (!cmdSuccess) {
-        return ctx.utils.render('main/message', {message: timeoutMessage});
+        return ctx.utils.renderMessage(timeoutMessage);
     }
 
     //Timer fot list delivery
@@ -84,7 +84,7 @@ export default async function Resources(ctx) {
                     resGroups,
                     disableActions: (ctx.admin.hasPermission('commands.resources')) ? '' : 'disabled',
                 };
-                resolve(['main/resources', renderData]);
+                resolve({ renderData });
             }
         }, 100);
     });
@@ -93,13 +93,19 @@ export default async function Resources(ctx) {
     const tError = new Promise((resolve, reject) => {
         tErrorTimer = setTimeout(() => {
             clearTimeout(tListTimer);
-            resolve(['main/message', {message: timeoutMessage}]);
+            resolve({ renderMessage: timeoutMessage });
         }, 1000);
     });
 
     //Start race and give output
-    const [view, renderData] = await Promise.race([tList, tError]);
-    return ctx.utils.render(view, renderData);
+    const { renderMessage, renderData } = await Promise.race([tList, tError]);
+    if (renderMessage) {
+        return ctx.utils.renderMessage(renderMessage);
+    } else if (renderData) {
+        return ctx.utils.render('main/resources', renderData);
+    } else {
+        return ctx.utils.error(500, 'Invalid response from Promise.race');
+    }
 };
 
 

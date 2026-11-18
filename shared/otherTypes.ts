@@ -31,10 +31,6 @@ export type ThemeType = {
     style: { [key: string]: string };
 };
 
-export type AdsDataType = {
-    login: { img: string, url: string } | null;
-    main: { img: string, url: string } | null;
-};
 
 export type InjectedTxConsts = {
     //Env
@@ -50,7 +46,6 @@ export type InjectedTxConsts = {
     hasMasterAccount: boolean;
     defaultTheme: string;
     customThemes: Omit<ThemeType, 'style'>[];
-    adsData: AdsDataType;
     providerLogo: string | undefined;
     providerName: string | undefined;
     hostConfigSource: string;

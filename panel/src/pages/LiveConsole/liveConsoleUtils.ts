@@ -1,14 +1,6 @@
 import { copyToClipboard } from "@/lib/utils";
-import { LiveConsoleOptions } from "./LiveConsolePage";
-
-
-//ANSII escape codes
-export const ANSI = {
-    WHITE: '\x1B[0;37m',
-    GRAY: '\x1B[1;90m',
-    YELLOW: '\x1B[0;33m',
-    RESET: '\x1B[0m',
-} as const;
+import { TimestampMode } from "./xtermOptions";
+import { ANSI } from "./liveConsoleColors";
 
 
 //Yoinked from core/modules/Logger/FXServerLogger/index.ts
@@ -46,8 +38,8 @@ export const extractTermLineTimestamp = (line: string) => {
 /**
  * Formats a timestamp into a console prefix
  */
-export const formatTermTimestamp = (ts: number, opts: LiveConsoleOptions): string => {
-    if (opts.timestampDisabled) return '';
+export const formatTermTimestamp = (ts: number, timestampMode: TimestampMode): string => {
+    if (timestampMode === 'DISABLED') return ANSI.RESET;
     const time = new Date(ts * 1000);
     const str = time.toLocaleTimeString(
         'en-US', //as en-gb uses 4 digits for the am/pm indicator
@@ -55,7 +47,9 @@ export const formatTermTimestamp = (ts: number, opts: LiveConsoleOptions): strin
             hour: '2-digit',
             minute: '2-digit',
             second: '2-digit',
-            hour12: opts.timestampForceHour12 ?? window.txBrowserHour12,
+            hour12: timestampMode === 'FORCE12H' ? true :
+                timestampMode === 'FORCE24H' ? false :
+                    window.txBrowserHour12,
         }
     );
 
@@ -64,18 +58,26 @@ export const formatTermTimestamp = (ts: number, opts: LiveConsoleOptions): strin
 }
 
 
+export const getEmptyTermTimestamp = (timestampMode: TimestampMode) => {
+    return formatTermTimestamp(Date.now(), timestampMode).replace(/\w/g, '-');
+}
+
 /**
  * Filters a string to be copied to the clipboard
  */
-export const filterTermLine = (selection: string, opts: LiveConsoleOptions) => {
-    if (opts.copyTimestamp && opts.copyTag) return selection;
+export const filterTermLine = (
+    selection: string,
+    copyTimestamp: boolean,
+    copyTag: boolean
+) => {
+    if (copyTimestamp && copyTag) return selection;
     const lineRegex = /^(?<ts>\d{2}:\d{2}:\d{2}(?: [AP]M)? )?(?<tag>\[.{20}] )?(?<content>.*)?/;
     const match = selection.match(lineRegex);
     if (!match) return selection;
     const { ts, tag, content } = match.groups ?? {};
     let prefix = '';
-    if (opts.copyTimestamp) prefix += ts ?? '';
-    if (opts.copyTag) prefix += tag ?? '';
+    if (copyTimestamp) prefix += ts ?? '';
+    if (copyTag) prefix += tag ?? '';
     return prefix + (content ?? '').trimEnd();
 }
 
@@ -86,12 +88,13 @@ export const filterTermLine = (selection: string, opts: LiveConsoleOptions) => {
 export const copyTermLine = async (
     selection: string,
     divRef: HTMLDivElement,
-    opts: LiveConsoleOptions,
+    copyTimestamp: boolean,
+    copyTag: boolean,
     returnFocusTo: HTMLElement | null = null
 ) => {
     const strToCopy = selection
         .split(/\r?\n/)
-        .map(line => filterTermLine(line, opts))
+        .map(line => filterTermLine(line, copyTimestamp, copyTag))
         .join('\r\n') //assuming the user is on windows
         .replace(/(\r?\n)+$/, '\r\n'); //single one at the end, if any
     return copyToClipboard(strToCopy, divRef, returnFocusTo);

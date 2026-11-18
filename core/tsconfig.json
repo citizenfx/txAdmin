@@ -58,7 +58,6 @@
   "include": [
     "**/*",
     "../shared/",
-    "../dynamicAds2.json",
   ],
   "references": [
     { "path": "../shared" }

@@ -39,7 +39,7 @@
                     <li class="nav-item">
                         <a class="nav-item nav-link" id="nav-revokewl-tab" data-toggle="tab" href="#nav-revokewl"
                             role="tab" aria-controls="nav-revokewl" aria-selected="true">
-                            Revoke Whitelists
+                            Revoke Allowlists
                         </a>
                     </li>
                 </ul>
@@ -71,7 +71,7 @@
                         <div class="row text-center pt-2">
                             <div class="col-lg-9 text-lg-left">
                                 <h5>Backup Database</h5>
-                                Download a copy of the <code>playersDB.json</code> file containing all players and actions (bans, warns and whitelists).  
+                                Download a copy of the <code>playersDB.json</code> file containing all players, actions (bans, warns), and join requests for allowlisted servers.  
                                 You should do this every once in a while.
                             </div>
                             <div class="col-lg-3 text-lg-right">
@@ -102,7 +102,7 @@
                                 </select>
                                 <span class="form-text text-muted">
                                     Remove from the database players based on how much time since they last connected to the server.
-                                    This will not remove players with saved notes, neither will erase bans/warns/whitelist logs.
+                                    This will not remove players with saved notes, neither will erase bans/warns logs.
                                 </span>
                             </div>
                         </div>
@@ -179,18 +179,18 @@
                                     <option value="30d" selected>players that haven't joined in the last 30 days</option>
                                     <option value="15d">players that haven't joined in the last 15 days</option>
                                     <option value="7d">players that haven't joined in the last 7 days</option>
-                                    <option value="all" class="font-weight-bold text-danger">REVOKE ALL WHITELISTS</option>
+                                    <option value="all" class="font-weight-bold text-danger">REVOKE ALL ALLOWLISTS</option>
                                 </select>
                                 <span class="form-text text-muted">
-                                    Revoke whitelist from players that have not joined the server the last X days. <br>
-                                    <strong>Note:</strong> This only applies to license whitelist, and not Discord member or Discord role whitelist.
+                                    Revoke allowlist from players that have not joined the server the last X days. <br>
+                                    <strong>Note:</strong> This only applies to license allowlist, and not Discord member or Discord role allowlist.
                                 </span>
                             </div>
                         </div>
     
                         <div class="text-center mt-4">
                             <button class="btn btn-sm btn-outline-danger" id="revokewl-submitButton" <%= disableActions %>>
-                                <i class="icon-close"></i> Revoke Whitelists
+                                <i class="icon-close"></i> Revoke From Allowlist
                             </button>
                         </div>
                     </div>
@@ -314,8 +314,8 @@
         revokewlSubmitBtn.onclick = async (event) => {
             //Confirm action
             const actionText = (frmFilter.value === 'all')
-                ? `Revoke ALL Whitelists.`
-                : `Revoke Whitelist from all players that have not joined in the past ${frmFilter.value}.`;
+                ? `Revoke ALL Allowlisted Players.`
+                : `Revoke Allowlist from all players that have not joined in the past ${frmFilter.value}.`;
             const confirmOptions = {
                 title: 'Are you sure wou want to:',
                 content: actionText
@@ -340,7 +340,7 @@
                     }else{
                         return txAdminAlert({
                             title: 'Result:',
-                            content: `<b>Whitelists revoked: ${data.cntRemoved}</b> <br>
+                            content: `<b>Allowlists revoked: ${data.cntRemoved}</b> <br>
                                 Process finished in ${data.msElapsed}ms.`
                         });
                     }
