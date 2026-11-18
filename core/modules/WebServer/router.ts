@@ -1,6 +1,7 @@
 import { txDevEnv } from '@core/globalData';
 import Router from '@koa/router';
 import KoaRateLimit from 'koa-ratelimit';
+import { getIpRateLimitKey } from '@lib/host/isIpAddressLocal';
 
 import * as routes from '@routes/index';
 import { apiAuthMw, hostAuthMw, intercomAuthMw, webAuthMw } from './middlewares/authMws';
@@ -23,7 +24,7 @@ export default () => {
         }),
         max: txConfig.webServer.limiterAttempts,
         disableHeader: true,
-        id: (ctx: any) => ctx.txVars.realIP,
+        id: (ctx: any) => getIpRateLimitKey(ctx.txVars.realIP),
     });
 
     //Rendered Pages

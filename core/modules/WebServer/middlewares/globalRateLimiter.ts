@@ -1,6 +1,6 @@
 const modulename = 'WebServer:RateLimiter';
 import consoleFactory from '@lib/console';
-import { isIpAddressLocal } from '@lib/host/isIpAddressLocal';
+import { getIpRateLimitKey, isIpAddressLocal } from '@lib/host/isIpAddressLocal';
 const console = consoleFactory(modulename);
 
 
@@ -72,6 +72,9 @@ const checkRateLimit = (remoteAddress: string) => {
 
     // Whitelist all local addresses
     if (isIpAddressLocal(remoteAddress)) return true;
+
+    // Grouping IPv6 by /64 and normalizing IPv4-mapped addresses
+    remoteAddress = getIpRateLimitKey(remoteAddress);
 
     // Checking if the IP is banned
     if (bannedIps.has(remoteAddress)) return false;
