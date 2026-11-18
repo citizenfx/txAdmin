@@ -248,7 +248,9 @@ export default class WebServer {
             // });
             this.httpServer.on('error', listenErrorHandler);
 
-            const netInterface = txHostConfig.netInterface ?? '0.0.0.0';
+            //NOTE: when no interface is forced, the host is omitted so Node listens on `::` (dual-stack)
+            //  when IPv6 is available, and falls back to `0.0.0.0` otherwise.
+            const netInterface = txHostConfig.netInterface;
             if (txHostConfig.netInterface) {
                 console.warn(`Starting with interface ${txHostConfig.netInterface}.`);
                 console.warn('If the HTTP server doesn\'t start, this is probably the reason.');

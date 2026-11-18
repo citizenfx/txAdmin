@@ -6,6 +6,7 @@ import mysql from 'mysql2/promise';
 import consts from '@shared/consts';
 import { txEnv, txHostConfig } from '@core/globalData';
 import { validateModifyServerConfig } from '@lib/fxserver/fxsConfigHelper';
+import { formatHostPort } from '@lib/host/isIpAddressLocal';
 import consoleFactory from '@lib/console';
 import { SYM_RESET_CONFIG } from '@lib/symbols';
 const console = consoleFactory(modulename);
@@ -156,8 +157,8 @@ async function handleSetVariables(ctx) {
         const endpointIface = txHostConfig.netInterface ?? '0.0.0.0';
         const endpointPort = txHostConfig.fxsPort ?? 30120;
         userVars.serverEndpoints = [
-            `endpoint_add_tcp "${endpointIface}:${endpointPort}" ${comment}`,
-            `endpoint_add_udp "${endpointIface}:${endpointPort}" ${comment}`,
+            `endpoint_add_tcp "${formatHostPort(endpointIface, endpointPort)}" ${comment}`,
+            `endpoint_add_udp "${formatHostPort(endpointIface, endpointPort)}" ${comment}`,
         ].join('\n');
     } else {
         userVars.serverEndpoints = [
