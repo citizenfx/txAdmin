@@ -38,7 +38,7 @@ export const hostEnvVarSchemas = {
         (val) => val < 40120 || val > 40150,
         'FXS_PORT cannot be between 40120 and 40150'
     ),
-    INTERFACE: z.string().ip({ version: "v4" }),
+    INTERFACE: z.string().ip(),
 
     //Provider
     PROVIDER_NAME: z.string()
